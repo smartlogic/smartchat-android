@@ -1,5 +1,6 @@
 package io.smartlogic.smartchat.api;
 
+import android.util.Base64;
 import android.util.Log;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -15,6 +16,10 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
+import org.bouncycastle.asn1.pkcs.PrivateKeyInfo;
+import org.bouncycastle.crypto.params.AsymmetricKeyParameter;
+import org.bouncycastle.crypto.util.PrivateKeyFactory;
+import org.bouncycastle.crypto.util.PrivateKeyInfoFactory;
 import org.bouncycastle.openssl.PEMDecryptorProvider;
 import org.bouncycastle.openssl.PEMEncryptedKeyPair;
 import org.bouncycastle.openssl.PEMParser;
@@ -26,7 +31,15 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.security.InvalidKeyException;
+import java.security.KeyFactory;
 import java.security.KeyPair;
+import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
+import java.security.Signature;
+import java.security.SignatureException;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.PKCS8EncodedKeySpec;
 
 import io.smartlogic.smartchat.hypermedia.HalRoot;
 import io.smartlogic.smartchat.models.User;
@@ -81,7 +94,31 @@ public class ApiClient {
             KeyPair keyPair = converter.getKeyPair(((PEMEncryptedKeyPair) object).decryptKeyPair(decProv));
 
             Log.d("smartchat", keyPair.getPrivate().toString());
+            Log.d("smartchat", keyPair.getPublic().toString());
+
+            String base64PrivateKey = Base64.encodeToString(keyPair.getPrivate().getEncoded(), Base64.NO_WRAP);
+            Log.d("smartchat-hi", "PEM Key: " + base64PrivateKey);
+
+            PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(Base64.decode(base64PrivateKey, Base64.NO_WRAP));
+            KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+            PrivateKey privatekey = keyFactory.generatePrivate(keySpec);
+
+            Log.d("smartchat", privatekey.toString());
+
+            Signature signer = Signature.getInstance("SHA256withRSA");
+            signer.initSign(privatekey);
+            signer.update("".getBytes());
+
+            Log.d("smartchat", Base64.encodeToString(signer.sign(), Base64.NO_WRAP));
         } catch (IOException e) {
+            e.printStackTrace();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        } catch (InvalidKeySpecException e) {
+            e.printStackTrace();
+        } catch (InvalidKeyException e) {
+            e.printStackTrace();
+        } catch (SignatureException e) {
             e.printStackTrace();
         }
     }

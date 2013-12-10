@@ -48,8 +48,6 @@ public class SignUpFragment extends Fragment {
             ApiClient client = new ApiClient();
             client.registerUser(user);
 
-            Log.d("smartchat", user.toString());
-
             return null;
         }
     }
