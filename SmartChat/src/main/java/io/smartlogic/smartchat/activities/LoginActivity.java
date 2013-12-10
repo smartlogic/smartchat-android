@@ -1,4 +1,4 @@
-package io.smartlogic.smartchat;
+package io.smartlogic.smartchat.activities;
 
 import android.app.Activity;
 import android.app.ActionBar;
@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.os.Build;
 
+import io.smartlogic.smartchat.R;
 import io.smartlogic.smartchat.fragments.InitialLoginFragment;
 import io.smartlogic.smartchat.fragments.LoginFragment;
 import io.smartlogic.smartchat.fragments.SignUpFragment;

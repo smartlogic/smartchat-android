@@ -1,6 +1,7 @@
 package io.smartlogic.smartchat.fragments;
 
 import android.app.Fragment;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -13,6 +14,7 @@ import android.widget.EditText;
 
 import io.smartlogic.smartchat.Constants;
 import io.smartlogic.smartchat.R;
+import io.smartlogic.smartchat.activities.ContactsActivity;
 import io.smartlogic.smartchat.api.ApiClient;
 import io.smartlogic.smartchat.models.User;
 
@@ -57,6 +59,12 @@ public class SignUpFragment extends Fragment {
             editor.commit();
 
             return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            Intent intent = new Intent(getActivity(), ContactsActivity.class);
+            startActivity(intent);
         }
     }
 }
