@@ -1,15 +1,17 @@
 package io.smartlogic.smartchat.fragments;
 
 import android.app.Fragment;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
+import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 
+import io.smartlogic.smartchat.Constants;
 import io.smartlogic.smartchat.R;
 import io.smartlogic.smartchat.api.ApiClient;
 import io.smartlogic.smartchat.models.User;
@@ -46,7 +48,13 @@ public class SignUpFragment extends Fragment {
             user.setPhoneNumber(phoneNumber.getText().toString());
 
             ApiClient client = new ApiClient();
-            client.registerUser(user);
+            String base64PrivateKey = client.registerUser(user);
+
+
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+            SharedPreferences.Editor editor = prefs.edit();
+            editor.putString(Constants.EXTRA_PRIVATE_KEY, base64PrivateKey);
+            editor.commit();
 
             return null;
         }

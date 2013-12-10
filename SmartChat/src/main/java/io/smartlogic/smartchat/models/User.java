@@ -3,6 +3,9 @@ package io.smartlogic.smartchat.models;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonRootName;
 
+import org.apache.commons.codec.binary.Hex;
+import org.apache.commons.codec.digest.DigestUtils;
+
 @JsonRootName("user")
 public class User {
     @JsonProperty("email")
@@ -13,6 +16,15 @@ public class User {
     private String phoneNumber;
     @JsonProperty("private_key")
     private String privateKey;
+
+    public static String hashPasswordForPrivateKey(User user) {
+        String hashedPassword = user.getPassword();
+        for (int i = 0; i < 1000; i++) {
+            hashedPassword = new String(Hex.encodeHex(DigestUtils.sha256(hashedPassword)));
+        }
+
+        return hashedPassword;
+    }
 
     @Override
     public String toString() {
