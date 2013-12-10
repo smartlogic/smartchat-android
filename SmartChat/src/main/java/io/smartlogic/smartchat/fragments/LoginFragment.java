@@ -8,9 +8,6 @@ import android.view.ViewGroup;
 
 import io.smartlogic.smartchat.R;
 
-/**
- * Created by eric on 12/9/13.
- */
 public class LoginFragment extends Fragment {
     public LoginFragment() {
     }

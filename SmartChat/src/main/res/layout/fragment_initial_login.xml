@@ -1,0 +1,27 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="io.smartlogic.smartchat.LoginActivity$PlaceholderFragment">
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:contentDescription="SmartChat" />
+
+    <Button
+        android:id="@+id/log_in"
+        android:background="@android:color/holo_blue_dark"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:layout_above="@+id/sign_up"
+        android:text="@string/log_in"/>
+
+    <Button
+        android:id="@+id/sign_up"
+        android:background="@android:color/holo_blue_bright"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:layout_alignParentBottom="true"
+        android:text="@string/sign_up"/>
+</RelativeLayout>

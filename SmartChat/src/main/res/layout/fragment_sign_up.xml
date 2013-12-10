@@ -1,20 +1,27 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    tools:context="io.smartlogic.smartchat.LoginActivity$PlaceholderFragment">
+    android:paddingBottom="@dimen/activity_vertical_margin">
 
     <EditText
         android:id="@+id/email"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:inputType="textEmailAddress"
+        android:layout_above="@+id/password"
+        android:hint="@string/email" />
+
+
+    <EditText
+        android:id="@+id/password"
         android:layout_above="@+id/center"
-        android:hint="@string/email"/>
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="textPassword"
+        android:hint="@string/password" />
 
     <View
         android:id="@+id/center"
@@ -23,10 +30,17 @@
         android:layout_centerInParent="true" />
 
     <EditText
-        android:id="@+id/password"
+        android:id="@+id/phone_number"
         android:layout_below="@+id/center"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:inputType="textPassword"
-        android:hint="@string/password"/>
+        android:hint="@string/phone_number"
+        android:inputType="phone" />
+
+    <Button
+        android:id="@+id/sign_up"
+        android:layout_below="@+id/phone_number"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/sign_up" />
 </RelativeLayout>

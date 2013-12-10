@@ -11,10 +11,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.os.Build;
 
+import io.smartlogic.smartchat.fragments.InitialLoginFragment;
 import io.smartlogic.smartchat.fragments.LoginFragment;
+import io.smartlogic.smartchat.fragments.SignUpFragment;
 
 public class LoginActivity extends Activity {
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -22,28 +23,20 @@ public class LoginActivity extends Activity {
 
         if (savedInstanceState == null) {
             getFragmentManager().beginTransaction()
-                    .add(R.id.container, new LoginFragment())
+                    .add(R.id.container, new InitialLoginFragment())
                     .commit();
         }
     }
 
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.login, menu);
-        return true;
+    public void switchToLogin() {
+        getFragmentManager().beginTransaction()
+                .replace(R.id.container, new LoginFragment())
+                .commit();
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-        if (id == R.id.action_settings) {
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
+    public void switchToSignUp() {
+        getFragmentManager().beginTransaction()
+                .replace(R.id.container, new SignUpFragment())
+                .commit();
     }
 }
