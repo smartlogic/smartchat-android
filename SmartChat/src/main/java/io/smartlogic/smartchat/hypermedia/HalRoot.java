@@ -14,11 +14,18 @@ public class HalRoot {
         return links.self.href;
     }
 
+    public String getFriendsLink() {
+        return links.friends.href;
+    }
+
     public class RootLinks {
         @JsonProperty("self")
         Link self;
 
         @JsonProperty("smartchat:users")
         Link users;
+
+        @JsonProperty("smartchat:friends")
+        Link friends;
     }
 }

@@ -6,11 +6,16 @@ import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+
+import org.bouncycastle.util.encoders.Hex;
+
+import java.util.Random;
 
 import io.smartlogic.smartchat.Constants;
 import io.smartlogic.smartchat.R;
@@ -56,6 +61,7 @@ public class SignUpFragment extends Fragment {
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
             SharedPreferences.Editor editor = prefs.edit();
             editor.putString(Constants.EXTRA_PRIVATE_KEY, base64PrivateKey);
+            editor.putString(Constants.EXTRA_EMAIL, user.getEmail());
             editor.commit();
 
             return null;

@@ -9,8 +9,12 @@ import android.widget.CursorAdapter;
 import android.widget.TextView;
 
 public class ContactsAdapter extends CursorAdapter {
+    private Context mContext;
+
     public ContactsAdapter(Context context, Cursor cursor) {
         super(context, cursor, true);
+
+        this.mContext = context;
     }
 
     @Override
