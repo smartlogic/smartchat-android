@@ -10,7 +10,6 @@ import android.provider.ContactsContract;
 import android.util.Log;
 import android.view.View;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,12 +19,21 @@ import io.smartlogic.smartchat.ContactsAdapter;
 import io.smartlogic.smartchat.api.ApiClient;
 import io.smartlogic.smartchat.hypermedia.FriendSearch;
 
-public class AddContactsFragment extends ListFragment {
+public class AddContactsFragment extends ListFragment implements ContactsAdapter.OnContactAddedListener {
     private Cursor mContactsCursor;
-
     private List<FriendSearch.Friend> mContactsOnSmartChat;
 
     public AddContactsFragment() {
+    }
+
+    @Override
+    public void onContactAdded(int contactId) {
+        for (FriendSearch.Friend friend : mContactsOnSmartChat) {
+            if (friend.contactId == contactId) {
+                new AddContactTask().execute(friend.getAddLink());
+                return;
+            }
+        }
     }
 
     @Override
@@ -38,7 +46,6 @@ public class AddContactsFragment extends ListFragment {
     }
 
     private class FindContactsTask extends AsyncTask<Void, Void, Void> {
-
         @Override
         protected Void doInBackground(Void... params) {
             Map<String, Integer> phoneNumbers = new HashMap<String, Integer>();
@@ -101,8 +108,22 @@ public class AddContactsFragment extends ListFragment {
             mContactsCursor = getActivity().getContentResolver().
                     query(ContactsContract.Contacts.CONTENT_URI, null, selection, selectionArgs, null);
 
-            setListAdapter(new ContactsAdapter(getActivity(), mContactsCursor));
+            setListAdapter(new ContactsAdapter(getActivity(), AddContactsFragment.this, mContactsCursor));
             setListShown(true);
+        }
+    }
+
+    private class AddContactTask extends AsyncTask<String, Void, Void> {
+        @Override
+        protected Void doInBackground(String... friendUrls) {
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+            String email = prefs.getString(Constants.EXTRA_EMAIL, "");
+            String encodedPrivateKey = prefs.getString(Constants.EXTRA_PRIVATE_KEY, "");
+
+            ApiClient client = new ApiClient(email, encodedPrivateKey);
+            client.addFriend(friendUrls[0]);
+
+            return null;
         }
     }
 }

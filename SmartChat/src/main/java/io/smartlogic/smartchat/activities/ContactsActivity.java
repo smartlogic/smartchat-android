@@ -3,6 +3,7 @@ package io.smartlogic.smartchat.activities;
 import android.app.Activity;
 import android.os.Bundle;
 
+import io.smartlogic.smartchat.ContactsAdapter;
 import io.smartlogic.smartchat.R;
 
 public class ContactsActivity extends Activity {

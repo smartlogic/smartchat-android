@@ -1,13 +1,11 @@
 package io.smartlogic.smartchat.api;
 
 import android.util.Base64;
-import android.util.Log;
 
 import com.damnhandy.uri.template.MalformedUriTemplateException;
 import com.damnhandy.uri.template.UriTemplate;
 import com.damnhandy.uri.template.VariableExpansionException;
 import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -16,7 +14,6 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.http.Header;
-import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.ClientProtocolException;
@@ -48,7 +45,6 @@ import java.security.Signature;
 import java.security.SignatureException;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -60,11 +56,9 @@ import io.smartlogic.smartchat.models.User;
 
 public class ApiClient {
     public static final String rootUrl = "http://192.168.1.254:3000/";
-
     private String email;
     private String encodedPrivateKey;
     private PrivateKey privateKey;
-
     private HttpClient client;
 
     public ApiClient() {
@@ -74,14 +68,6 @@ public class ApiClient {
     public ApiClient(String email, String privateKey) {
         this.email = email;
         this.encodedPrivateKey = privateKey;
-    }
-
-    private void loadPrivateKey() {
-        if (privateKey != null) {
-            return;
-        }
-
-        this.privateKey = loadPrivateKeyFromString(encodedPrivateKey);
     }
 
     /**
@@ -180,6 +166,29 @@ public class ApiClient {
         return null;
     }
 
+    public void addFriend(String addFriendUrl) {
+        loadPrivateKey();
+
+        client = new DefaultHttpClient();
+
+        HttpPost addFriend = new HttpPost(addFriendUrl);
+        signRequest(addFriend);
+
+        try {
+            client.execute(addFriend);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void loadPrivateKey() {
+        if (privateKey != null) {
+            return;
+        }
+
+        this.privateKey = loadPrivateKeyFromString(encodedPrivateKey);
+    }
+
     private Object executeAndParseJson(HttpUriRequest request, ObjectMapper mapper, Class klass) {
         try {
             signRequest(request);
@@ -207,6 +216,7 @@ public class ApiClient {
 
     /**
      * Removes all non-digits and MD5 hashes phone numbers
+     *
      * @param phoneNumbers List of phone numbers
      * @return Scrubbed numbers
      */
