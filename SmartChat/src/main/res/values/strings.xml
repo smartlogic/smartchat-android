@@ -10,5 +10,6 @@
     <string name="password">Password</string>
     <string name="phone_number">Phone Number</string>
     <string name="add_contacts">Add Contacts</string>
+    <string name="done">Done</string>
 
 </resources>
