@@ -6,19 +6,24 @@ import android.util.Log;
 import com.damnhandy.uri.template.MalformedUriTemplateException;
 import com.damnhandy.uri.template.UriTemplate;
 import com.damnhandy.uri.template.VariableExpansionException;
+import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.http.Header;
+import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.auth.BasicScheme;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -59,6 +64,8 @@ public class ApiClient {
     private String email;
     private String encodedPrivateKey;
     private PrivateKey privateKey;
+
+    private HttpClient client;
 
     public ApiClient() {
 
@@ -135,58 +142,27 @@ public class ApiClient {
 
         loadPrivateKey();
 
+        client = new DefaultHttpClient();
+
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+
         try {
-            ObjectMapper mapper = new ObjectMapper();
-            mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+            HttpGet rootRequest = new HttpGet(rootUrl);
+            HalRoot root = (HalRoot) executeAndParseJson(rootRequest, mapper, HalRoot.class);
+
+            HttpGet friendsRequest = new HttpGet(root.getFriendsLink());
+            HalFriends friends = (HalFriends) executeAndParseJson(friendsRequest, mapper, HalFriends.class);
 
             Map<String, Object[]> map = new HashMap<String, Object[]>();
             map.put("phone_numbers", scrubbedPhoneNumbers.keySet().toArray());
-
             String requestJson = mapper.writeValueAsString(map);
 
-            Log.d("smartchat", requestJson);
-
-            HttpClient client = new DefaultHttpClient();
-            HttpGet rootRequest = new HttpGet(rootUrl);
-
-            UsernamePasswordCredentials creds = new UsernamePasswordCredentials(email, signUrl(privateKey, rootUrl));
-            Header basicAuthHeader = BasicScheme.authenticate(creds, "US-ASCII", false);
-
-            rootRequest.addHeader(basicAuthHeader);
-
-            HttpResponse response = client.execute(rootRequest);
-
-            String responseJson = EntityUtils.toString(response.getEntity());
-            HalRoot root = mapper.readValue(responseJson, HalRoot.class);
-
-            String friendsUrl = root.getFriendsLink();
-
-            HttpGet friendsRequest = new HttpGet(friendsUrl);
-            creds = new UsernamePasswordCredentials(email, signUrl(privateKey, friendsUrl));
-            basicAuthHeader = BasicScheme.authenticate(creds, "US-ASCII", false);
-            friendsRequest.addHeader(basicAuthHeader);
-
-            response = client.execute(friendsRequest);
-            responseJson = EntityUtils.toString(response.getEntity());
-
-            HalFriends friends = mapper.readValue(responseJson, HalFriends.class);
-
             String searchUrl = UriTemplate.fromTemplate(friends.getSearchLink()).expand();
-
             HttpPost searchRequest = new HttpPost(searchUrl);
-            creds = new UsernamePasswordCredentials(email, signUrl(privateKey, searchUrl));
-            basicAuthHeader = BasicScheme.authenticate(creds, "US-ASCII", false);
-            searchRequest.addHeader(basicAuthHeader);
-
             searchRequest.addHeader("Content-Type", "application/json");
             searchRequest.setEntity(new StringEntity(requestJson));
-
-            response = client.execute(searchRequest);
-
-            responseJson = EntityUtils.toString(response.getEntity());
-            Log.d("smartchat", responseJson);
-
-            FriendSearch friendSearch = mapper.readValue(responseJson, FriendSearch.class);
+            FriendSearch friendSearch = (FriendSearch) executeAndParseJson(searchRequest, mapper, FriendSearch.class);
 
             for (FriendSearch.Friend friend : friendSearch.getFriends()) {
                 friend.contactId = scrubbedPhoneNumbers.get(friend.phoneNumber);
@@ -202,6 +178,31 @@ public class ApiClient {
         }
 
         return null;
+    }
+
+    private Object executeAndParseJson(HttpUriRequest request, ObjectMapper mapper, Class klass) {
+        try {
+            signRequest(request);
+            HttpResponse response = client.execute(request);
+            String responseJson = EntityUtils.toString(response.getEntity());
+            return mapper.readValue(responseJson, klass);
+        } catch (JsonParseException e) {
+            e.printStackTrace();
+        } catch (JsonMappingException e) {
+            e.printStackTrace();
+        } catch (ClientProtocolException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    private void signRequest(HttpUriRequest request) {
+        UsernamePasswordCredentials credentials = new UsernamePasswordCredentials(email, signUrl(privateKey, request.getURI().toString()));
+        Header basicAuthHeader = BasicScheme.authenticate(credentials, "US-ASCII", false);
+        request.addHeader(basicAuthHeader);
     }
 
     /**
