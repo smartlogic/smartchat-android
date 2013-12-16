@@ -1,11 +1,13 @@
 package io.smartlogic.smartchat.api;
 
 import android.util.Base64;
+import android.util.Log;
 
 import com.damnhandy.uri.template.MalformedUriTemplateException;
 import com.damnhandy.uri.template.UriTemplate;
 import com.damnhandy.uri.template.VariableExpansionException;
 import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -36,6 +38,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.io.UnsupportedEncodingException;
 import java.security.InvalidKeyException;
 import java.security.KeyFactory;
 import java.security.KeyPair;
@@ -52,6 +55,7 @@ import java.util.Map;
 import io.smartlogic.smartchat.hypermedia.FriendSearch;
 import io.smartlogic.smartchat.hypermedia.HalFriends;
 import io.smartlogic.smartchat.hypermedia.HalRoot;
+import io.smartlogic.smartchat.models.Device;
 import io.smartlogic.smartchat.models.User;
 
 public class ApiClient {
@@ -133,6 +137,7 @@ public class ApiClient {
         ObjectMapper mapper = new ObjectMapper();
         mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
 
+
         try {
             HttpGet rootRequest = new HttpGet(rootUrl);
             HalRoot root = (HalRoot) executeAndParseJson(rootRequest, mapper, HalRoot.class);
@@ -176,6 +181,44 @@ public class ApiClient {
 
         try {
             client.execute(addFriend);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void registerDevice(String deviceToken) {
+        loadPrivateKey();
+
+        client = new DefaultHttpClient();
+
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+        mapper.enable(SerializationFeature.WRAP_ROOT_VALUE);
+
+        try {
+            HttpGet rootRequest = new HttpGet(rootUrl);
+            HalRoot root = (HalRoot) executeAndParseJson(rootRequest, mapper, HalRoot.class);
+
+            Device device = new Device();
+            device.setDeviceId(deviceToken);
+            String requestJson = mapper.writeValueAsString(device);
+
+            HttpPost searchRequest = new HttpPost(root.getDevicesLink());
+            searchRequest.addHeader("Content-Type", "application/json");
+            searchRequest.setEntity(new StringEntity(requestJson));
+
+            signRequest(searchRequest);
+            HttpResponse response = client.execute(searchRequest);
+
+            if (response.getStatusLine().getStatusCode() != 201) {
+                Log.d("smartchat", "error registering device");
+            }
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        } catch (ClientProtocolException e) {
+            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }

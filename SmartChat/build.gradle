@@ -40,4 +40,5 @@ dependencies {
     compile "org.bouncycastle:bcpkix-jdk15on:1.50"
     compile "commons-codec:commons-codec:1.8"
     compile "com.damnhandy:handy-uri-templates:2.0.1"
+    compile 'com.google.android.gms:play-services:4.0.30'
 }

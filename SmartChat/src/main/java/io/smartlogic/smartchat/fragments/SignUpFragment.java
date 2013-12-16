@@ -6,15 +6,17 @@ import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.google.android.gms.gcm.GoogleCloudMessaging;
+
 import org.bouncycastle.util.encoders.Hex;
 
+import java.io.IOException;
 import java.util.Random;
 
 import io.smartlogic.smartchat.Constants;
@@ -57,12 +59,20 @@ public class SignUpFragment extends Fragment {
             ApiClient client = new ApiClient();
             String base64PrivateKey = client.registerUser(user);
 
-
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
             SharedPreferences.Editor editor = prefs.edit();
             editor.putString(Constants.EXTRA_PRIVATE_KEY, base64PrivateKey);
             editor.putString(Constants.EXTRA_EMAIL, user.getEmail());
             editor.commit();
+
+            GoogleCloudMessaging gcm = GoogleCloudMessaging.getInstance(getActivity());
+            try {
+                String registrationId = gcm.register(Constants.GCM_SENDER_ID);
+                client = new ApiClient(user.getEmail(), base64PrivateKey);
+                client.registerDevice(registrationId);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
 
             return null;
         }

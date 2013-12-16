@@ -18,6 +18,10 @@ public class HalRoot {
         return links.friends.href;
     }
 
+    public String getDevicesLink() {
+        return links.devices.href;
+    }
+
     public class RootLinks {
         @JsonProperty("self")
         Link self;
@@ -27,5 +31,8 @@ public class HalRoot {
 
         @JsonProperty("smartchat:friends")
         Link friends;
+
+        @JsonProperty("smartchat:devices")
+        Link devices;
     }
 }
