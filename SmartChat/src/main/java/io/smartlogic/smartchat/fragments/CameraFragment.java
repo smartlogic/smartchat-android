@@ -39,7 +39,7 @@ public class CameraFragment extends Fragment {
                 fos.write(data);
                 fos.close();
 
-                new ResizeAndUploadTask(pictureFile.getPath()).execute();
+                new ResizeTask(pictureFile.getPath()).execute();
 
                 Log.d(TAG, "Captured " + pictureFile.toString());
             } catch (FileNotFoundException e) {
@@ -112,10 +112,11 @@ public class CameraFragment extends Fragment {
         mPreview = null;
     }
 
-    private class ResizeAndUploadTask extends AsyncTask<Void, Void, Void> {
+    private class ResizeTask extends AsyncTask<Void, Void, Void> {
         private String filePath;
+        private String resizedPhotoPath;
 
-        public ResizeAndUploadTask(String filePath) {
+        public ResizeTask(String filePath) {
             this.filePath = filePath;
         }
 
@@ -137,6 +138,8 @@ public class CameraFragment extends Fragment {
                 out.close();
 
                 new File(filePath).delete();
+
+                resizedPhotoPath = pictureFile.getPath();
             } catch (IOException e) {
                 e.printStackTrace();
             }
