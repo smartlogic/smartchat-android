@@ -7,7 +7,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
-import io.smartlogic.smartchat.ContactsAdapter;
 import io.smartlogic.smartchat.R;
 
 public class ContactsActivity extends Activity {

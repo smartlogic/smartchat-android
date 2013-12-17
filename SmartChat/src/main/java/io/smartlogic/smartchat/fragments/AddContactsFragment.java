@@ -7,7 +7,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.provider.ContactsContract;
-import android.util.Log;
 import android.view.View;
 
 import java.util.HashMap;
@@ -15,7 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 import io.smartlogic.smartchat.Constants;
-import io.smartlogic.smartchat.ContactsAdapter;
+import io.smartlogic.smartchat.adapters.ContactsAdapter;
 import io.smartlogic.smartchat.api.ApiClient;
 import io.smartlogic.smartchat.hypermedia.FriendSearch;
 

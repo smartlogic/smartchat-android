@@ -1,6 +1,7 @@
 package io.smartlogic.smartchat.fragments;
 
 import android.app.Fragment;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
@@ -20,7 +21,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
+import io.smartlogic.smartchat.Constants;
 import io.smartlogic.smartchat.R;
+import io.smartlogic.smartchat.activities.UploadActivity;
 import io.smartlogic.smartchat.views.CameraPreview;
 
 public class CameraFragment extends Fragment {
@@ -145,6 +148,13 @@ public class CameraFragment extends Fragment {
             }
 
             return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            Intent intent = new Intent(getActivity(), UploadActivity.class);
+            intent.putExtra(Constants.EXTRA_PHOTO_PATH, resizedPhotoPath);
+            startActivity(intent);
         }
     }
 }

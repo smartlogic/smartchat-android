@@ -1,4 +1,4 @@
-package io.smartlogic.smartchat;
+package io.smartlogic.smartchat.adapters;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -8,6 +8,8 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CursorAdapter;
 import android.widget.TextView;
+
+import io.smartlogic.smartchat.R;
 
 public class ContactsAdapter extends CursorAdapter {
     public interface OnContactAddedListener {

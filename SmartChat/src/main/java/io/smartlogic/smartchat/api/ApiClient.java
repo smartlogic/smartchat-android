@@ -15,6 +15,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.io.FileUtils;
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.auth.UsernamePasswordCredentials;
@@ -35,6 +36,7 @@ import org.bouncycastle.openssl.jcajce.JcePEMDecryptorProviderBuilder;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
@@ -56,6 +58,8 @@ import io.smartlogic.smartchat.hypermedia.FriendSearch;
 import io.smartlogic.smartchat.hypermedia.HalFriends;
 import io.smartlogic.smartchat.hypermedia.HalRoot;
 import io.smartlogic.smartchat.models.Device;
+import io.smartlogic.smartchat.models.Friend;
+import io.smartlogic.smartchat.models.Media;
 import io.smartlogic.smartchat.models.User;
 
 public class ApiClient {
@@ -224,6 +228,64 @@ public class ApiClient {
         }
     }
 
+    public List<Friend> getFriends() {
+        loadPrivateKey();
+
+        client = new DefaultHttpClient();
+
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+        mapper.enable(SerializationFeature.WRAP_ROOT_VALUE);
+
+        HttpGet rootRequest = new HttpGet(rootUrl);
+        HalRoot root = (HalRoot) executeAndParseJson(rootRequest, mapper, HalRoot.class);
+
+        HttpGet friendRequest = new HttpGet(root.getFriendsLink());
+        HalFriends friends = (HalFriends) executeAndParseJson(friendRequest, mapper, HalFriends.class);
+
+        Log.d("smarthcat", String.valueOf(friends.getFriends().size()));
+
+        return friends.getFriends();
+    }
+
+    public void uploadMedia(List<Integer> friendIds, String photoPath) {
+        loadPrivateKey();
+
+        client = new DefaultHttpClient();
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+        mapper.enable(SerializationFeature.WRAP_ROOT_VALUE);
+
+        Media media = new Media();
+
+        try {
+            File photo = new File(photoPath);
+            byte[] encoded = FileUtils.readFileToByteArray(photo);
+            String photoBase64 = Base64.encodeToString(encoded, Base64.NO_WRAP);
+            media.setFile(photoBase64);
+            media.setFileName(photo.getName());
+            media.setFriendIds(friendIds);
+
+            String requestJson = mapper.writeValueAsString(media);
+
+            HttpGet rootRequest = new HttpGet(rootUrl);
+            HalRoot root = (HalRoot) executeAndParseJson(rootRequest, mapper, HalRoot.class);
+
+            HttpPost mediaRequest = new HttpPost(root.getMediaLink());
+            mediaRequest.addHeader("Content-Type", "application/json");
+            mediaRequest.setEntity(new StringEntity(requestJson));
+
+            signRequest(mediaRequest);
+            HttpResponse response = client.execute(mediaRequest);
+
+            if (response.getStatusLine().getStatusCode() != 201) {
+                Log.d("smartchat", "error uploading media");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     private void loadPrivateKey() {
         if (privateKey != null) {
             return;
@@ -237,6 +299,7 @@ public class ApiClient {
             signRequest(request);
             HttpResponse response = client.execute(request);
             String responseJson = EntityUtils.toString(response.getEntity());
+            Log.d("smartchat", responseJson);
             return mapper.readValue(responseJson, klass);
         } catch (JsonParseException e) {
             e.printStackTrace();

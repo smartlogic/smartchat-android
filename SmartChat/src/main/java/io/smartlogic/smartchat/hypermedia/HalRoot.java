@@ -22,6 +22,10 @@ public class HalRoot {
         return links.devices.href;
     }
 
+    public String getMediaLink() {
+        return links.media.href;
+    }
+
     public class RootLinks {
         @JsonProperty("self")
         Link self;
@@ -34,5 +38,8 @@ public class HalRoot {
 
         @JsonProperty("smartchat:devices")
         Link devices;
+
+        @JsonProperty("smartchat:media")
+        Link media;
     }
 }
