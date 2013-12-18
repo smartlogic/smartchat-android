@@ -2,19 +2,19 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    android:paddingBottom="@dimen/activity_vertical_margin"
     tools:context="io.smartlogic.smartchat.activities.LoginActivity$PlaceholderFragment">
 
     <EditText
         android:id="@+id/email"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:inputType="textEmailAddress"
         android:layout_above="@+id/center"
-        android:hint="@string/email"/>
+        android:hint="@string/email"
+        android:inputType="textEmailAddress" />
 
     <View
         android:id="@+id/center"
@@ -24,9 +24,16 @@
 
     <EditText
         android:id="@+id/password"
-        android:layout_below="@+id/center"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:inputType="textPassword"
-        android:hint="@string/password"/>
+        android:layout_below="@+id/center"
+        android:hint="@string/password"
+        android:inputType="textPassword" />
+
+    <Button
+        android:id="@+id/log_in"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/password"
+        android:text="@string/log_in" />
 </RelativeLayout>

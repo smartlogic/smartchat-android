@@ -283,6 +283,62 @@ public class ApiClient {
         }
     }
 
+    public User login(String email, String password) {
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+        mapper.enable(SerializationFeature.WRAP_ROOT_VALUE);
+
+        User user = new User();
+        user.setEmail(email);
+        user.setPassword(password);
+
+        try {
+            HttpClient client = new DefaultHttpClient();
+            HttpGet rootRequest = new HttpGet(rootUrl);
+            HttpResponse response = client.execute(rootRequest);
+
+            Log.d("smartchat", String.valueOf(response.getStatusLine().getStatusCode()));
+
+            String responseJson = EntityUtils.toString(response.getEntity());
+            HalRoot root = mapper.readValue(responseJson, HalRoot.class);
+
+            HttpPost userPost = new HttpPost(root.getUserSignIn());
+
+            UsernamePasswordCredentials credentials = new UsernamePasswordCredentials(email, password);
+            Header basicAuthHeader = BasicScheme.authenticate(credentials, "US-ASCII", false);
+            userPost.addHeader(basicAuthHeader);
+
+            response = client.execute(userPost);
+            responseJson = EntityUtils.toString(response.getEntity());
+
+            User loadedUser = mapper.readValue(responseJson, User.class);
+
+            ByteArrayInputStream tube = new ByteArrayInputStream(loadedUser.getPrivateKey().getBytes());
+            Reader stringReader = new BufferedReader(new InputStreamReader(tube));
+            PEMParser pemParser = new PEMParser(stringReader);
+            Object object = pemParser.readObject();
+
+            PEMDecryptorProvider decProv = new JcePEMDecryptorProviderBuilder().
+                    build(User.hashPasswordForPrivateKey(user).toCharArray());
+            JcaPEMKeyConverter converter = new JcaPEMKeyConverter().setProvider("BC");
+            KeyPair keyPair = converter.getKeyPair(((PEMEncryptedKeyPair) object).decryptKeyPair(decProv));
+
+            String base64PrivateKey = Base64.encodeToString(keyPair.getPrivate().getEncoded(), Base64.NO_WRAP);
+            user.setPrivateKey(base64PrivateKey);
+
+            return user;
+        } catch (JsonParseException e) {
+            e.printStackTrace();
+        } catch (JsonMappingException e) {
+            e.printStackTrace();
+        } catch (ClientProtocolException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     private void loadPrivateKey() {
         if (privateKey != null) {
             return;

@@ -10,6 +10,10 @@ public class HalRoot {
         return links.users.href;
     }
 
+    public String getUserSignIn() {
+        return links.userSignIn.href;
+    }
+
     public String getSelfLink() {
         return links.self.href;
     }
@@ -32,6 +36,9 @@ public class HalRoot {
 
         @JsonProperty("smartchat:users")
         Link users;
+
+        @JsonProperty("smartchat:user-sign-in")
+        Link userSignIn;
 
         @JsonProperty("smartchat:friends")
         Link friends;
