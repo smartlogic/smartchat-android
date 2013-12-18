@@ -5,9 +5,12 @@ import android.os.Bundle;
 import android.view.View;
 
 import io.smartlogic.smartchat.R;
+import io.smartlogic.smartchat.api.GCMRegistration;
 import io.smartlogic.smartchat.fragments.CameraFragment;
 
 public class MainActivity extends Activity {
+    public static final String TAG = "main activity";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -25,5 +28,7 @@ public class MainActivity extends Activity {
                     .add(R.id.container, new CameraFragment())
                     .commit();
         }
+
+        new GCMRegistration(this).check();
     }
 }

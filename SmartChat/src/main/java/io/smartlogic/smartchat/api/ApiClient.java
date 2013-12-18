@@ -42,14 +42,11 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.security.InvalidKeyException;
-import java.security.KeyFactory;
 import java.security.KeyPair;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.Signature;
 import java.security.SignatureException;
-import java.security.spec.InvalidKeySpecException;
-import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -291,7 +288,7 @@ public class ApiClient {
             return;
         }
 
-        this.privateKey = loadPrivateKeyFromString(encodedPrivateKey);
+        this.privateKey = RSAEncryption.loadPrivateKeyFromString(encodedPrivateKey);
     }
 
     private Object executeAndParseJson(HttpUriRequest request, ObjectMapper mapper, Class klass) {
@@ -336,19 +333,6 @@ public class ApiClient {
         }
 
         return scrubbedPhoneNumbers;
-    }
-
-    private PrivateKey loadPrivateKeyFromString(String base64EncodedPrivateKey) {
-        try {
-            PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(Base64.decode(base64EncodedPrivateKey, Base64.NO_WRAP));
-            KeyFactory keyFactory = KeyFactory.getInstance("RSA");
-            return keyFactory.generatePrivate(keySpec);
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        } catch (InvalidKeySpecException e) {
-            e.printStackTrace();
-        }
-        return null;
     }
 
     private String signUrl(PrivateKey privateKey, String url) {

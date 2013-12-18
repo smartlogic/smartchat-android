@@ -12,17 +12,11 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 
-import com.google.android.gms.gcm.GoogleCloudMessaging;
-
-import org.bouncycastle.util.encoders.Hex;
-
-import java.io.IOException;
-import java.util.Random;
-
 import io.smartlogic.smartchat.Constants;
 import io.smartlogic.smartchat.R;
 import io.smartlogic.smartchat.activities.ContactsActivity;
 import io.smartlogic.smartchat.api.ApiClient;
+import io.smartlogic.smartchat.api.GCMRegistration;
 import io.smartlogic.smartchat.models.User;
 
 public class SignUpFragment extends Fragment {
@@ -65,14 +59,7 @@ public class SignUpFragment extends Fragment {
             editor.putString(Constants.EXTRA_EMAIL, user.getEmail());
             editor.commit();
 
-            GoogleCloudMessaging gcm = GoogleCloudMessaging.getInstance(getActivity());
-            try {
-                String registrationId = gcm.register(Constants.GCM_SENDER_ID);
-                client = new ApiClient(user.getEmail(), base64PrivateKey);
-                client.registerDevice(registrationId);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            new GCMRegistration(getActivity()).check();
 
             return null;
         }

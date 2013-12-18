@@ -42,4 +42,5 @@ dependencies {
     compile "commons-io:commons-io:2.4"
     compile "com.damnhandy:handy-uri-templates:2.0.1"
     compile 'com.google.android.gms:play-services:4.0.30'
+    compile 'com.android.support:support-v4:13.0.0'
 }
