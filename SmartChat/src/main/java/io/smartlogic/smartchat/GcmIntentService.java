@@ -36,6 +36,6 @@ public class GcmIntentService extends IntentService {
         mBuilder.setContentIntent(resultPendingIntent);
 
         NotificationManager mNotificationManager = (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE);
-        mNotificationManager.notify(1, mBuilder.build());
+        mNotificationManager.notify(extras.getInt("id", 1), mBuilder.build());
     }
 }
