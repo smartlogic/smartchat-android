@@ -15,14 +15,14 @@ import java.util.List;
 import io.smartlogic.smartchat.Constants;
 import io.smartlogic.smartchat.activities.MainActivity;
 import io.smartlogic.smartchat.activities.UploadActivity;
-import io.smartlogic.smartchat.adapters.FriendsAdapter;
+import io.smartlogic.smartchat.adapters.FriendSelectorAdapter;
 import io.smartlogic.smartchat.api.ApiClient;
 import io.smartlogic.smartchat.models.Friend;
 
-public class PickFriendsFragment extends ListFragment implements FriendsAdapter.OnFriendCheckedListener,
+public class PickFriendsFragment extends ListFragment implements FriendSelectorAdapter.OnFriendCheckedListener,
         UploadActivity.OnDoneSelectedListener {
 
-    private FriendsAdapter mAdapter;
+    private FriendSelectorAdapter mAdapter;
     private HashSet<Integer> mCheckedFriendIds;
     private String photoPath;
 
@@ -70,7 +70,7 @@ public class PickFriendsFragment extends ListFragment implements FriendsAdapter.
             ApiClient client = getApiClient();
             List<Friend> friends = client.getFriends();
 
-            mAdapter = new FriendsAdapter(getActivity(), friends, PickFriendsFragment.this);
+            mAdapter = new FriendSelectorAdapter(getActivity(), friends, PickFriendsFragment.this);
 
             return null;
         }

@@ -9,7 +9,7 @@ import io.smartlogic.smartchat.adapters.MainFragmentPagerAdapter;
 import io.smartlogic.smartchat.api.GCMRegistration;
 import io.smartlogic.smartchat.fragments.AddContactsFragment;
 import io.smartlogic.smartchat.fragments.CameraFragment;
-import io.smartlogic.smartchat.fragments.PickFriendsFragment;
+import io.smartlogic.smartchat.fragments.FriendsFragment;
 
 public class MainActivity extends FragmentActivity {
     public static final String TAG = "main activity";
@@ -26,6 +26,7 @@ public class MainActivity extends FragmentActivity {
 
         mPagerAdapter = new MainFragmentPagerAdapter(this, mViewPager);
         mPagerAdapter.addTab(CameraFragment.class, null);
+        mPagerAdapter.addTab(FriendsFragment.class, null);
         mPagerAdapter.addTab(AddContactsFragment.class, null);
 
         new GCMRegistration(this).check();

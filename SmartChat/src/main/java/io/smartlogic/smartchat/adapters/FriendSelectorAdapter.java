@@ -5,6 +5,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.TextView;
 
 import java.util.List;
@@ -12,15 +14,17 @@ import java.util.List;
 import io.smartlogic.smartchat.R;
 import io.smartlogic.smartchat.models.Friend;
 
-public class FriendsAdapter extends ArrayAdapter<Friend> {
+public class FriendSelectorAdapter extends ArrayAdapter<Friend> {
     private Context mContext;
     private List<Friend> mFriends;
+    private OnFriendCheckedListener mFriendCheckedListener;
 
-    public FriendsAdapter(Context context, List<Friend> friends) {
+    public FriendSelectorAdapter(Context context, List<Friend> friends, OnFriendCheckedListener friendCheckedListener) {
         super(context, R.layout.adapter_friends);
 
         this.mContext = context;
         this.mFriends = friends;
+        this.mFriendCheckedListener = friendCheckedListener;
     }
 
     @Override
@@ -34,7 +38,7 @@ public class FriendsAdapter extends ArrayAdapter<Friend> {
 
         View view;
         if (convertView == null) {
-            view = inflater.inflate(R.layout.adapter_friends, null);
+            view = inflater.inflate(R.layout.adapter_friend_select, null);
         } else {
             view = convertView;
         }
@@ -42,6 +46,19 @@ public class FriendsAdapter extends ArrayAdapter<Friend> {
         TextView friendEmail = (TextView) view.findViewById(R.id.email);
         friendEmail.setText(mFriends.get(position).getEmail());
 
+        final int friendPosition = position;
+        CheckBox checkBox = (CheckBox) view.findViewById(R.id.checkbox);
+        checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                mFriendCheckedListener.onFriendChecked(mFriends.get(friendPosition), isChecked);
+            }
+        });
+
         return view;
+    }
+
+    public interface OnFriendCheckedListener {
+        public void onFriendChecked(Friend fiend, boolean isChecked);
     }
 }
