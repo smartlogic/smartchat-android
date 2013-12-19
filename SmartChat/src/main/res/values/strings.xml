@@ -2,8 +2,6 @@
 <resources>
 
     <string name="app_name">SmartChat</string>
-    <string name="hello_world">Hello world!</string>
-    <string name="action_settings">Settings</string>
     <string name="log_in">Log In</string>
     <string name="sign_up">Sign Up</string>
     <string name="email">Email</string>
