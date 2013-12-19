@@ -1,12 +1,12 @@
 package io.smartlogic.smartchat.fragments;
 
-import android.app.ListFragment;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.provider.ContactsContract;
+import android.support.v4.app.ListFragment;
 import android.view.View;
 
 import java.util.HashMap;
