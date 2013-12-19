@@ -16,6 +16,14 @@ android {
     compileSdkVersion 19
     buildToolsVersion "19.0.0"
 
+    signingConfigs {
+        release {
+            storeFile file("keystore.jks")
+            storePassword System.getenv("KEYSTORE_PASSWORD")
+            keyAlias "play store"
+            keyPassword System.getenv("KEY_PASSWORD")
+        }
+    }
     defaultConfig {
         minSdkVersion 15
         targetSdkVersion 19
@@ -24,6 +32,7 @@ android {
         release {
             runProguard false
             proguardFile getDefaultProguardFile('proguard-android.txt')
+            signingConfig signingConfigs.release
         }
     }
     productFlavors {
