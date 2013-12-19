@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.View;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -93,6 +94,9 @@ public class PickFriendsFragment extends ListFragment implements FriendSelectorA
             friendIds.addAll(mCheckedFriendIds);
 
             client.uploadMedia(friendIds, photoPath);
+
+            File photoFile = new File(photoPath);
+            photoFile.delete();
 
             return null;
         }

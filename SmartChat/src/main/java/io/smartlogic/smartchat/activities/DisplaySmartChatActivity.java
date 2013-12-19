@@ -57,11 +57,12 @@ public class DisplaySmartChatActivity extends Activity {
             ImageView photoView = (ImageView) findViewById(R.id.smartchat);
             photoView.setImageBitmap(bitmap);
 
+            pictureFile.delete();
+
             Timer timer = new Timer();
             TimerTask task = new TimerTask() {
                 @Override
                 public void run() {
-                    pictureFile.delete();
                     finish();
                 }
             };
