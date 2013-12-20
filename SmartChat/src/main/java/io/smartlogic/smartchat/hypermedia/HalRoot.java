@@ -1,5 +1,6 @@
 package io.smartlogic.smartchat.hypermedia;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class HalRoot {
@@ -30,6 +31,10 @@ public class HalRoot {
         return links.media.href;
     }
 
+    public String getInvitationsLink() {
+        return links.invitations.href;
+    }
+
     public class RootLinks {
         @JsonProperty("self")
         Link self;
@@ -48,5 +53,8 @@ public class HalRoot {
 
         @JsonProperty("smartchat:media")
         Link media;
+
+        @JsonProperty("smartchat:invitations")
+        Link invitations;
     }
 }

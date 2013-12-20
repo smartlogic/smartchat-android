@@ -60,7 +60,7 @@ import io.smartlogic.smartchat.models.Media;
 import io.smartlogic.smartchat.models.User;
 
 public class ApiClient {
-    public static final String rootUrl = "http://192.168.1.254:3000/";
+    public static final String rootUrl = "http://192.168.2.236:3000/";
     private String email;
     private String encodedPrivateKey;
     private PrivateKey privateKey;
@@ -337,6 +337,42 @@ public class ApiClient {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public void inviteUser(String email, String message) {
+        loadPrivateKey();
+
+        client = new DefaultHttpClient();
+
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+
+        try {
+            HttpGet rootRequest = new HttpGet(rootUrl);
+            HalRoot root = (HalRoot) executeAndParseJson(rootRequest, mapper, HalRoot.class);
+
+            HttpPost inviteRequest = new HttpPost(root.getInvitationsLink());
+            signRequest(inviteRequest);
+
+            Map<String, String> invitation = new HashMap<String, String>();
+            invitation.put("email", email);
+            invitation.put("message", message);
+
+            String requestJson = mapper.writeValueAsString(invitation);
+
+            inviteRequest.addHeader("Content-Type", "application/json");
+            inviteRequest.setEntity(new StringEntity(requestJson));
+
+            HttpResponse response = client.execute(inviteRequest);
+
+            if (response.getStatusLine().getStatusCode() != 204) {
+                Log.d("smartchat api client", "error inviting user");
+            }
+        } catch (ClientProtocolException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void loadPrivateKey() {
