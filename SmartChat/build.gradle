@@ -16,6 +16,13 @@ android {
     compileSdkVersion 19
     buildToolsVersion "19.0.0"
 
+    packagingOptions {
+        exclude 'META-INF/LICENSE.txt'
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/NOTICE.txt'
+        exclude 'META-INF/NOTICE'
+    }
+
     signingConfigs {
         release {
             storeFile file("keystore.jks")
