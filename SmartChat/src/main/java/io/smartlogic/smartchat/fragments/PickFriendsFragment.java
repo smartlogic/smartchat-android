@@ -25,7 +25,6 @@ public class PickFriendsFragment extends ListFragment implements FriendSelectorA
 
     private FriendSelectorAdapter mAdapter;
     private HashSet<Integer> mCheckedFriendIds;
-    private String photoPath;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -88,12 +87,13 @@ public class PickFriendsFragment extends ListFragment implements FriendSelectorA
         protected Void doInBackground(Void... params) {
             ApiClient client = getApiClient();
 
-            photoPath = getArguments().getString(Constants.EXTRA_PHOTO_PATH);
+            String photoPath = getArguments().getString(Constants.EXTRA_PHOTO_PATH);
+            String drawingPath = getArguments().getString(Constants.EXTRA_DRAWING_PATH, "");
 
             List<Integer> friendIds = new ArrayList<Integer>();
             friendIds.addAll(mCheckedFriendIds);
 
-            client.uploadMedia(friendIds, photoPath);
+            client.uploadMedia(friendIds, photoPath, drawingPath);
 
             File photoFile = new File(photoPath);
             photoFile.delete();

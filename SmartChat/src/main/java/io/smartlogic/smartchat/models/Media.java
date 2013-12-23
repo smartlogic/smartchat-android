@@ -13,6 +13,8 @@ public class Media {
     private String fileName;
     @JsonProperty("file")
     private String file;
+    @JsonProperty("drawing")
+    private String drawing;
 
     public List<Integer> getFriendIds() {
         return friendIds;
@@ -36,5 +38,13 @@ public class Media {
 
     public void setFile(String file) {
         this.file = file;
+    }
+
+    public String getDrawing() {
+        return drawing;
+    }
+
+    public void setDrawing(String drawing) {
+        this.drawing = drawing;
     }
 }

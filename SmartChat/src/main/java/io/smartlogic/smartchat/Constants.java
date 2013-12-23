@@ -4,6 +4,7 @@ public class Constants {
     public static final String EXTRA_EMAIL = "email";
     public static final String EXTRA_PRIVATE_KEY = "private_key";
     public static final String EXTRA_PHOTO_PATH = "photo_path";
+    public static final String EXTRA_DRAWING_PATH = "drawing_path";
 
     public static final String EXTRA_S3_FILE_URL = "s3_file_url";
     public static final String EXTRA_ENCRYPTED_AES_KEY = "encrypted_aes_key";

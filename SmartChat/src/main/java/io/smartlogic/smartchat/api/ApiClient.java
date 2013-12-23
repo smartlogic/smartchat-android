@@ -60,7 +60,7 @@ import io.smartlogic.smartchat.models.Media;
 import io.smartlogic.smartchat.models.User;
 
 public class ApiClient {
-    public static final String rootUrl = "http://192.168.2.236:3000/";
+    public static final String rootUrl = "http://192.168.1.254:3000/";
     private String email;
     private String encodedPrivateKey;
     private PrivateKey privateKey;
@@ -245,7 +245,7 @@ public class ApiClient {
         return friends.getFriends();
     }
 
-    public void uploadMedia(List<Integer> friendIds, String photoPath) {
+    public void uploadMedia(List<Integer> friendIds, String photoPath, String drawingPath) {
         loadPrivateKey();
 
         client = new DefaultHttpClient();
@@ -257,10 +257,20 @@ public class ApiClient {
 
         try {
             File photo = new File(photoPath);
-            byte[] encoded = FileUtils.readFileToByteArray(photo);
-            String photoBase64 = Base64.encodeToString(encoded, Base64.NO_WRAP);
+            byte[] photoEncoded = FileUtils.readFileToByteArray(photo);
+            String photoBase64 = Base64.encodeToString(photoEncoded, Base64.NO_WRAP);
+
             media.setFile(photoBase64);
             media.setFileName(photo.getName());
+
+            if (drawingPath != null && !drawingPath.equals("")) {
+                File drawing = new File(drawingPath);
+                byte[] drawingEncoded = FileUtils.readFileToByteArray(drawing);
+                String drawingBase64 = Base64.encodeToString(drawingEncoded, Base64.NO_WRAP);
+
+                media.setDrawing(drawingBase64);
+            }
+
             media.setFriendIds(friendIds);
 
             String requestJson = mapper.writeValueAsString(media);

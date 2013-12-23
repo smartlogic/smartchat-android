@@ -4,11 +4,13 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
+import android.graphics.Point;
 import android.hardware.Camera;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,10 +22,11 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.List;
 
 import io.smartlogic.smartchat.Constants;
 import io.smartlogic.smartchat.R;
-import io.smartlogic.smartchat.activities.UploadActivity;
+import io.smartlogic.smartchat.activities.SmartChatPreviewActivity;
 import io.smartlogic.smartchat.views.CameraPreview;
 
 public class CameraFragment extends Fragment {
@@ -152,7 +155,7 @@ public class CameraFragment extends Fragment {
 
         @Override
         protected void onPostExecute(Void aVoid) {
-            Intent intent = new Intent(getActivity(), UploadActivity.class);
+            Intent intent = new Intent(getActivity(), SmartChatPreviewActivity.class);
             intent.putExtra(Constants.EXTRA_PHOTO_PATH, resizedPhotoPath);
             startActivity(intent);
         }

@@ -13,5 +13,6 @@
     <string name="pick_from_contacts">Pick From Your Contacts</string>
     <string name="message_hint">Add a custom invite message</string>
     <string name="send_invite">Send Invite</string>
+    <string name="upload">Upload</string>
 
 </resources>

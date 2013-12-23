@@ -21,6 +21,7 @@ public class UploadActivity extends Activity {
         if (savedInstanceState == null) {
             Bundle args = new Bundle();
             args.putString(Constants.EXTRA_PHOTO_PATH, getIntent().getExtras().getString(Constants.EXTRA_PHOTO_PATH));
+            args.putString(Constants.EXTRA_DRAWING_PATH, getIntent().getExtras().getString(Constants.EXTRA_DRAWING_PATH));
             mFriendsFragment = new PickFriendsFragment();
             mFriendsFragment.setArguments(args);
             getFragmentManager().beginTransaction()
