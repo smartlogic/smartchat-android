@@ -8,6 +8,8 @@ import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.util.Log;
+import android.view.View;
 import android.widget.ImageView;
 
 import java.io.File;
@@ -20,6 +22,7 @@ import io.smartlogic.smartchat.api.SmartChatDownloader;
 
 public class DisplaySmartChatActivity extends Activity {
     private File pictureFile;
+    private File drawingFile;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,6 +41,10 @@ public class DisplaySmartChatActivity extends Activity {
 
         @Override
         protected Void doInBackground(Void... params) {
+            for (String key : getIntent().getExtras().keySet()) {
+                Log.d("smartchat", key);
+            }
+
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
             String encodedPrivateKey = prefs.getString(Constants.EXTRA_PRIVATE_KEY, "");
             String encryptedAesKey = getIntent().getExtras().getString(Constants.EXTRA_ENCRYPTED_AES_KEY);
@@ -46,6 +53,15 @@ public class DisplaySmartChatActivity extends Activity {
 
             SmartChatDownloader downloader = new SmartChatDownloader(context, encodedPrivateKey, encryptedAesKey, encryptedAesIv, s3Url);
             pictureFile = downloader.download();
+
+            if (!getIntent().getExtras().getString(Constants.EXTRA_DRAWING_S3_FILE_URL, "").equals("")) {
+                String drawingEncryptedAesKey = getIntent().getExtras().getString(Constants.EXTRA_DRAWING_ENCRYPTED_AES_KEY);
+                String drawingEncryptedAesIv = getIntent().getExtras().getString(Constants.EXTRA_DRAWING_ENCRYPTED_AES_IV);
+                String drawingS3Url = getIntent().getExtras().getString(Constants.EXTRA_DRAWING_S3_FILE_URL);
+
+                downloader = new SmartChatDownloader(context, encodedPrivateKey, drawingEncryptedAesKey, drawingEncryptedAesIv, drawingS3Url);
+                drawingFile = downloader.download();
+            }
 
             return null;
         }
@@ -58,6 +74,15 @@ public class DisplaySmartChatActivity extends Activity {
             photoView.setImageBitmap(bitmap);
 
             pictureFile.delete();
+
+            if (drawingFile != null) {
+                bitmap = BitmapFactory.decodeFile(drawingFile.getAbsolutePath());
+                ImageView drawingView = (ImageView) findViewById(R.id.drawing);
+                drawingView.setVisibility(View.VISIBLE);
+                drawingView.setImageBitmap(bitmap);
+
+                drawingFile.delete();
+            }
 
             Timer timer = new Timer();
             TimerTask task = new TimerTask() {
