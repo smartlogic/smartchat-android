@@ -135,7 +135,7 @@ public class CameraFragment extends Fragment {
                 matrix.postRotate(90);
 
                 Bitmap bitmap = BitmapFactory.decodeFile(filePath);
-                Bitmap scaled = Bitmap.createScaledBitmap(bitmap, bitmap.getWidth() / 4, bitmap.getHeight() / 4, false);
+                Bitmap scaled = Bitmap.createScaledBitmap(bitmap, bitmap.getWidth() / 2, bitmap.getHeight() / 2, false);
                 Bitmap rotated = Bitmap.createBitmap(scaled, 0, 0, scaled.getWidth(), scaled.getHeight(), matrix, true);
 
                 OutputStream out = new FileOutputStream(pictureFile);
