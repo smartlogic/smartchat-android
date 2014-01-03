@@ -16,6 +16,10 @@ android {
     compileSdkVersion 19
     buildToolsVersion "19.0.0"
 
+    lintOptions {
+        abortOnError false
+    }
+
     packagingOptions {
         exclude 'META-INF/LICENSE.txt'
         exclude 'META-INF/LICENSE'
