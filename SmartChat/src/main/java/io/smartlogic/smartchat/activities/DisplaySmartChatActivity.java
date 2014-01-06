@@ -42,24 +42,20 @@ public class DisplaySmartChatActivity extends Activity {
         @Override
         protected Void doInBackground(Void... params) {
             for (String key : getIntent().getExtras().keySet()) {
-                Log.d("smartchat", key);
+                Log.d("smartchat", key + ": " + getIntent().getExtras().get(key));
             }
 
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
             String encodedPrivateKey = prefs.getString(Constants.EXTRA_PRIVATE_KEY, "");
-            String encryptedAesKey = getIntent().getExtras().getString(Constants.EXTRA_ENCRYPTED_AES_KEY);
-            String encryptedAesIv = getIntent().getExtras().getString(Constants.EXTRA_ENCRYPTED_AES_IV);
             String s3Url = getIntent().getExtras().getString(Constants.EXTRA_FILE_URL);
 
-            SmartChatDownloader downloader = new SmartChatDownloader(context, encodedPrivateKey, encryptedAesKey, encryptedAesIv, s3Url);
+            SmartChatDownloader downloader = new SmartChatDownloader(context, encodedPrivateKey, s3Url);
             pictureFile = downloader.download();
 
             if (!getIntent().getExtras().getString(Constants.EXTRA_DRAWING_FILE_URL, "").equals("")) {
-                String drawingEncryptedAesKey = getIntent().getExtras().getString(Constants.EXTRA_DRAWING_ENCRYPTED_AES_KEY);
-                String drawingEncryptedAesIv = getIntent().getExtras().getString(Constants.EXTRA_DRAWING_ENCRYPTED_AES_IV);
                 String drawingS3Url = getIntent().getExtras().getString(Constants.EXTRA_DRAWING_FILE_URL);
 
-                downloader = new SmartChatDownloader(context, encodedPrivateKey, drawingEncryptedAesKey, drawingEncryptedAesIv, drawingS3Url);
+                downloader = new SmartChatDownloader(context, encodedPrivateKey, drawingS3Url);
                 drawingFile = downloader.download();
             }
 
