@@ -6,7 +6,7 @@
 
     <fragment
         android:id="@+id/add_contacts_fragment"
+        android:name="io.smartlogic.smartchat.fragments.AddContactsFragment"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:name="io.smartlogic.smartchat.fragments.AddContactsFragment" />
+        android:layout_height="wrap_content" />
 </RelativeLayout>
