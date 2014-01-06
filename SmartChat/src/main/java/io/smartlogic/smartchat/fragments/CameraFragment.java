@@ -93,8 +93,27 @@ public class CameraFragment extends Fragment {
         super.onResume();
 
         mCamera = getCameraInstance();
-
         Camera.Parameters parameters = mCamera.getParameters();
+
+        Display mDisplay = getActivity().getWindowManager().getDefaultDisplay();
+        Point point = new Point();
+        mDisplay.getSize(point);
+
+        Log.d(TAG, "" + point.x + "x" + point.y);
+
+        Camera.Size currentSize = parameters.getPictureSize();
+        Log.d(TAG, "" + currentSize.height + "x" + currentSize.width);
+
+        List<Camera.Size> sizes = mCamera.getParameters().getSupportedPictureSizes();
+        Camera.Size selectedSize = sizes.get(0);
+        for (Camera.Size size : sizes) {
+            Log.d(TAG, "" + size.height + "x" + size.width);
+        }
+
+        if (selectedSize != null) {
+            parameters.setPictureSize(selectedSize.width, selectedSize.height);
+        }
+
         parameters.setRotation(90);
         mCamera.setParameters(parameters);
         mCamera.setDisplayOrientation(90);
