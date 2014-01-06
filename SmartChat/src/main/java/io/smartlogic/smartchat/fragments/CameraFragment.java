@@ -55,14 +55,15 @@ public class CameraFragment extends Fragment {
             }
         }
     };
+    private int mCameraId = Camera.CameraInfo.CAMERA_FACING_BACK;
 
     /**
      * A safe way to get an instance of the Camera object.
      */
-    private static Camera getCameraInstance() {
+    private static Camera getCameraInstance(int cameraId) {
         Camera c = null;
         try {
-            c = Camera.open(); // attempt to get a Camera instance
+            c = Camera.open(cameraId); // attempt to get a Camera instance
         } catch (Exception e) {
             // Camera is not available (in use or does not exist)
         }
@@ -86,13 +87,40 @@ public class CameraFragment extends Fragment {
                     }
                 }
         );
+
+        Button switchCamera = (Button) getView().findViewById(R.id.switch_camera);
+        switchCamera.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                removeCameraInstance();
+
+                mCameraId = getFrontCameraId();
+                resumeCamera();
+            }
+        });
+    }
+
+    public int getFrontCameraId() {
+        Camera.CameraInfo ci = new Camera.CameraInfo();
+        for (int i = 0; i < Camera.getNumberOfCameras(); i++) {
+            Camera.getCameraInfo(i, ci);
+            if (ci.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
+                return i;
+            }
+        }
+
+        return Camera.CameraInfo.CAMERA_FACING_BACK; // No front-facing camera found
     }
 
     @Override
     public void onResume() {
         super.onResume();
 
-        mCamera = getCameraInstance();
+        resumeCamera();
+    }
+
+    public void resumeCamera() {
+        mCamera = getCameraInstance(mCameraId);
         Camera.Parameters parameters = mCamera.getParameters();
 
         Display mDisplay = getActivity().getWindowManager().getDefaultDisplay();
@@ -128,6 +156,10 @@ public class CameraFragment extends Fragment {
     public void onPause() {
         super.onPause();
 
+        removeCameraInstance();
+    }
+
+    public void removeCameraInstance() {
         if (mCamera != null) {
             mCamera.release();
             mCamera = null;
