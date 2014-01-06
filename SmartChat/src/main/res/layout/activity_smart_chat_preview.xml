@@ -6,12 +6,6 @@
     android:layout_height="match_parent"
     android:background="@android:color/black">
 
-    <Button
-        android:id="@+id/upload"
-        android:text="@string/upload"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
-
     <ImageView
         android:id="@+id/smartchat"
         android:layout_width="wrap_content"
@@ -19,4 +13,10 @@
         android:layout_centerInParent="true"
         android:adjustViewBounds="true"
         android:contentDescription="@string/app_name" />
+
+    <Button
+        android:id="@+id/upload"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/upload" />
 </RelativeLayout>

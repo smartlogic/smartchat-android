@@ -22,7 +22,6 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.List;
 
 import io.smartlogic.smartchat.Constants;
 import io.smartlogic.smartchat.R;
@@ -57,19 +56,6 @@ public class CameraFragment extends Fragment {
     };
     private int mCameraId = Camera.CameraInfo.CAMERA_FACING_BACK;
 
-    /**
-     * A safe way to get an instance of the Camera object.
-     */
-    private static Camera getCameraInstance(int cameraId) {
-        Camera c = null;
-        try {
-            c = Camera.open(cameraId); // attempt to get a Camera instance
-        } catch (Exception e) {
-            // Camera is not available (in use or does not exist)
-        }
-        return c; // returns null if camera is unavailable
-    }
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_camera, null);
@@ -94,13 +80,31 @@ public class CameraFragment extends Fragment {
             public void onClick(View v) {
                 removeCameraInstance();
 
-                mCameraId = getFrontCameraId();
+                if (mCameraId == Camera.CameraInfo.CAMERA_FACING_FRONT) {
+                    mCameraId = Camera.CameraInfo.CAMERA_FACING_BACK;
+                } else {
+                    mCameraId = getFrontCameraId();
+                }
+
                 resumeCamera();
             }
         });
     }
 
-    public int getFrontCameraId() {
+    /**
+     * A safe way to get an instance of the Camera object.
+     */
+    private Camera getCameraInstance(int cameraId) {
+        Camera c = null;
+        try {
+            c = Camera.open(cameraId); // attempt to get a Camera instance
+        } catch (Exception e) {
+            // Camera is not available (in use or does not exist)
+        }
+        return c; // returns null if camera is unavailable
+    }
+
+    private int getFrontCameraId() {
         Camera.CameraInfo ci = new Camera.CameraInfo();
         for (int i = 0; i < Camera.getNumberOfCameras(); i++) {
             Camera.getCameraInfo(i, ci);
@@ -112,35 +116,9 @@ public class CameraFragment extends Fragment {
         return Camera.CameraInfo.CAMERA_FACING_BACK; // No front-facing camera found
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-
-        resumeCamera();
-    }
-
     public void resumeCamera() {
         mCamera = getCameraInstance(mCameraId);
         Camera.Parameters parameters = mCamera.getParameters();
-
-        Display mDisplay = getActivity().getWindowManager().getDefaultDisplay();
-        Point point = new Point();
-        mDisplay.getSize(point);
-
-        Log.d(TAG, "" + point.x + "x" + point.y);
-
-        Camera.Size currentSize = parameters.getPictureSize();
-        Log.d(TAG, "" + currentSize.height + "x" + currentSize.width);
-
-        List<Camera.Size> sizes = mCamera.getParameters().getSupportedPictureSizes();
-        Camera.Size selectedSize = sizes.get(0);
-        for (Camera.Size size : sizes) {
-            Log.d(TAG, "" + size.height + "x" + size.width);
-        }
-
-        if (selectedSize != null) {
-            parameters.setPictureSize(selectedSize.width, selectedSize.height);
-        }
 
         parameters.setRotation(90);
         mCamera.setParameters(parameters);
@@ -152,13 +130,6 @@ public class CameraFragment extends Fragment {
         mPreviewLayout.addView(mPreview);
     }
 
-    @Override
-    public void onPause() {
-        super.onPause();
-
-        removeCameraInstance();
-    }
-
     public void removeCameraInstance() {
         if (mCamera != null) {
             mCamera.release();
@@ -167,6 +138,20 @@ public class CameraFragment extends Fragment {
 
         mPreviewLayout.removeView(mPreview);
         mPreview = null;
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        removeCameraInstance();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        resumeCamera();
     }
 
     private class ResizeTask extends AsyncTask<Void, Void, Void> {
@@ -180,17 +165,15 @@ public class CameraFragment extends Fragment {
         @Override
         protected Void doInBackground(Void... unused) {
             try {
-                File pictureFile = File.createTempFile("smartchat", ".jpg", getActivity().getExternalCacheDir());
-
-                Matrix matrix = new Matrix();
-                matrix.postRotate(90);
-
                 Bitmap bitmap = BitmapFactory.decodeFile(filePath);
-                Bitmap scaled = Bitmap.createScaledBitmap(bitmap, bitmap.getWidth() / 2, bitmap.getHeight() / 2, false);
-                Bitmap rotated = Bitmap.createBitmap(scaled, 0, 0, scaled.getWidth(), scaled.getHeight(), matrix, true);
 
+                bitmap = rotateImage(bitmap);
+                bitmap = scaleImage(bitmap);
+
+
+                File pictureFile = File.createTempFile("smartchat", ".jpg", getActivity().getExternalCacheDir());
                 OutputStream out = new FileOutputStream(pictureFile);
-                rotated.compress(Bitmap.CompressFormat.JPEG, 80, out);
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 80, out);
                 out.flush();
                 out.close();
 
@@ -202,6 +185,37 @@ public class CameraFragment extends Fragment {
             }
 
             return null;
+        }
+
+        private Bitmap scaleImage(Bitmap bitmap) {
+            Display display = getActivity().getWindowManager().getDefaultDisplay();
+            Point point = new Point();
+            display.getSize(point);
+
+            if (bitmap.getWidth() > point.x || bitmap.getHeight() > point.y) {
+                int height = point.y;
+                int width = (int) (point.y * ((float) bitmap.getWidth() / (float) bitmap.getHeight()));
+
+                bitmap = Bitmap.createScaledBitmap(bitmap, width, height, false);
+            }
+
+            return bitmap;
+        }
+
+        private Bitmap rotateImage(Bitmap bitmap) {
+            if (bitmap.getWidth() > bitmap.getHeight()) {
+                Matrix matrix = new Matrix();
+
+                if (mCameraId == Camera.CameraInfo.CAMERA_FACING_FRONT) {
+                    matrix.postRotate(-90);
+                } else {
+                    matrix.postRotate(90);
+                }
+
+                bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+            }
+
+            return bitmap;
         }
 
         @Override
