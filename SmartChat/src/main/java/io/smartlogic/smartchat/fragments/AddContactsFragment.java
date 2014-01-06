@@ -102,7 +102,11 @@ public class AddContactsFragment extends ListFragment implements ContactsAdapter
                 selection += ContactsContract.Contacts._ID + " = ? and ";
                 selectionArgs[i] = String.valueOf(mContactsOnSmartChat.get(i).contactId);
             }
-            selection = selection.substring(0, selection.length() - 4);
+
+            // Check that selection is long enough to remove "and "
+            if (mContactsOnSmartChat.size() == 0) {
+                selection = selection.substring(0, selection.length() - 4);
+            }
 
             mContactsCursor = getActivity().getContentResolver().
                     query(ContactsContract.Contacts.CONTENT_URI, null, selection, selectionArgs, null);
