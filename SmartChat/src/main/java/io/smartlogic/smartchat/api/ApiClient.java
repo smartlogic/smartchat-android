@@ -60,7 +60,7 @@ import io.smartlogic.smartchat.models.Media;
 import io.smartlogic.smartchat.models.User;
 
 public class ApiClient {
-    public static final String rootUrl = "http://192.168.1.254:3000/";
+    public static final String rootUrl = "http://192.168.1.254:5000/";
     private String email;
     private String encodedPrivateKey;
     private PrivateKey privateKey;
@@ -285,7 +285,7 @@ public class ApiClient {
             signRequest(mediaRequest);
             HttpResponse response = client.execute(mediaRequest);
 
-            if (response.getStatusLine().getStatusCode() != 201) {
+            if (response.getStatusLine().getStatusCode() != 202) {
                 Log.d("smartchat", "error uploading media");
             }
         } catch (IOException e) {

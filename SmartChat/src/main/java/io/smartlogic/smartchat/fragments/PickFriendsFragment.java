@@ -8,8 +8,6 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.View;
 
-import java.io.File;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
@@ -19,6 +17,7 @@ import io.smartlogic.smartchat.activities.UploadActivity;
 import io.smartlogic.smartchat.adapters.FriendSelectorAdapter;
 import io.smartlogic.smartchat.api.ApiClient;
 import io.smartlogic.smartchat.models.Friend;
+import io.smartlogic.smartchat.services.UploadService;
 
 public class PickFriendsFragment extends ListFragment implements FriendSelectorAdapter.OnFriendCheckedListener,
         UploadActivity.OnDoneSelectedListener {
@@ -53,7 +52,22 @@ public class PickFriendsFragment extends ListFragment implements FriendSelectorA
 
     @Override
     public void onDoneSelected() {
-        new UploadTask().execute();
+        int[] friendIds = new int[mCheckedFriendIds.size()];
+        int i = 0;
+        for (int id : mCheckedFriendIds) {
+            friendIds[i] = id;
+            i++;
+        }
+
+        Intent intent = new Intent(getActivity(), UploadService.class);
+        intent.putExtra(Constants.EXTRA_FRIEND_IDS, friendIds);
+        intent.putExtra(Constants.EXTRA_PHOTO_PATH, getArguments().getString(Constants.EXTRA_PHOTO_PATH));
+        intent.putExtra(Constants.EXTRA_DRAWING_PATH, getArguments().getString(Constants.EXTRA_DRAWING_PATH, ""));
+        getActivity().startService(intent);
+
+        intent = new Intent(getActivity(), MainActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
     }
 
     private ApiClient getApiClient() {
@@ -79,33 +93,6 @@ public class PickFriendsFragment extends ListFragment implements FriendSelectorA
         protected void onPostExecute(Void aVoid) {
             setListAdapter(mAdapter);
             setListShown(true);
-        }
-    }
-
-    private class UploadTask extends AsyncTask<Void, Void, Void> {
-        @Override
-        protected Void doInBackground(Void... params) {
-            ApiClient client = getApiClient();
-
-            String photoPath = getArguments().getString(Constants.EXTRA_PHOTO_PATH);
-            String drawingPath = getArguments().getString(Constants.EXTRA_DRAWING_PATH, "");
-
-            List<Integer> friendIds = new ArrayList<Integer>();
-            friendIds.addAll(mCheckedFriendIds);
-
-            client.uploadMedia(friendIds, photoPath, drawingPath);
-
-            File photoFile = new File(photoPath);
-            photoFile.delete();
-
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            Intent intent = new Intent(getActivity(), MainActivity.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            startActivity(intent);
         }
     }
 }
