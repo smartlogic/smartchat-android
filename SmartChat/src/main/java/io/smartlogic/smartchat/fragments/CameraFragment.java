@@ -170,12 +170,12 @@ public class CameraFragment extends Fragment {
                 bitmap = rotateImage(bitmap);
                 bitmap = scaleImage(bitmap);
 
-
                 File pictureFile = File.createTempFile("smartchat", ".jpg", getActivity().getExternalCacheDir());
                 OutputStream out = new FileOutputStream(pictureFile);
-                bitmap.compress(Bitmap.CompressFormat.JPEG, 80, out);
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
                 out.flush();
                 out.close();
+                bitmap.recycle();
 
                 new File(filePath).delete();
 
@@ -196,7 +196,9 @@ public class CameraFragment extends Fragment {
                 int height = point.y;
                 int width = (int) (point.y * ((float) bitmap.getWidth() / (float) bitmap.getHeight()));
 
-                bitmap = Bitmap.createScaledBitmap(bitmap, width, height, false);
+                Bitmap scaled = Bitmap.createScaledBitmap(bitmap, width, height, false);
+                bitmap.recycle();
+                return scaled;
             }
 
             return bitmap;
@@ -212,7 +214,9 @@ public class CameraFragment extends Fragment {
                     matrix.postRotate(90);
                 }
 
-                bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+                Bitmap rotated = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+                bitmap.recycle();
+                return rotated;
             }
 
             return bitmap;
