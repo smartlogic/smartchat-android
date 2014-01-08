@@ -108,11 +108,12 @@ public class AddContactsFragment extends ListFragment implements ContactsAdapter
                 selection = selection.substring(0, selection.length() - 4);
             }
 
-            mContactsCursor = getActivity().getContentResolver().
-                    query(ContactsContract.Contacts.CONTENT_URI, null, selection, selectionArgs, null);
-
-            setListAdapter(new ContactsAdapter(getActivity(), AddContactsFragment.this, mContactsCursor));
-            setListShown(true);
+            if (getActivity() != null) {
+                mContactsCursor = getActivity().getContentResolver().
+                        query(ContactsContract.Contacts.CONTENT_URI, null, selection, selectionArgs, null);
+                setListAdapter(new ContactsAdapter(getActivity(), AddContactsFragment.this, mContactsCursor));
+                setListShown(true);
+            }
         }
     }
 

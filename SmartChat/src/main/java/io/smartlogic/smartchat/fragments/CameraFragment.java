@@ -22,6 +22,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.List;
 
 import io.smartlogic.smartchat.Constants;
 import io.smartlogic.smartchat.R;
@@ -120,6 +121,22 @@ public class CameraFragment extends Fragment {
         mCamera = getCameraInstance(mCameraId);
         Camera.Parameters parameters = mCamera.getParameters();
 
+        Display display = getActivity().getWindowManager().getDefaultDisplay();
+        Point screenSize = new Point();
+        display.getSize(screenSize);
+        float screenRatio = (float) screenSize.x / screenSize.y;
+        List<Camera.Size> sizes = parameters.getSupportedPictureSizes();
+        Camera.Size selectedSize = parameters.getPictureSize();
+        for (Camera.Size size : sizes) {
+            float ratio = (float) size.height / size.width;
+            if (ratio == screenRatio) {
+                selectedSize = size;
+                break;
+            }
+        }
+
+        parameters.setPreviewSize(screenSize.y, screenSize.x);
+        parameters.setPictureSize(selectedSize.width, selectedSize.height);
         parameters.setRotation(90);
         parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_AUTO);
         mCamera.setParameters(parameters);
@@ -139,7 +156,7 @@ public class CameraFragment extends Fragment {
                     }
                 });
             }
-       });
+        });
     }
 
     public void removeCameraInstance() {
