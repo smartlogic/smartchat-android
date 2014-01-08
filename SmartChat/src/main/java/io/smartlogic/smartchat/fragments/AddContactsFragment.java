@@ -104,7 +104,7 @@ public class AddContactsFragment extends ListFragment implements ContactsAdapter
             }
 
             // Check that selection is long enough to remove "and "
-            if (mContactsOnSmartChat.size() == 0) {
+            if (mContactsOnSmartChat.size() > 0) {
                 selection = selection.substring(0, selection.length() - 4);
             }
 
