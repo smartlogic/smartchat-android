@@ -121,6 +121,7 @@ public class CameraFragment extends Fragment {
         Camera.Parameters parameters = mCamera.getParameters();
 
         parameters.setRotation(90);
+        parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_AUTO);
         mCamera.setParameters(parameters);
         mCamera.setDisplayOrientation(90);
 
@@ -128,10 +129,22 @@ public class CameraFragment extends Fragment {
         mPreview = new CameraPreview(getActivity(), mCamera);
         mPreviewLayout = (FrameLayout) getView().findViewById(R.id.camera_preview);
         mPreviewLayout.addView(mPreview);
+        mPreview.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mCamera.autoFocus(new Camera.AutoFocusCallback() {
+                    @Override
+                    public void onAutoFocus(boolean success, Camera camera) {
+                        Log.d(TAG, "started autofocus");
+                    }
+                });
+            }
+       });
     }
 
     public void removeCameraInstance() {
         if (mCamera != null) {
+            mCamera.cancelAutoFocus();
             mCamera.release();
             mCamera = null;
         }
