@@ -29,6 +29,8 @@ public class DisplaySmartChatActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_display_smart_chat);
 
+        getActionBar().hide();
+
         new ImageDownloaderTask(this).execute();
     }
 
