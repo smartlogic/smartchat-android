@@ -7,9 +7,6 @@ import android.support.v4.view.ViewPager;
 import io.smartlogic.smartchat.R;
 import io.smartlogic.smartchat.adapters.MainFragmentPagerAdapter;
 import io.smartlogic.smartchat.api.GCMRegistration;
-import io.smartlogic.smartchat.fragments.AddContactsWithInviteFragment;
-import io.smartlogic.smartchat.fragments.CameraFragment;
-import io.smartlogic.smartchat.fragments.FriendsFragment;
 
 public class MainActivity extends FragmentActivity {
     public static final String TAG = "main activity";
@@ -29,9 +26,6 @@ public class MainActivity extends FragmentActivity {
         setContentView(mViewPager);
 
         mPagerAdapter = new MainFragmentPagerAdapter(this, mViewPager);
-        mPagerAdapter.addTab(CameraFragment.class, null, "");
-        mPagerAdapter.addTab(FriendsFragment.class, null, getString(R.string.friends));
-        mPagerAdapter.addTab(AddContactsWithInviteFragment.class, null, getString(R.string.add_contacts));
 
         new GCMRegistration(this).check();
     }

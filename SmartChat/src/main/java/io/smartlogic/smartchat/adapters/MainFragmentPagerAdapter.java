@@ -1,75 +1,84 @@
 package io.smartlogic.smartchat.adapters;
 
 import android.app.Activity;
-import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 
-import java.util.ArrayList;
+import io.smartlogic.smartchat.R;
+import io.smartlogic.smartchat.fragments.AddContactsWithInviteFragment;
+import io.smartlogic.smartchat.fragments.CameraFragment;
+import io.smartlogic.smartchat.fragments.FriendsFragment;
 
 public class MainFragmentPagerAdapter extends FragmentStatePagerAdapter {
+    private static final int TAB_COUNT = 3;
+    private static final int POSITION_CAMERA = 0;
+    private static final int POSITION_FRIENDS = 1;
+    private static final int POSITION_ADD_FRIENDS = 2;
     private final Activity mContext;
     private final ViewPager mViewPager;
-    private final ArrayList<TabInfo> mTabs = new ArrayList<TabInfo>();
+    private String[] titles;
+    private PageChangeListener mPageChangeListener;
 
     public MainFragmentPagerAdapter(FragmentActivity activity, ViewPager pager) {
         super(activity.getSupportFragmentManager());
 
-        this.mContext = activity;
-        this.mViewPager = pager;
+        mContext = activity;
+        mViewPager = pager;
         mViewPager.setAdapter(this);
-        mViewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-            @Override
-            public void onPageScrolled(int i, float v, int i2) {
-                if (mContext.getActionBar() != null) {
-                    if (i == 0 && v < 0.5) {
-                        mContext.getActionBar().hide();
-                    } else {
-                        mContext.getActionBar().show();
-                    }
-                }
-            }
 
-            @Override
-            public void onPageSelected(int i) {
-                mContext.setTitle(mTabs.get(i).title);
-            }
-
-            @Override
-            public void onPageScrollStateChanged(int i) {
-
-            }
-        });
-    }
-
-    public void addTab(Class<?> clss, Bundle args, String title) {
-        TabInfo info = new TabInfo(clss, args, title);
-        mTabs.add(info);
-        notifyDataSetChanged();
+        mPageChangeListener = new PageChangeListener();
+        mViewPager.setOnPageChangeListener(mPageChangeListener);
     }
 
     @Override
     public Fragment getItem(int position) {
-        TabInfo info = mTabs.get(position);
-        return Fragment.instantiate(mContext, info.clss.getName(), info.args);
+        switch (position) {
+            case POSITION_CAMERA:
+                return Fragment.instantiate(mContext, CameraFragment.class.getName(), null);
+            case POSITION_FRIENDS:
+                return Fragment.instantiate(mContext, FriendsFragment.class.getName(), null);
+            case POSITION_ADD_FRIENDS:
+                return Fragment.instantiate(mContext, AddContactsWithInviteFragment.class.getName(), null);
+        }
+
+        return null;
     }
 
     @Override
     public int getCount() {
-        return mTabs.size();
+        return TAB_COUNT;
     }
 
-    static final class TabInfo {
-        private final Class<?> clss;
-        private final Bundle args;
-        private final String title;
+    private String getTitle(int position) {
+        if (titles == null) {
+            titles = new String[]{"", mContext.getString(R.string.friends), mContext.getString(R.string.add_contacts)};
+        }
 
-        TabInfo(Class<?> _class, Bundle _args, String _title) {
-            clss = _class;
-            args = _args;
-            title = _title;
+        return titles[position];
+    }
+
+    private class PageChangeListener implements ViewPager.OnPageChangeListener {
+        @Override
+        public void onPageScrolled(int i, float v, int i2) {
+            if (mContext.getActionBar() != null) {
+                if (i == 0 && v < 0.5) {
+                    mContext.getActionBar().hide();
+                } else {
+                    mContext.getActionBar().show();
+                }
+            }
+        }
+
+        @Override
+        public void onPageSelected(int i) {
+            mContext.setTitle(getTitle(i));
+            mContext.invalidateOptionsMenu();
+        }
+
+        @Override
+        public void onPageScrollStateChanged(int i) {
+
         }
     }
 }
