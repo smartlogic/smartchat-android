@@ -60,6 +60,7 @@ import io.smartlogic.smartchat.models.Media;
 import io.smartlogic.smartchat.models.User;
 
 public class ApiClient {
+    public static final String TAG = "ApiClient";
     public static final String rootUrl = "http://192.168.1.254:5000/";
     private String email;
     private String encodedPrivateKey;
@@ -137,7 +138,6 @@ public class ApiClient {
 
         ObjectMapper mapper = new ObjectMapper();
         mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
-
 
         try {
             HttpGet rootRequest = new HttpGet(rootUrl);
@@ -398,7 +398,7 @@ public class ApiClient {
             signRequest(request);
             HttpResponse response = client.execute(request);
             String responseJson = EntityUtils.toString(response.getEntity());
-            Log.d("smartchat", responseJson);
+            Log.d("response json", responseJson);
             return mapper.readValue(responseJson, klass);
         } catch (JsonParseException e) {
             e.printStackTrace();

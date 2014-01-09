@@ -18,5 +18,6 @@
     <string name="switch_camera">Switch Camera</string>
     <string name="friends">Friends</string>
     <string name="friends_list_empty">You are not connected to any friends. Please add some by swiping right.</string>
+    <string name="add_contacts_empty">None of your contacts were found on SmartChat, please invite some!</string>
 
 </resources>

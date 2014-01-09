@@ -7,13 +7,16 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.provider.ContactsContract;
 import android.support.v4.app.ListFragment;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import io.smartlogic.smartchat.Constants;
+import io.smartlogic.smartchat.R;
 import io.smartlogic.smartchat.adapters.ContactsAdapter;
 import io.smartlogic.smartchat.api.ApiClient;
 import io.smartlogic.smartchat.hypermedia.FriendSearch;
@@ -36,10 +39,13 @@ public class AddContactsFragment extends ListFragment implements ContactsAdapter
     }
 
     @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.fragment_add_contacts, null);
+    }
+
+    @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-        setListShown(false);
 
         new FindContactsTask().execute();
     }
@@ -96,23 +102,19 @@ public class AddContactsFragment extends ListFragment implements ContactsAdapter
 
         @Override
         protected void onPostExecute(Void aVoid) {
-            String selection = "";
+            String selection = ContactsContract.Contacts._ID + " = -1 or ";
             String[] selectionArgs = new String[mContactsOnSmartChat.size()];
             for (int i = 0; i < mContactsOnSmartChat.size(); i++) {
-                selection += ContactsContract.Contacts._ID + " = ? and ";
+                selection += ContactsContract.Contacts._ID + " = ? or ";
                 selectionArgs[i] = String.valueOf(mContactsOnSmartChat.get(i).contactId);
             }
 
-            // Check that selection is long enough to remove "and "
-            if (mContactsOnSmartChat.size() > 0) {
-                selection = selection.substring(0, selection.length() - 4);
-            }
+            selection = selection.substring(0, selection.length() - 3);
 
             if (getActivity() != null) {
                 mContactsCursor = getActivity().getContentResolver().
                         query(ContactsContract.Contacts.CONTENT_URI, null, selection, selectionArgs, null);
                 setListAdapter(new ContactsAdapter(getActivity(), AddContactsFragment.this, mContactsCursor));
-                setListShown(true);
             }
         }
     }
