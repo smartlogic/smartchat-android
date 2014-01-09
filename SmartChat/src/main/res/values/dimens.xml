@@ -3,5 +3,6 @@
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="contact_text_size">20sp</dimen>
+    <dimen name="friends_list_empty">20sp</dimen>
 
 </resources>

@@ -16,5 +16,7 @@
     <string name="upload">Upload</string>
     <string name="capture">Capture</string>
     <string name="switch_camera">Switch Camera</string>
+    <string name="friends">Friends</string>
+    <string name="friends_list_empty">You are not connected to any friends. Please add some by swiping right.</string>
 
 </resources>
