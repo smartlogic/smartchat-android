@@ -10,6 +10,8 @@ import android.support.v4.app.ListFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import java.util.HashMap;
 import java.util.List;
@@ -46,6 +48,9 @@ public class AddContactsFragment extends ListFragment implements ContactsAdapter
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        TextView empty = (TextView) view.findViewById(android.R.id.empty);
+        empty.setVisibility(View.GONE);
 
         new FindContactsTask().execute();
     }
@@ -114,6 +119,10 @@ public class AddContactsFragment extends ListFragment implements ContactsAdapter
             if (getActivity() != null) {
                 mContactsCursor = getActivity().getContentResolver().
                         query(ContactsContract.Contacts.CONTENT_URI, null, selection, selectionArgs, null);
+
+                ProgressBar progressBar = (ProgressBar) getView().findViewById(R.id.progress_bar);
+                progressBar.setVisibility(View.GONE);
+
                 setListAdapter(new ContactsAdapter(getActivity(), AddContactsFragment.this, mContactsCursor));
             }
         }

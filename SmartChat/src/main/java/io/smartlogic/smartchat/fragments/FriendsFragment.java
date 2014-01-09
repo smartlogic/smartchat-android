@@ -8,6 +8,7 @@ import android.support.v4.app.ListFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import java.util.List;
 
@@ -28,6 +29,9 @@ public class FriendsFragment extends ListFragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        TextView empty = (TextView) view.findViewById(android.R.id.empty);
+        empty.setVisibility(View.GONE);
 
         new LoadFriendsTask().execute();
     }
