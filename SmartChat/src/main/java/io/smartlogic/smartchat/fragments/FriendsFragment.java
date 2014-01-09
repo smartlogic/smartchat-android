@@ -29,10 +29,6 @@ public class FriendsFragment extends ListFragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        if (getActivity() != null && getActivity().getActionBar() != null) {
-            getActivity().getActionBar().setTitle(R.string.friends);
-        }
-
         new LoadFriendsTask().execute();
     }
 

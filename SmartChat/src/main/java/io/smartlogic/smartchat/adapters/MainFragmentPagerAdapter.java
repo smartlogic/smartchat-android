@@ -23,15 +23,18 @@ public class MainFragmentPagerAdapter extends FragmentStatePagerAdapter {
         mViewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int i, float v, int i2) {
-                if (i == 0 && v < 0.5) {
-                    mContext.getActionBar().hide();
-                } else {
-                    mContext.getActionBar().show();
+                if (mContext.getActionBar() != null) {
+                    if (i == 0 && v < 0.5) {
+                        mContext.getActionBar().hide();
+                    } else {
+                        mContext.getActionBar().show();
+                    }
                 }
             }
 
             @Override
             public void onPageSelected(int i) {
+                mContext.setTitle(mTabs.get(i).title);
             }
 
             @Override
@@ -41,8 +44,8 @@ public class MainFragmentPagerAdapter extends FragmentStatePagerAdapter {
         });
     }
 
-    public void addTab(Class<?> clss, Bundle args) {
-        TabInfo info = new TabInfo(clss, args);
+    public void addTab(Class<?> clss, Bundle args, String title) {
+        TabInfo info = new TabInfo(clss, args, title);
         mTabs.add(info);
         notifyDataSetChanged();
     }
@@ -61,10 +64,12 @@ public class MainFragmentPagerAdapter extends FragmentStatePagerAdapter {
     static final class TabInfo {
         private final Class<?> clss;
         private final Bundle args;
+        private final String title;
 
-        TabInfo(Class<?> _class, Bundle _args) {
+        TabInfo(Class<?> _class, Bundle _args, String _title) {
             clss = _class;
             args = _args;
+            title = _title;
         }
     }
 }

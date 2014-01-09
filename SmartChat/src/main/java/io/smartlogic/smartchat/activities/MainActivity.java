@@ -20,16 +20,18 @@ public class MainActivity extends FragmentActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        getActionBar().hide();
+        if (getActionBar() != null) {
+            getActionBar().hide();
+        }
 
         mViewPager = new ViewPager(this);
         mViewPager.setId(R.id.pager);
         setContentView(mViewPager);
 
         mPagerAdapter = new MainFragmentPagerAdapter(this, mViewPager);
-        mPagerAdapter.addTab(CameraFragment.class, null);
-        mPagerAdapter.addTab(FriendsFragment.class, null);
-        mPagerAdapter.addTab(AddContactsWithInviteFragment.class, null);
+        mPagerAdapter.addTab(CameraFragment.class, null, "");
+        mPagerAdapter.addTab(FriendsFragment.class, null, getString(R.string.friends));
+        mPagerAdapter.addTab(AddContactsWithInviteFragment.class, null, getString(R.string.add_contacts));
 
         new GCMRegistration(this).check();
     }

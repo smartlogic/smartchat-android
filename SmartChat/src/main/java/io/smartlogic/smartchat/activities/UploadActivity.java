@@ -16,9 +16,9 @@ public class UploadActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_upload);
 
-        if (savedInstanceState == null) {
+        if (savedInstanceState == null && getIntent().getExtras() != null) {
             Bundle args = new Bundle();
             args.putString(Constants.EXTRA_PHOTO_PATH, getIntent().getExtras().getString(Constants.EXTRA_PHOTO_PATH));
             args.putString(Constants.EXTRA_DRAWING_PATH, getIntent().getExtras().getString(Constants.EXTRA_DRAWING_PATH));
