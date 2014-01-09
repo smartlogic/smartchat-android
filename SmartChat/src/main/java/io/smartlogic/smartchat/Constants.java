@@ -12,4 +12,7 @@ public class Constants {
     public static final String GCM_SENDER_ID = "14366602602";
     public static final String PROPERTY_REG_ID = "registration_id";
     public static final String PROPERTY_APP_VERSION = "appVersion";
+
+    public static final String AUTHORITY = "io.smartlogic.smartchat";
+    public static final String ACCOUNT_TYPE = "io.smartlogic.smartchat.account";
 }

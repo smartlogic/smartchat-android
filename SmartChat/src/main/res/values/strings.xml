@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <string name="data_provider_name">Data</string>
     <string name="app_name">SmartChat</string>
     <string name="log_in">Log In</string>
     <string name="sign_up">Sign Up</string>
