@@ -28,6 +28,7 @@ public class GcmIntentService extends IntentService {
                 .setContentTitle("New SmartChat")
                 .setContentText("SmartChat from " + extras.getString("creator_email"))
                 .setDefaults(Notification.FLAG_SHOW_LIGHTS)
+                .setVibrate(new long[]{750})
                 .setLights(0xff6AC8C8, 1000, 750);
         Intent resultIntent = new Intent(this, DisplaySmartChatActivity.class);
         resultIntent.putExtras(extras);
