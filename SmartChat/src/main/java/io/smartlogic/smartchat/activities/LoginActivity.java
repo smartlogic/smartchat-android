@@ -1,15 +1,7 @@
 package io.smartlogic.smartchat.activities;
 
 import android.app.Activity;
-import android.app.ActionBar;
-import android.app.Fragment;
 import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.os.Build;
 
 import io.smartlogic.smartchat.R;
 import io.smartlogic.smartchat.fragments.InitialLoginFragment;
@@ -17,6 +9,8 @@ import io.smartlogic.smartchat.fragments.LoginFragment;
 import io.smartlogic.smartchat.fragments.SignUpFragment;
 
 public class LoginActivity extends Activity {
+    private boolean initialLoginFragment = true;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -29,13 +23,30 @@ public class LoginActivity extends Activity {
         }
     }
 
+    @Override
+    public void onBackPressed() {
+        if (initialLoginFragment) {
+            finish();
+        } else {
+            initialLoginFragment = true;
+
+            getFragmentManager().beginTransaction()
+                    .replace(R.id.container, new InitialLoginFragment())
+                    .commit();
+        }
+    }
+
     public void switchToLogin() {
+        initialLoginFragment = false;
+
         getFragmentManager().beginTransaction()
                 .replace(R.id.container, new LoginFragment())
                 .commit();
     }
 
     public void switchToSignUp() {
+        initialLoginFragment = false;
+
         getFragmentManager().beginTransaction()
                 .replace(R.id.container, new SignUpFragment())
                 .commit();
