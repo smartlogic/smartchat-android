@@ -1,6 +1,7 @@
 package io.smartlogic.smartchat;
 
 import android.app.IntentService;
+import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -25,7 +26,9 @@ public class GcmIntentService extends IntentService {
                 .setAutoCancel(true)
                 .setSmallIcon(R.drawable.ic_launcher)
                 .setContentTitle("New SmartChat")
-                .setContentText("SmartChat from " + extras.getString("creator_email"));
+                .setContentText("SmartChat from " + extras.getString("creator_email"))
+                .setDefaults(Notification.FLAG_SHOW_LIGHTS)
+                .setLights(0xff6AC8C8, 1000, 750);
         Intent resultIntent = new Intent(this, DisplaySmartChatActivity.class);
         resultIntent.putExtras(extras);
 
