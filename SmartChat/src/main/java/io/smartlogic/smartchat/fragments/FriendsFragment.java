@@ -40,8 +40,13 @@ public class FriendsFragment extends ListFragment implements LoaderManager.Loade
 
     @Override
     public void onLoadFinished(android.support.v4.content.Loader<Cursor> cursorLoader, Cursor cursor) {
-        mAdapter = new FriendsAdapter(getActivity(), cursor);
-        setListAdapter(mAdapter);
+        if (mAdapter == null) {
+            mAdapter = new FriendsAdapter(getActivity(), cursor);
+
+            setListAdapter(mAdapter);
+        } else {
+            mAdapter.swapCursor(cursor);
+        }
     }
 
     @Override

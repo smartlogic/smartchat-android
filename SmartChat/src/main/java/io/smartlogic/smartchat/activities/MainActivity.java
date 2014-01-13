@@ -15,6 +15,7 @@ import io.smartlogic.smartchat.Constants;
 import io.smartlogic.smartchat.R;
 import io.smartlogic.smartchat.adapters.MainFragmentPagerAdapter;
 import io.smartlogic.smartchat.api.GCMRegistration;
+import io.smartlogic.smartchat.sync.SyncClient;
 
 public class MainActivity extends FragmentActivity {
     public static final String TAG = "main activity";
@@ -29,6 +30,10 @@ public class MainActivity extends FragmentActivity {
             getActionBar().hide();
         }
 
+        if (getIntent().getBooleanExtra(Constants.EXTRA_SYNC, false)) {
+            new SyncNowTask().execute();
+        }
+
         mViewPager = new ViewPager(this);
         mViewPager.setId(R.id.pager);
         setContentView(mViewPager);
@@ -38,6 +43,15 @@ public class MainActivity extends FragmentActivity {
         new GCMRegistration(this).check();
 
         new CreateAccountTask(this).execute();
+    }
+
+    private class SyncNowTask extends AsyncTask<Void, Void, Void> {
+        @Override
+        protected Void doInBackground(Void... params) {
+            new SyncClient(MainActivity.this).sync();
+
+            return null;
+        }
     }
 
     private class CreateAccountTask extends AsyncTask<Void, Void, Void> {

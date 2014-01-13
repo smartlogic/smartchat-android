@@ -22,6 +22,10 @@ public class LauncherActivity extends Activity {
             intent = new Intent(this, LoginActivity.class);
         } else {
             intent = new Intent(this, MainActivity.class);
+
+            if (getIntent().getExtras() != null) {
+                intent.putExtra(Constants.EXTRA_SYNC, getIntent().getExtras().getBoolean(Constants.EXTRA_SYNC, false));
+            }
         }
 
         startActivityForResult(intent, 0);

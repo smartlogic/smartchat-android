@@ -7,6 +7,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
+import io.smartlogic.smartchat.Constants;
 import io.smartlogic.smartchat.R;
 
 public class ContactsActivity extends FragmentActivity {
@@ -29,6 +30,7 @@ public class ContactsActivity extends FragmentActivity {
             case R.id.done:
                 Intent intent = new Intent(this, LauncherActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                intent.putExtra(Constants.EXTRA_SYNC, true);
                 startActivity(intent);
                 return true;
             default:

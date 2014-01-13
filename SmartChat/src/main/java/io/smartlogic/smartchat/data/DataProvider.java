@@ -58,8 +58,12 @@ public class DataProvider extends ContentProvider {
             newUri = DataUriManager.getFriendUri(id);
         }
 
-        if (newUri != null && getContext() != null) {
-            getContext().getContentResolver().notifyChange(newUri, null, false);
+        if (getContext() != null) {
+            getContext().getContentResolver().notifyChange(uri, null, false);
+
+            if (newUri != null) {
+                getContext().getContentResolver().notifyChange(newUri, null, false);
+            }
         }
 
         return newUri;
