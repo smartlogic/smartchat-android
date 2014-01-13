@@ -1,12 +1,41 @@
 package io.smartlogic.smartchat.models;
 
+import android.content.ContentValues;
+import android.database.Cursor;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class Friend {
+    @JsonIgnore
+    private int _id;
     @JsonProperty("id")
     private Integer id;
     @JsonProperty("email")
     private String email;
+
+    public static Friend fromCursor(Cursor cursor) {
+        Friend friend = new Friend();
+
+        if (cursor.getColumnIndex("_id") != -1) {
+            friend.setDatabaseId(cursor.getInt(cursor.getColumnIndex("_id")));
+        }
+
+        if (cursor.getColumnIndex("id") != -1) {
+            friend.setId(cursor.getInt(cursor.getColumnIndex("id")));
+        }
+
+        if (cursor.getColumnIndex("username") != -1) {
+            friend.setEmail(cursor.getString(cursor.getColumnIndex("username")));
+        }
+
+        return friend;
+    }
+
+    @Override
+    public String toString() {
+        return "<Friend _id: " + getDatabaseId() + " id: " + getId() + " username: " + getEmail() + ">";
+    }
 
     public Integer getId() {
         return id;
@@ -22,5 +51,22 @@ public class Friend {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public ContentValues getAttributes() {
+        ContentValues cv = new ContentValues();
+
+        cv.put("id", getId());
+        cv.put("username", getEmail());
+
+        return cv;
+    }
+
+    public int getDatabaseId() {
+        return _id;
+    }
+
+    public void setDatabaseId(int databaseId) {
+        this._id = databaseId;
     }
 }

@@ -15,4 +15,5 @@ public class Constants {
 
     public static final String AUTHORITY = "io.smartlogic.smartchat";
     public static final String ACCOUNT_TYPE = "io.smartlogic.smartchat.account";
+    public static final String DATABASE_NAME = "smartchat.db";
 }

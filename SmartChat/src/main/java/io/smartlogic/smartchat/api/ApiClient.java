@@ -61,7 +61,7 @@ import io.smartlogic.smartchat.models.User;
 
 public class ApiClient {
     public static final String TAG = "ApiClient";
-    public static final String rootUrl = "http://smartchat.smartlogic.io/";
+    public static final String rootUrl = "http://192.168.1.254:5000/";
     private String email;
     private String encodedPrivateKey;
     private PrivateKey privateKey;
