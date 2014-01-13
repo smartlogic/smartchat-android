@@ -1,24 +1,21 @@
 package io.smartlogic.smartchat.fragments;
 
-import android.content.SharedPreferences;
-import android.os.AsyncTask;
+import android.database.Cursor;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v4.app.ListFragment;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import java.util.List;
-
-import io.smartlogic.smartchat.Constants;
 import io.smartlogic.smartchat.R;
 import io.smartlogic.smartchat.adapters.FriendsAdapter;
-import io.smartlogic.smartchat.api.ApiClient;
-import io.smartlogic.smartchat.models.Friend;
+import io.smartlogic.smartchat.data.DataUriManager;
 
-public class FriendsFragment extends ListFragment {
+public class FriendsFragment extends ListFragment implements LoaderManager.LoaderCallbacks<Cursor> {
     private FriendsAdapter mAdapter;
 
     @Override
@@ -33,27 +30,24 @@ public class FriendsFragment extends ListFragment {
         TextView empty = (TextView) view.findViewById(android.R.id.empty);
         empty.setVisibility(View.GONE);
 
-        new LoadFriendsTask().execute();
+        getLoaderManager().initLoader(1, null, this);
     }
 
-    private class LoadFriendsTask extends AsyncTask<Void, Void, Void> {
-        @Override
-        protected Void doInBackground(Void... params) {
-            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
-            String email = prefs.getString(Constants.EXTRA_EMAIL, "");
-            String encodedPrivateKey = prefs.getString(Constants.EXTRA_PRIVATE_KEY, "");
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        return new CursorLoader(getActivity(), DataUriManager.getFriendsUri(), null, null, null, null);
+    }
 
-            ApiClient client = new ApiClient(email, encodedPrivateKey);
-            List<Friend> friends = client.getFriends();
+    @Override
+    public void onLoadFinished(android.support.v4.content.Loader<Cursor> cursorLoader, Cursor cursor) {
+        mAdapter = new FriendsAdapter(getActivity(), cursor);
+        setListAdapter(mAdapter);
+    }
 
-            mAdapter = new FriendsAdapter(getActivity(), friends);
-
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            setListAdapter(mAdapter);
+    @Override
+    public void onLoaderReset(android.support.v4.content.Loader<Cursor> cursorLoader) {
+        if (mAdapter != null) {
+            mAdapter.swapCursor(null);
         }
     }
 }
