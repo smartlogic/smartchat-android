@@ -1,5 +1,6 @@
 package io.smartlogic.smartchat.fragments;
 
+import android.content.ContentResolver;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.AsyncTask;
@@ -10,6 +11,7 @@ import android.support.v4.app.ListFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -22,6 +24,7 @@ import io.smartlogic.smartchat.R;
 import io.smartlogic.smartchat.adapters.ContactsAdapter;
 import io.smartlogic.smartchat.api.ApiClient;
 import io.smartlogic.smartchat.hypermedia.FriendSearch;
+import io.smartlogic.smartchat.sync.AccountHelper;
 
 public class AddContactsFragment extends ListFragment implements ContactsAdapter.OnContactAddedListener {
     private Cursor mContactsCursor;
@@ -52,7 +55,18 @@ public class AddContactsFragment extends ListFragment implements ContactsAdapter
         TextView empty = (TextView) view.findViewById(android.R.id.empty);
         empty.setVisibility(View.GONE);
 
-        new FindContactsTask().execute();
+        final Button button = (Button) view.findViewById(R.id.find_friends);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ProgressBar progressBar = (ProgressBar) getView().findViewById(R.id.progress_bar);
+                progressBar.setVisibility(View.VISIBLE);
+
+                button.setVisibility(View.GONE);
+
+                new FindContactsTask().execute();
+            }
+        });
     }
 
     private class FindContactsTask extends AsyncTask<Void, Void, Void> {
@@ -139,6 +153,13 @@ public class AddContactsFragment extends ListFragment implements ContactsAdapter
             client.addFriend(friendUrls[0]);
 
             return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            Bundle bundle = new Bundle();
+            bundle.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
+            ContentResolver.requestSync(AccountHelper.getAccount(getActivity()), Constants.AUTHORITY, bundle);
         }
     }
 }
