@@ -129,8 +129,9 @@ public class ApiClient {
         return null;
     }
 
-    public List<FriendSearch.Friend> searchForFriends(Map<String, Integer> phoneNumbers) {
+    public List<FriendSearch.Friend> searchForFriends(Map<String, Integer> phoneNumbers, Map<String, Integer> emails) {
         Map<String, Integer> scrubbedPhoneNumbers = scrubPhoneNumbers(phoneNumbers);
+        Map<String, Integer> scrubbedEmails = scrubEmails(emails);
 
         loadPrivateKey();
 
@@ -148,6 +149,7 @@ public class ApiClient {
 
             Map<String, Object[]> map = new HashMap<String, Object[]>();
             map.put("phone_numbers", scrubbedPhoneNumbers.keySet().toArray());
+            map.put("emails", scrubbedEmails.keySet().toArray());
             String requestJson = mapper.writeValueAsString(map);
 
             String searchUrl = UriTemplate.fromTemplate(friends.getSearchLink()).expand();
@@ -157,7 +159,12 @@ public class ApiClient {
             FriendSearch friendSearch = (FriendSearch) executeAndParseJson(searchRequest, mapper, FriendSearch.class);
 
             for (FriendSearch.Friend friend : friendSearch.getFriends()) {
-                friend.contactId = scrubbedPhoneNumbers.get(friend.phoneNumber);
+                if (friend.phoneNumber != null) {
+                    friend.contactId = scrubbedPhoneNumbers.get(friend.phoneNumber);
+                }
+                if (friend.email != null) {
+                    friend.contactId = scrubbedEmails.get(friend.email);
+                }
             }
 
             return friendSearch.getFriends();
@@ -435,6 +442,23 @@ public class ApiClient {
         }
 
         return scrubbedPhoneNumbers;
+    }
+
+    /**
+     * MD5 hashes emails
+     *
+     * @param emails List of emails
+     * @return Scrubbed emails
+     */
+    private Map<String, Integer> scrubEmails(Map<String, Integer> emails) {
+        Map<String, Integer> scrubbedEmails = new HashMap<String, Integer>();
+
+        for (String email : emails.keySet()) {
+            String scrubbedEmail = new String(Hex.encodeHex(DigestUtils.md5(email)));
+            scrubbedEmails.put(scrubbedEmail, emails.get(email));
+        }
+
+        return scrubbedEmails;
     }
 
     private String signUrl(PrivateKey privateKey, String url) {

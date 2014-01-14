@@ -70,12 +70,26 @@ public class AddContactsFragment extends ListFragment implements ContactsAdapter
     }
 
     private class FindContactsTask extends AsyncTask<Void, Void, Void> {
+        Map<String, Integer> phoneNumbers = new HashMap<String, Integer>();
+        Map<String, Integer> emails = new HashMap<String, Integer>();
+
         @Override
         protected Void doInBackground(Void... params) {
-            Map<String, Integer> phoneNumbers = new HashMap<String, Integer>();
+            loadPhoneNumbers();
+            loadEmails();
 
-            String selection = ContactsContract.Contacts.IN_VISIBLE_GROUP + " = '" + ("1") + "' and " +
-                    ContactsContract.Contacts.HAS_PHONE_NUMBER + " = '" + ("1") + "'";
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+            String email = prefs.getString(Constants.EXTRA_EMAIL, "");
+            String encodedPrivateKey = prefs.getString(Constants.EXTRA_PRIVATE_KEY, "");
+
+            ApiClient client = new ApiClient(email, encodedPrivateKey);
+            mContactsOnSmartChat = client.searchForFriends(phoneNumbers, emails);
+
+            return null;
+        }
+
+        private void loadPhoneNumbers() {
+            String selection = ContactsContract.Contacts.HAS_PHONE_NUMBER + " = '" + ("1") + "'";
 
             Cursor cursor = getActivity().getContentResolver().
                     query(ContactsContract.Contacts.CONTENT_URI, null, selection, null, null);
@@ -97,6 +111,7 @@ public class AddContactsFragment extends ListFragment implements ContactsAdapter
                 int phoneFieldColumnIndex = contactCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER);
 
                 if (contactCursor.getCount() < 1) {
+                    contactCursor.close();
                     continue;
                 }
 
@@ -109,14 +124,42 @@ public class AddContactsFragment extends ListFragment implements ContactsAdapter
                 contactCursor.close();
             } while (cursor.moveToNext());
 
-            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
-            String email = prefs.getString(Constants.EXTRA_EMAIL, "");
-            String encodedPrivateKey = prefs.getString(Constants.EXTRA_PRIVATE_KEY, "");
+            cursor.close();
+        }
 
-            ApiClient client = new ApiClient(email, encodedPrivateKey);
-            mContactsOnSmartChat = client.searchForFriends(phoneNumbers);
+        private void loadEmails() {
+            Cursor cursor = getActivity().getContentResolver().
+                    query(ContactsContract.Contacts.CONTENT_URI, null, null, null, null);
 
-            return null;
+            int idFieldColumnIndex = cursor.getColumnIndex(ContactsContract.CommonDataKinds.Email._ID);
+
+            cursor.moveToFirst();
+
+            do {
+                int contactId = cursor.getInt(idFieldColumnIndex);
+                String emailSelection = ContactsContract.CommonDataKinds.Email.CONTACT_ID + " = ?";
+                String[] emailSelectionArgs = new String[]{String.valueOf(contactId)};
+
+                Cursor contactCursor = getActivity().getContentResolver().
+                        query(ContactsContract.CommonDataKinds.Email.CONTENT_URI, null, emailSelection, emailSelectionArgs, null);
+                contactCursor.moveToFirst();
+
+                int contactEmailColumnIndex = contactCursor.getColumnIndex(ContactsContract.CommonDataKinds.Email.DATA);
+
+                if (contactCursor.getCount() < 1) {
+                    contactCursor.close();
+                    continue;
+                }
+
+                do {
+                    String email = contactCursor.getString(contactEmailColumnIndex);
+                    emails.put(email, contactId);
+                } while (contactCursor.moveToNext());
+
+                contactCursor.close();
+            } while (cursor.moveToNext());
+
+            cursor.close();
         }
 
         @Override
