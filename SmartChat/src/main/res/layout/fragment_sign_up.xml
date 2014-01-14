@@ -29,17 +29,9 @@
         android:layout_height="0dp"
         android:layout_centerInParent="true" />
 
-    <EditText
-        android:id="@+id/phone_number"
-        android:layout_below="@+id/center"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="@string/phone_number"
-        android:inputType="phone" />
-
     <Button
         android:id="@+id/sign_up"
-        android:layout_below="@+id/phone_number"
+        android:layout_below="@+id/center"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/sign_up" />

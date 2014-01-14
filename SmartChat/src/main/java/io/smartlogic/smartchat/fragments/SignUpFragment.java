@@ -46,15 +46,12 @@ public class SignUpFragment extends Fragment {
     public void attemptSignUp() {
         EditText emailView = (EditText) getView().findViewById(R.id.email);
         EditText passwordView = (EditText) getView().findViewById(R.id.password);
-        EditText phoneNumberView = (EditText) getView().findViewById(R.id.phone_number);
 
         emailView.setError(null);
         passwordView.setError(null);
-        phoneNumberView.setError(null);
 
         String email = emailView.getText().toString();
         String password = passwordView.getText().toString();
-        String phoneNumber = phoneNumberView.getText().toString();
 
         boolean cancel = false;
         View focusView = null;
@@ -75,18 +72,12 @@ public class SignUpFragment extends Fragment {
             cancel = true;
         }
 
-        if (TextUtils.isEmpty(phoneNumber)) {
-            phoneNumberView.setError(getString(R.string.phone_number_blank));
-            focusView = phoneNumberView;
-            cancel = true;
-        }
-
         if (cancel) {
             // There was an error; don't attempt login and focus the first
             // form field with an error.
             focusView.requestFocus();
         } else {
-            new RegistrationTask(email, password, phoneNumber).execute();
+            new RegistrationTask(email, password).execute();
 
             mSignUpButton.setOnClickListener(null);
         }
@@ -95,12 +86,10 @@ public class SignUpFragment extends Fragment {
     private class RegistrationTask extends AsyncTask<Void, Void, Void> {
         private String email;
         private String password;
-        private String phoneNumber;
 
-        public RegistrationTask(String email, String password, String phoneNumber) {
+        public RegistrationTask(String email, String password) {
             this.email = email;
             this.password = password;
-            this.phoneNumber = phoneNumber;
         }
 
         @Override
@@ -108,7 +97,6 @@ public class SignUpFragment extends Fragment {
             User user = new User();
             user.setEmail(email);
             user.setPassword(password);
-            user.setPhoneNumber(phoneNumber);
 
             ApiClient client = new ApiClient();
             String base64PrivateKey = client.registerUser(user);
