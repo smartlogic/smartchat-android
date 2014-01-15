@@ -1,25 +1,26 @@
 package io.smartlogic.smartchat.fragments;
 
-import android.app.ListFragment;
 import android.content.Intent;
-import android.os.AsyncTask;
+import android.database.Cursor;
 import android.os.Bundle;
-import android.util.Log;
+import android.support.v4.app.ListFragment;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.view.View;
 
 import java.util.HashSet;
-import java.util.List;
 
 import io.smartlogic.smartchat.Constants;
 import io.smartlogic.smartchat.activities.MainActivity;
 import io.smartlogic.smartchat.activities.UploadActivity;
 import io.smartlogic.smartchat.adapters.FriendSelectorAdapter;
-import io.smartlogic.smartchat.api.ContextApiClient;
+import io.smartlogic.smartchat.data.DataUriManager;
 import io.smartlogic.smartchat.models.Friend;
 import io.smartlogic.smartchat.services.UploadService;
 
 public class PickFriendsFragment extends ListFragment implements FriendSelectorAdapter.OnFriendCheckedListener,
-        UploadActivity.OnDoneSelectedListener {
+        UploadActivity.OnDoneSelectedListener, LoaderManager.LoaderCallbacks<Cursor> {
 
     private FriendSelectorAdapter mAdapter;
     private HashSet<Integer> mCheckedFriendIds;
@@ -37,7 +38,7 @@ public class PickFriendsFragment extends ListFragment implements FriendSelectorA
 
         setListShown(false);
 
-        new LoadFriendsTask().execute();
+        getLoaderManager().initLoader(1, null, this);
     }
 
     @Override
@@ -69,21 +70,27 @@ public class PickFriendsFragment extends ListFragment implements FriendSelectorA
         startActivity(intent);
     }
 
-    private class LoadFriendsTask extends AsyncTask<Void, Void, Void> {
-        @Override
-        protected Void doInBackground(Void... params) {
-            ContextApiClient client = new ContextApiClient(getActivity());
-            List<Friend> friends = client.getFriends();
 
-            mAdapter = new FriendSelectorAdapter(getActivity(), friends, PickFriendsFragment.this);
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        return new CursorLoader(getActivity(), DataUriManager.getFriendsUri(), null, null, null, null);
+    }
 
-            return null;
-        }
+    @Override
+    public void onLoadFinished(android.support.v4.content.Loader<Cursor> cursorLoader, Cursor cursor) {
+        if (mAdapter == null) {
+            mAdapter = new FriendSelectorAdapter(getActivity(), cursor, PickFriendsFragment.this);
 
-        @Override
-        protected void onPostExecute(Void aVoid) {
             setListAdapter(mAdapter);
-            setListShown(true);
+        } else {
+            mAdapter.swapCursor(cursor);
+        }
+    }
+
+    @Override
+    public void onLoaderReset(android.support.v4.content.Loader<Cursor> cursorLoader) {
+        if (mAdapter != null) {
+            mAdapter.swapCursor(null);
         }
     }
 }

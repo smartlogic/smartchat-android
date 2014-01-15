@@ -1,61 +1,50 @@
 package io.smartlogic.smartchat.adapters;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.CursorAdapter;
 import android.widget.TextView;
-
-import java.util.List;
 
 import io.smartlogic.smartchat.R;
 import io.smartlogic.smartchat.models.Friend;
 
-public class FriendSelectorAdapter extends ArrayAdapter<Friend> {
+public class FriendSelectorAdapter extends CursorAdapter {
+    private LayoutInflater mInflater;
     private Context mContext;
-    private List<Friend> mFriends;
     private OnFriendCheckedListener mFriendCheckedListener;
 
-    public FriendSelectorAdapter(Context context, List<Friend> friends, OnFriendCheckedListener friendCheckedListener) {
-        super(context, R.layout.adapter_friends);
+    public FriendSelectorAdapter(Context context, Cursor friends, OnFriendCheckedListener friendCheckedListener) {
+        super(context, friends, false);
 
+        this.mInflater = LayoutInflater.from(context);
         this.mContext = context;
-        this.mFriends = friends;
         this.mFriendCheckedListener = friendCheckedListener;
     }
 
     @Override
-    public int getCount() {
-        return mFriends.size();
+    public View newView(Context context, Cursor cursor, ViewGroup parent) {
+        return mInflater.inflate(R.layout.adapter_friend_select, null);
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-
-        View view;
-        if (convertView == null) {
-            view = inflater.inflate(R.layout.adapter_friend_select, null);
-        } else {
-            view = convertView;
-        }
+    public void bindView(View view, Context context, Cursor cursor) {
+        final Friend friend = Friend.fromCursor(cursor);
 
         TextView friendUsername = (TextView) view.findViewById(R.id.username);
-        friendUsername.setText(mFriends.get(position).getUsername());
+        friendUsername.setText(friend.getUsername());
 
-        final int friendPosition = position;
         CheckBox checkBox = (CheckBox) view.findViewById(R.id.checkbox);
         checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                mFriendCheckedListener.onFriendChecked(mFriends.get(friendPosition), isChecked);
+                mFriendCheckedListener.onFriendChecked(friend, isChecked);
             }
         });
-
-        return view;
     }
 
     public interface OnFriendCheckedListener {

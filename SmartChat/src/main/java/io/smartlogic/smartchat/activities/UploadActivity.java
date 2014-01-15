@@ -1,7 +1,7 @@
 package io.smartlogic.smartchat.activities;
 
-import android.app.Activity;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -10,7 +10,7 @@ import io.smartlogic.smartchat.Constants;
 import io.smartlogic.smartchat.R;
 import io.smartlogic.smartchat.fragments.PickFriendsFragment;
 
-public class UploadActivity extends Activity {
+public class UploadActivity extends FragmentActivity {
     private PickFriendsFragment mFriendsFragment;
 
     @Override
@@ -24,7 +24,7 @@ public class UploadActivity extends Activity {
             args.putString(Constants.EXTRA_DRAWING_PATH, getIntent().getExtras().getString(Constants.EXTRA_DRAWING_PATH));
             mFriendsFragment = new PickFriendsFragment();
             mFriendsFragment.setArguments(args);
-            getFragmentManager().beginTransaction()
+            getSupportFragmentManager().beginTransaction()
                     .add(R.id.container, mFriendsFragment)
                     .commit();
         }
