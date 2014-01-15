@@ -20,6 +20,7 @@ import android.widget.EditText;
 import io.smartlogic.smartchat.Constants;
 import io.smartlogic.smartchat.R;
 import io.smartlogic.smartchat.api.ApiClient;
+import io.smartlogic.smartchat.api.ContextApiClient;
 
 public class InviteUserFragment extends Fragment {
     private EditText mEmailView;
@@ -90,11 +91,7 @@ public class InviteUserFragment extends Fragment {
     private class InviteUserTask extends AsyncTask<Void, Void, Void> {
         @Override
         protected Void doInBackground(Void... params) {
-            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
-            String username = prefs.getString(Constants.EXTRA_USERNAME, "");
-            String encodedPrivateKey = prefs.getString(Constants.EXTRA_PRIVATE_KEY, "");
-
-            ApiClient client = new ApiClient(username, encodedPrivateKey);
+            ContextApiClient client = new ContextApiClient(getActivity());
             client.inviteUser(mEmailView.getText().toString(), mMessageView.getText().toString());
 
             return null;

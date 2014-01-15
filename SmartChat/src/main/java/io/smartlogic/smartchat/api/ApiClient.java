@@ -129,7 +129,65 @@ public class ApiClient {
         return null;
     }
 
-    public List<FriendSearch.Friend> searchForFriends(Map<String, Integer> phoneNumbers, Map<String, Integer> emails) {
+    public User login(String username, String password) throws AuthenticationException {
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+        mapper.enable(SerializationFeature.WRAP_ROOT_VALUE);
+
+        User user = new User();
+        user.setUsername(username);
+        user.setPassword(password);
+
+        try {
+            HttpClient client = new DefaultHttpClient();
+            HttpGet rootRequest = new HttpGet(rootUrl);
+            HttpResponse response = client.execute(rootRequest);
+
+            Log.d("smartchat", String.valueOf(response.getStatusLine().getStatusCode()));
+
+            String responseJson = EntityUtils.toString(response.getEntity());
+            HalRoot root = mapper.readValue(responseJson, HalRoot.class);
+
+            HttpPost userPost = new HttpPost(root.getUserSignIn());
+
+            UsernamePasswordCredentials credentials = new UsernamePasswordCredentials(username, password);
+            Header basicAuthHeader = BasicScheme.authenticate(credentials, "US-ASCII", false);
+            userPost.addHeader(basicAuthHeader);
+
+            response = client.execute(userPost);
+            checkStatusCode(response);
+
+            responseJson = EntityUtils.toString(response.getEntity());
+
+            User loadedUser = mapper.readValue(responseJson, User.class);
+
+            ByteArrayInputStream tube = new ByteArrayInputStream(loadedUser.getPrivateKey().getBytes());
+            Reader stringReader = new BufferedReader(new InputStreamReader(tube));
+            PEMParser pemParser = new PEMParser(stringReader);
+            Object object = pemParser.readObject();
+
+            PEMDecryptorProvider decProv = new JcePEMDecryptorProviderBuilder().
+                    build(User.hashPasswordForPrivateKey(user).toCharArray());
+            JcaPEMKeyConverter converter = new JcaPEMKeyConverter().setProvider("BC");
+            KeyPair keyPair = converter.getKeyPair(((PEMEncryptedKeyPair) object).decryptKeyPair(decProv));
+
+            String base64PrivateKey = Base64.encodeToString(keyPair.getPrivate().getEncoded(), Base64.NO_WRAP);
+            user.setPrivateKey(base64PrivateKey);
+
+            return user;
+        } catch (JsonParseException e) {
+            e.printStackTrace();
+        } catch (JsonMappingException e) {
+            e.printStackTrace();
+        } catch (ClientProtocolException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public List<FriendSearch.Friend> searchForFriends(Map<String, Integer> phoneNumbers, Map<String, Integer> emails) throws AuthenticationException {
         Map<String, Integer> scrubbedPhoneNumbers = scrubPhoneNumbers(phoneNumbers);
         Map<String, Integer> scrubbedEmails = scrubEmails(emails);
 
@@ -179,7 +237,7 @@ public class ApiClient {
         return null;
     }
 
-    public void addFriend(String addFriendUrl) {
+    public void addFriend(String addFriendUrl) throws AuthenticationException {
         loadPrivateKey();
 
         client = new DefaultHttpClient();
@@ -188,13 +246,14 @@ public class ApiClient {
         signRequest(addFriend);
 
         try {
-            client.execute(addFriend);
+            HttpResponse response = client.execute(addFriend);
+            checkStatusCode(response);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public void registerDevice(String deviceToken) {
+    public void registerDevice(String deviceToken) throws AuthenticationException {
         loadPrivateKey();
 
         client = new DefaultHttpClient();
@@ -217,6 +276,7 @@ public class ApiClient {
 
             signRequest(searchRequest);
             HttpResponse response = client.execute(searchRequest);
+            checkStatusCode(response);
 
             if (response.getStatusLine().getStatusCode() != 201) {
                 Log.d("smartchat", "error registering device");
@@ -232,7 +292,7 @@ public class ApiClient {
         }
     }
 
-    public List<Friend> getFriends() {
+    public List<Friend> getFriends() throws AuthenticationException {
         loadPrivateKey();
 
         client = new DefaultHttpClient();
@@ -247,12 +307,10 @@ public class ApiClient {
         HttpGet friendRequest = new HttpGet(root.getFriendsLink());
         HalFriends friends = (HalFriends) executeAndParseJson(friendRequest, mapper, HalFriends.class);
 
-        Log.d("smarthcat", String.valueOf(friends.getFriends().size()));
-
         return friends.getFriends();
     }
 
-    public void uploadMedia(List<Integer> friendIds, String photoPath, String drawingPath) {
+    public void uploadMedia(List<Integer> friendIds, String photoPath, String drawingPath) throws AuthenticationException {
         loadPrivateKey();
 
         client = new DefaultHttpClient();
@@ -291,6 +349,7 @@ public class ApiClient {
 
             signRequest(mediaRequest);
             HttpResponse response = client.execute(mediaRequest);
+            checkStatusCode(response);
 
             if (response.getStatusLine().getStatusCode() != 202) {
                 Log.d("smartchat", "error uploading media");
@@ -300,63 +359,7 @@ public class ApiClient {
         }
     }
 
-    public User login(String username, String password) {
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
-        mapper.enable(SerializationFeature.WRAP_ROOT_VALUE);
-
-        User user = new User();
-        user.setUsername(username);
-        user.setPassword(password);
-
-        try {
-            HttpClient client = new DefaultHttpClient();
-            HttpGet rootRequest = new HttpGet(rootUrl);
-            HttpResponse response = client.execute(rootRequest);
-
-            Log.d("smartchat", String.valueOf(response.getStatusLine().getStatusCode()));
-
-            String responseJson = EntityUtils.toString(response.getEntity());
-            HalRoot root = mapper.readValue(responseJson, HalRoot.class);
-
-            HttpPost userPost = new HttpPost(root.getUserSignIn());
-
-            UsernamePasswordCredentials credentials = new UsernamePasswordCredentials(username, password);
-            Header basicAuthHeader = BasicScheme.authenticate(credentials, "US-ASCII", false);
-            userPost.addHeader(basicAuthHeader);
-
-            response = client.execute(userPost);
-            responseJson = EntityUtils.toString(response.getEntity());
-
-            User loadedUser = mapper.readValue(responseJson, User.class);
-
-            ByteArrayInputStream tube = new ByteArrayInputStream(loadedUser.getPrivateKey().getBytes());
-            Reader stringReader = new BufferedReader(new InputStreamReader(tube));
-            PEMParser pemParser = new PEMParser(stringReader);
-            Object object = pemParser.readObject();
-
-            PEMDecryptorProvider decProv = new JcePEMDecryptorProviderBuilder().
-                    build(User.hashPasswordForPrivateKey(user).toCharArray());
-            JcaPEMKeyConverter converter = new JcaPEMKeyConverter().setProvider("BC");
-            KeyPair keyPair = converter.getKeyPair(((PEMEncryptedKeyPair) object).decryptKeyPair(decProv));
-
-            String base64PrivateKey = Base64.encodeToString(keyPair.getPrivate().getEncoded(), Base64.NO_WRAP);
-            user.setPrivateKey(base64PrivateKey);
-
-            return user;
-        } catch (JsonParseException e) {
-            e.printStackTrace();
-        } catch (JsonMappingException e) {
-            e.printStackTrace();
-        } catch (ClientProtocolException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    public void inviteUser(String email, String message) {
+    public void inviteUser(String email, String message) throws AuthenticationException {
         loadPrivateKey();
 
         client = new DefaultHttpClient();
@@ -381,6 +384,7 @@ public class ApiClient {
             inviteRequest.setEntity(new StringEntity(requestJson));
 
             HttpResponse response = client.execute(inviteRequest);
+            checkStatusCode(response);
 
             if (response.getStatusLine().getStatusCode() != 204) {
                 Log.d("smartchat api client", "error inviting user");
@@ -400,10 +404,12 @@ public class ApiClient {
         this.privateKey = RSAEncryption.loadPrivateKeyFromString(encodedPrivateKey);
     }
 
-    private Object executeAndParseJson(HttpUriRequest request, ObjectMapper mapper, Class klass) {
+    private Object executeAndParseJson(HttpUriRequest request, ObjectMapper mapper, Class klass) throws AuthenticationException {
         try {
             signRequest(request);
             HttpResponse response = client.execute(request);
+            checkStatusCode(response);
+
             String responseJson = EntityUtils.toString(response.getEntity());
             Log.d("response json", responseJson);
             return mapper.readValue(responseJson, klass);
@@ -476,5 +482,13 @@ public class ApiClient {
         }
 
         return "";
+    }
+
+    private void checkStatusCode(HttpResponse response) throws AuthenticationException {
+        switch (response.getStatusLine().getStatusCode()) {
+            case 401:
+                Log.e(TAG, "Authentication error");
+                throw new AuthenticationException();
+        }
     }
 }

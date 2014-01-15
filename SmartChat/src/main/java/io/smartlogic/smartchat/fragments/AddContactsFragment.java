@@ -1,11 +1,9 @@
 package io.smartlogic.smartchat.fragments;
 
 import android.content.ContentResolver;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.provider.ContactsContract;
 import android.support.v4.app.ListFragment;
 import android.view.LayoutInflater;
@@ -22,7 +20,7 @@ import java.util.Map;
 import io.smartlogic.smartchat.Constants;
 import io.smartlogic.smartchat.R;
 import io.smartlogic.smartchat.adapters.ContactsAdapter;
-import io.smartlogic.smartchat.api.ApiClient;
+import io.smartlogic.smartchat.api.ContextApiClient;
 import io.smartlogic.smartchat.hypermedia.FriendSearch;
 import io.smartlogic.smartchat.sync.AccountHelper;
 
@@ -78,11 +76,7 @@ public class AddContactsFragment extends ListFragment implements ContactsAdapter
             loadPhoneNumbers();
             loadEmails();
 
-            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
-            String username = prefs.getString(Constants.EXTRA_USERNAME, "");
-            String encodedPrivateKey = prefs.getString(Constants.EXTRA_PRIVATE_KEY, "");
-
-            ApiClient client = new ApiClient(username, encodedPrivateKey);
+            ContextApiClient client = new ContextApiClient(getActivity());
             mContactsOnSmartChat = client.searchForFriends(phoneNumbers, emails);
 
             return null;
@@ -188,11 +182,7 @@ public class AddContactsFragment extends ListFragment implements ContactsAdapter
     private class AddContactTask extends AsyncTask<String, Void, Void> {
         @Override
         protected Void doInBackground(String... friendUrls) {
-            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
-            String username = prefs.getString(Constants.EXTRA_USERNAME, "");
-            String encodedPrivateKey = prefs.getString(Constants.EXTRA_PRIVATE_KEY, "");
-
-            ApiClient client = new ApiClient(username, encodedPrivateKey);
+            ContextApiClient client = new ContextApiClient(getActivity());
             client.addFriend(friendUrls[0]);
 
             return null;

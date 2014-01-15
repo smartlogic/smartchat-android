@@ -16,6 +16,7 @@ import io.smartlogic.smartchat.activities.MainActivity;
 import io.smartlogic.smartchat.activities.UploadActivity;
 import io.smartlogic.smartchat.adapters.FriendSelectorAdapter;
 import io.smartlogic.smartchat.api.ApiClient;
+import io.smartlogic.smartchat.api.ContextApiClient;
 import io.smartlogic.smartchat.models.Friend;
 import io.smartlogic.smartchat.services.UploadService;
 
@@ -70,18 +71,10 @@ public class PickFriendsFragment extends ListFragment implements FriendSelectorA
         startActivity(intent);
     }
 
-    private ApiClient getApiClient() {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        String username = prefs.getString(Constants.EXTRA_USERNAME, "");
-        String encodedPrivateKey = prefs.getString(Constants.EXTRA_PRIVATE_KEY, "");
-
-        return new ApiClient(username, encodedPrivateKey);
-    }
-
     private class LoadFriendsTask extends AsyncTask<Void, Void, Void> {
         @Override
         protected Void doInBackground(Void... params) {
-            ApiClient client = getApiClient();
+            ContextApiClient client = new ContextApiClient(getActivity());
             List<Friend> friends = client.getFriends();
 
             mAdapter = new FriendSelectorAdapter(getActivity(), friends, PickFriendsFragment.this);

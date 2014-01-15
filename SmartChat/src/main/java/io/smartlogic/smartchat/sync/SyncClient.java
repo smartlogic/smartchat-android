@@ -12,6 +12,7 @@ import java.util.List;
 
 import io.smartlogic.smartchat.Constants;
 import io.smartlogic.smartchat.api.ApiClient;
+import io.smartlogic.smartchat.api.AuthenticationException;
 import io.smartlogic.smartchat.data.DataUriManager;
 import io.smartlogic.smartchat.models.Friend;
 
@@ -30,34 +31,38 @@ public class SyncClient {
     public void sync() {
         logFriends();
 
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mContext);
-        String username = prefs.getString(Constants.EXTRA_USERNAME, "");
-        String encodedPrivateKey = prefs.getString(Constants.EXTRA_PRIVATE_KEY, "");
+        try {
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mContext);
+            String username = prefs.getString(Constants.EXTRA_USERNAME, "");
+            String encodedPrivateKey = prefs.getString(Constants.EXTRA_PRIVATE_KEY, "");
 
-        ApiClient client = new ApiClient(username, encodedPrivateKey);
+            ApiClient client = new ApiClient(username, encodedPrivateKey);
 
-        List<Friend> friends = client.getFriends();
+            List<Friend> friends = client.getFriends();
 
-        Cursor cursor = mContentResolver.query(DataUriManager.getFriendsUri(), new String[]{"id"}, null, null, null);
+            Cursor cursor = mContentResolver.query(DataUriManager.getFriendsUri(), new String[]{"id"}, null, null, null);
 
-        if (cursor == null) {
-            throw new RuntimeException("Cursor is null");
-        }
-
-        List<Integer> idsInDatabase = new ArrayList<Integer>();
-
-        while (cursor.moveToNext()) {
-            idsInDatabase.add(cursor.getInt(cursor.getColumnIndex("id")));
-        }
-
-        cursor.close();
-
-        for (Friend friend : friends) {
-            if (idsInDatabase.contains(friend.getId())) {
-                mContentResolver.update(DataUriManager.getFriendUri(friend.getId()), friend.getAttributes(), "id = ?", new String[]{String.valueOf(friend.getId())});
-            } else {
-                mContentResolver.insert(DataUriManager.getFriendsUri(), friend.getAttributes());
+            if (cursor == null) {
+                throw new RuntimeException("Cursor is null");
             }
+
+            List<Integer> idsInDatabase = new ArrayList<Integer>();
+
+            while (cursor.moveToNext()) {
+                idsInDatabase.add(cursor.getInt(cursor.getColumnIndex("id")));
+            }
+
+            cursor.close();
+
+            for (Friend friend : friends) {
+                if (idsInDatabase.contains(friend.getId())) {
+                    mContentResolver.update(DataUriManager.getFriendUri(friend.getId()), friend.getAttributes(), "id = ?", new String[]{String.valueOf(friend.getId())});
+                } else {
+                    mContentResolver.insert(DataUriManager.getFriendsUri(), friend.getAttributes());
+                }
+            }
+        } catch (AuthenticationException e) {
+            Log.e(TAG, "Authentication error");
         }
     }
 

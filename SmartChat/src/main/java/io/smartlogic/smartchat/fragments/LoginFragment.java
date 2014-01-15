@@ -16,6 +16,7 @@ import io.smartlogic.smartchat.Constants;
 import io.smartlogic.smartchat.R;
 import io.smartlogic.smartchat.activities.MainActivity;
 import io.smartlogic.smartchat.api.ApiClient;
+import io.smartlogic.smartchat.api.ContextApiClient;
 import io.smartlogic.smartchat.api.GCMRegistration;
 import io.smartlogic.smartchat.models.User;
 
@@ -44,7 +45,7 @@ public class LoginFragment extends Fragment {
             EditText username = (EditText) getView().findViewById(R.id.username);
             EditText password = (EditText) getView().findViewById(R.id.password);
 
-            ApiClient client = new ApiClient();
+            ContextApiClient client = new ContextApiClient(getActivity());
             User user = client.login(username.getText().toString(), password.getText().toString());
 
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());

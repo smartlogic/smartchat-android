@@ -12,6 +12,7 @@ import java.util.List;
 
 import io.smartlogic.smartchat.Constants;
 import io.smartlogic.smartchat.api.ApiClient;
+import io.smartlogic.smartchat.api.AuthenticationException;
 
 public class UploadService extends IntentService {
     private static final String TAG = "UploadService";
@@ -22,8 +23,6 @@ public class UploadService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
-        Log.d(TAG, "Called");
-
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         String username = prefs.getString(Constants.EXTRA_USERNAME, "");
         String encodedPrivateKey = prefs.getString(Constants.EXTRA_PRIVATE_KEY, "");
@@ -39,11 +38,13 @@ public class UploadService extends IntentService {
             friendIdList.add(friendId);
         }
 
-        client.uploadMedia(friendIdList, photoPath, drawingPath);
+        try {
+            client.uploadMedia(friendIdList, photoPath, drawingPath);
+        } catch (AuthenticationException e) {
+            Log.e(TAG, "Authentication error");
+        }
 
         File photoFile = new File(photoPath);
         photoFile.delete();
-
-        Log.d(TAG, "Finished");
     }
 }
