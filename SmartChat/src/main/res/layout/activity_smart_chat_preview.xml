@@ -18,5 +18,7 @@
         android:id="@+id/upload"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:layout_alignParentBottom="true"
         android:text="@string/upload" />
 </RelativeLayout>
