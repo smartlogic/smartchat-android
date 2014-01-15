@@ -2,10 +2,9 @@ package io.smartlogic.smartchat.fragments;
 
 import android.app.ListFragment;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.View;
 
 import java.util.HashSet;
@@ -15,7 +14,6 @@ import io.smartlogic.smartchat.Constants;
 import io.smartlogic.smartchat.activities.MainActivity;
 import io.smartlogic.smartchat.activities.UploadActivity;
 import io.smartlogic.smartchat.adapters.FriendSelectorAdapter;
-import io.smartlogic.smartchat.api.ApiClient;
 import io.smartlogic.smartchat.api.ContextApiClient;
 import io.smartlogic.smartchat.models.Friend;
 import io.smartlogic.smartchat.services.UploadService;

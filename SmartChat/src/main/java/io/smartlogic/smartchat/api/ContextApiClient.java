@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -65,7 +66,7 @@ public class ContextApiClient {
 
     public List<Friend> getFriends() {
         try {
-            mClient.getFriends();
+            return mClient.getFriends();
         } catch (AuthenticationException e) {
             signUserOut();
         }
@@ -81,6 +82,7 @@ public class ContextApiClient {
     }
 
     private void signUserOut() {
+        Log.e("ContextApiClient", "Authentication error");
         Intent intent = new Intent(mContext, LogoutActivity.class);
         mContext.startActivity(intent);
     }
