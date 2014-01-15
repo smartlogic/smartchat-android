@@ -7,14 +7,14 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import java.io.File;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import io.smartlogic.smartchat.Constants;
 import io.smartlogic.smartchat.R;
@@ -82,14 +82,19 @@ public class DisplaySmartChatActivity extends Activity {
                 drawingFile.delete();
             }
 
-            Timer timer = new Timer();
-            TimerTask task = new TimerTask() {
+            final TextView countDownText = (TextView) findViewById(R.id.count_down);
+
+            new CountDownTimer(10 * 1000, 1000) {
                 @Override
-                public void run() {
+                public void onTick(long millisUntilFinished) {
+                    countDownText.setText(String.valueOf(millisUntilFinished / 1000));
+                }
+
+                @Override
+                public void onFinish() {
                     finish();
                 }
-            };
-            timer.schedule(task, 10 * 1000);
+            }.start();
 
             super.onPostExecute(aVoid);
         }
