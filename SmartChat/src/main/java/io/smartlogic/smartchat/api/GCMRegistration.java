@@ -72,13 +72,13 @@ public class GCMRegistration {
         @Override
         protected Void doInBackground(Void... params) {
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mContext);
-            String email = prefs.getString(Constants.EXTRA_EMAIL, "");
+            String username = prefs.getString(Constants.EXTRA_USERNAME, "");
             String base64PrivateKey = prefs.getString(Constants.EXTRA_PRIVATE_KEY, "");
 
             GoogleCloudMessaging gcm = GoogleCloudMessaging.getInstance(mContext);
             try {
                 String registrationId = gcm.register(Constants.GCM_SENDER_ID);
-                ApiClient client = new ApiClient(email, base64PrivateKey);
+                ApiClient client = new ApiClient(username, base64PrivateKey);
                 client.registerDevice(registrationId);
 
                 SharedPreferences.Editor editor = prefs.edit();

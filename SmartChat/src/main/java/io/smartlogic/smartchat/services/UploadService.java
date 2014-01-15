@@ -25,10 +25,10 @@ public class UploadService extends IntentService {
         Log.d(TAG, "Called");
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        String email = prefs.getString(Constants.EXTRA_EMAIL, "");
+        String username = prefs.getString(Constants.EXTRA_USERNAME, "");
         String encodedPrivateKey = prefs.getString(Constants.EXTRA_PRIVATE_KEY, "");
 
-        ApiClient client = new ApiClient(email, encodedPrivateKey);
+        ApiClient client = new ApiClient(username, encodedPrivateKey);
 
         String photoPath = intent.getExtras().getString(Constants.EXTRA_PHOTO_PATH);
         String drawingPath = intent.getExtras().getString(Constants.EXTRA_DRAWING_PATH, "");

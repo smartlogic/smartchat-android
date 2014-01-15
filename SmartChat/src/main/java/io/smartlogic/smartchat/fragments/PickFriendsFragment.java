@@ -72,10 +72,10 @@ public class PickFriendsFragment extends ListFragment implements FriendSelectorA
 
     private ApiClient getApiClient() {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        String email = prefs.getString(Constants.EXTRA_EMAIL, "");
+        String username = prefs.getString(Constants.EXTRA_USERNAME, "");
         String encodedPrivateKey = prefs.getString(Constants.EXTRA_PRIVATE_KEY, "");
 
-        return new ApiClient(email, encodedPrivateKey);
+        return new ApiClient(username, encodedPrivateKey);
     }
 
     private class LoadFriendsTask extends AsyncTask<Void, Void, Void> {

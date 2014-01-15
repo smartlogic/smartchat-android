@@ -13,6 +13,8 @@ public class Friend {
     private Integer id;
     @JsonProperty("email")
     private String email;
+    @JsonProperty("username")
+    private String username;
 
     public static Friend fromCursor(Cursor cursor) {
         Friend friend = new Friend();
@@ -26,7 +28,7 @@ public class Friend {
         }
 
         if (cursor.getColumnIndex("username") != -1) {
-            friend.setEmail(cursor.getString(cursor.getColumnIndex("username")));
+            friend.setUsername(cursor.getString(cursor.getColumnIndex("username")));
         }
 
         return friend;
@@ -34,7 +36,7 @@ public class Friend {
 
     @Override
     public String toString() {
-        return "<Friend _id: " + getDatabaseId() + " id: " + getId() + " username: " + getEmail() + ">";
+        return "<Friend _id: " + getDatabaseId() + " id: " + getId() + " username: " + getUsername() + ">";
     }
 
     public Integer getId() {
@@ -57,7 +59,7 @@ public class Friend {
         ContentValues cv = new ContentValues();
 
         cv.put("id", getId());
-        cv.put("username", getEmail());
+        cv.put("username", getUsername());
 
         return cv;
     }
@@ -68,5 +70,13 @@ public class Friend {
 
     public void setDatabaseId(int databaseId) {
         this._id = databaseId;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 }

@@ -79,10 +79,10 @@ public class AddContactsFragment extends ListFragment implements ContactsAdapter
             loadEmails();
 
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
-            String email = prefs.getString(Constants.EXTRA_EMAIL, "");
+            String username = prefs.getString(Constants.EXTRA_USERNAME, "");
             String encodedPrivateKey = prefs.getString(Constants.EXTRA_PRIVATE_KEY, "");
 
-            ApiClient client = new ApiClient(email, encodedPrivateKey);
+            ApiClient client = new ApiClient(username, encodedPrivateKey);
             mContactsOnSmartChat = client.searchForFriends(phoneNumbers, emails);
 
             return null;
@@ -189,10 +189,10 @@ public class AddContactsFragment extends ListFragment implements ContactsAdapter
         @Override
         protected Void doInBackground(String... friendUrls) {
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
-            String email = prefs.getString(Constants.EXTRA_EMAIL, "");
+            String username = prefs.getString(Constants.EXTRA_USERNAME, "");
             String encodedPrivateKey = prefs.getString(Constants.EXTRA_PRIVATE_KEY, "");
 
-            ApiClient client = new ApiClient(email, encodedPrivateKey);
+            ApiClient client = new ApiClient(username, encodedPrivateKey);
             client.addFriend(friendUrls[0]);
 
             return null;

@@ -8,6 +8,8 @@ import org.apache.commons.codec.digest.DigestUtils;
 
 @JsonRootName("user")
 public class User {
+    @JsonProperty("username")
+    private String username;
     @JsonProperty("email")
     private String email;
     @JsonProperty("password")
@@ -63,5 +65,13 @@ public class User {
 
     public void setPrivateKey(String privateKey) {
         this.privateKey = privateKey;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 }

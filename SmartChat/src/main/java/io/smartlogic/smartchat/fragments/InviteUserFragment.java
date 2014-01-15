@@ -91,10 +91,10 @@ public class InviteUserFragment extends Fragment {
         @Override
         protected Void doInBackground(Void... params) {
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
-            String email = prefs.getString(Constants.EXTRA_EMAIL, "");
+            String username = prefs.getString(Constants.EXTRA_USERNAME, "");
             String encodedPrivateKey = prefs.getString(Constants.EXTRA_PRIVATE_KEY, "");
 
-            ApiClient client = new ApiClient(email, encodedPrivateKey);
+            ApiClient client = new ApiClient(username, encodedPrivateKey);
             client.inviteUser(mEmailView.getText().toString(), mMessageView.getText().toString());
 
             return null;

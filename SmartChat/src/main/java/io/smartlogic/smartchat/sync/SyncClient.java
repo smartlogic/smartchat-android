@@ -31,10 +31,10 @@ public class SyncClient {
         logFriends();
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mContext);
-        String email = prefs.getString(Constants.EXTRA_EMAIL, "");
+        String username = prefs.getString(Constants.EXTRA_USERNAME, "");
         String encodedPrivateKey = prefs.getString(Constants.EXTRA_PRIVATE_KEY, "");
 
-        ApiClient client = new ApiClient(email, encodedPrivateKey);
+        ApiClient client = new ApiClient(username, encodedPrivateKey);
 
         List<Friend> friends = client.getFriends();
 

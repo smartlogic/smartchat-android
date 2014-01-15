@@ -15,10 +15,10 @@ public class LauncherActivity extends Activity {
         super.onCreate(savedInstanceState);
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        String email = prefs.getString(Constants.EXTRA_EMAIL, "");
+        String username = prefs.getString(Constants.EXTRA_USERNAME, "");
 
         Intent intent;
-        if (email.equals("")) {
+        if (username.equals("")) {
             intent = new Intent(this, LoginActivity.class);
         } else {
             intent = new Intent(this, MainActivity.class);

@@ -29,7 +29,7 @@ public class FriendsAdapter extends CursorAdapter {
     public void bindView(View view, Context context, Cursor cursor) {
         Friend friend = Friend.fromCursor(cursor);
 
-        TextView friendEmail = (TextView) view.findViewById(R.id.email);
-        friendEmail.setText(friend.getEmail());
+        TextView friendUsername = (TextView) view.findViewById(R.id.username);
+        friendUsername.setText(friend.getUsername());
     }
 }

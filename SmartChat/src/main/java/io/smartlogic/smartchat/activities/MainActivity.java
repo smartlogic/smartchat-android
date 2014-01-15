@@ -77,9 +77,9 @@ public class MainActivity extends FragmentActivity {
             }
 
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mContext);
-            String email = prefs.getString(Constants.EXTRA_EMAIL, "");
+            String username = prefs.getString(Constants.EXTRA_USERNAME, "");
 
-            Account account = new Account(email, Constants.ACCOUNT_TYPE);
+            Account account = new Account(username, Constants.ACCOUNT_TYPE);
             accountManager.addAccountExplicitly(account, "", null);
 
             ContentResolver.setIsSyncable(account, Constants.AUTHORITY, 1);

@@ -43,8 +43,8 @@ public class FriendSelectorAdapter extends ArrayAdapter<Friend> {
             view = convertView;
         }
 
-        TextView friendEmail = (TextView) view.findViewById(R.id.email);
-        friendEmail.setText(mFriends.get(position).getEmail());
+        TextView friendUsername = (TextView) view.findViewById(R.id.username);
+        friendUsername.setText(mFriends.get(position).getUsername());
 
         final int friendPosition = position;
         CheckBox checkBox = (CheckBox) view.findViewById(R.id.checkbox);

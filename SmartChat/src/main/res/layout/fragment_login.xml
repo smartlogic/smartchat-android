@@ -9,11 +9,11 @@
     tools:context="io.smartlogic.smartchat.activities.LoginActivity$PlaceholderFragment">
 
     <EditText
-        android:id="@+id/email"
+        android:id="@+id/username"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_above="@+id/center"
-        android:hint="@string/email"
+        android:hint="@string/username"
         android:inputType="textEmailAddress" />
 
     <View

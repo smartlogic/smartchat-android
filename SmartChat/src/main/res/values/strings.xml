@@ -6,6 +6,7 @@
     <string name="log_in">Log In</string>
     <string name="sign_up">Sign Up</string>
     <string name="email">Email</string>
+    <string name="username">Username</string>
     <string name="password">Password</string>
     <string name="phone_number">Phone Number</string>
     <string name="add_contacts">Add Contacts</string>

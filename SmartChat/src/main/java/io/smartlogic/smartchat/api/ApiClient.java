@@ -62,7 +62,7 @@ import io.smartlogic.smartchat.models.User;
 public class ApiClient {
     public static final String TAG = "ApiClient";
     public static final String rootUrl = "http://192.168.1.254:5000/";
-    private String email;
+    private String username;
     private String encodedPrivateKey;
     private PrivateKey privateKey;
     private HttpClient client;
@@ -71,8 +71,8 @@ public class ApiClient {
 
     }
 
-    public ApiClient(String email, String privateKey) {
-        this.email = email;
+    public ApiClient(String username, String privateKey) {
+        this.username = username;
         this.encodedPrivateKey = privateKey;
     }
 
@@ -300,13 +300,13 @@ public class ApiClient {
         }
     }
 
-    public User login(String email, String password) {
+    public User login(String username, String password) {
         ObjectMapper mapper = new ObjectMapper();
         mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
         mapper.enable(SerializationFeature.WRAP_ROOT_VALUE);
 
         User user = new User();
-        user.setEmail(email);
+        user.setUsername(username);
         user.setPassword(password);
 
         try {
@@ -321,7 +321,7 @@ public class ApiClient {
 
             HttpPost userPost = new HttpPost(root.getUserSignIn());
 
-            UsernamePasswordCredentials credentials = new UsernamePasswordCredentials(email, password);
+            UsernamePasswordCredentials credentials = new UsernamePasswordCredentials(username, password);
             Header basicAuthHeader = BasicScheme.authenticate(credentials, "US-ASCII", false);
             userPost.addHeader(basicAuthHeader);
 
@@ -421,7 +421,7 @@ public class ApiClient {
     }
 
     private void signRequest(HttpUriRequest request) {
-        UsernamePasswordCredentials credentials = new UsernamePasswordCredentials(email, signUrl(privateKey, request.getURI().toString()));
+        UsernamePasswordCredentials credentials = new UsernamePasswordCredentials(username, signUrl(privateKey, request.getURI().toString()));
         Header basicAuthHeader = BasicScheme.authenticate(credentials, "US-ASCII", false);
         request.addHeader(basicAuthHeader);
     }

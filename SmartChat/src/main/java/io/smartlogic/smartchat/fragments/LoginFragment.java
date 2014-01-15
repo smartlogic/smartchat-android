@@ -41,16 +41,16 @@ public class LoginFragment extends Fragment {
     private class LoginTask extends AsyncTask<Void, Void, Void> {
         @Override
         protected Void doInBackground(Void... params) {
-            EditText email = (EditText) getView().findViewById(R.id.email);
+            EditText username = (EditText) getView().findViewById(R.id.username);
             EditText password = (EditText) getView().findViewById(R.id.password);
 
             ApiClient client = new ApiClient();
-            User user = client.login(email.getText().toString(), password.getText().toString());
+            User user = client.login(username.getText().toString(), password.getText().toString());
 
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
             SharedPreferences.Editor editor = prefs.edit();
             editor.putString(Constants.EXTRA_PRIVATE_KEY, user.getPrivateKey());
-            editor.putString(Constants.EXTRA_EMAIL, user.getEmail());
+            editor.putString(Constants.EXTRA_USERNAME, user.getUsername());
             editor.commit();
 
             new GCMRegistration(getActivity()).check();

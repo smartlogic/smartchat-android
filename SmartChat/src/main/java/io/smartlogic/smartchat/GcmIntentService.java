@@ -26,7 +26,7 @@ public class GcmIntentService extends IntentService {
                 .setAutoCancel(true)
                 .setSmallIcon(R.drawable.ic_launcher)
                 .setContentTitle("New SmartChat")
-                .setContentText("SmartChat from " + extras.getString("creator_email"))
+                .setContentText("SmartChat from " + extras.getString("creator_username"))
                 .setDefaults(Notification.FLAG_SHOW_LIGHTS)
                 .setVibrate(new long[]{750})
                 .setLights(0xff6AC8C8, 1000, 750);

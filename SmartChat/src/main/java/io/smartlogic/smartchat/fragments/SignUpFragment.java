@@ -44,12 +44,15 @@ public class SignUpFragment extends Fragment {
     }
 
     public void attemptSignUp() {
+        EditText usernameView = (EditText) getView().findViewById(R.id.username);
         EditText emailView = (EditText) getView().findViewById(R.id.email);
         EditText passwordView = (EditText) getView().findViewById(R.id.password);
 
+        usernameView.setError(null);
         emailView.setError(null);
         passwordView.setError(null);
 
+        String username = usernameView.getText().toString();
         String email = emailView.getText().toString();
         String password = passwordView.getText().toString();
 
@@ -77,17 +80,19 @@ public class SignUpFragment extends Fragment {
             // form field with an error.
             focusView.requestFocus();
         } else {
-            new RegistrationTask(email, password).execute();
+            new RegistrationTask(username, email, password).execute();
 
             mSignUpButton.setOnClickListener(null);
         }
     }
 
     private class RegistrationTask extends AsyncTask<Void, Void, Void> {
+        private String username;
         private String email;
         private String password;
 
-        public RegistrationTask(String email, String password) {
+        public RegistrationTask(String username, String email, String password) {
+            this.username = username;
             this.email = email;
             this.password = password;
         }
@@ -95,6 +100,7 @@ public class SignUpFragment extends Fragment {
         @Override
         protected Void doInBackground(Void... params) {
             User user = new User();
+            user.setUsername(username);
             user.setEmail(email);
             user.setPassword(password);
 
@@ -104,7 +110,7 @@ public class SignUpFragment extends Fragment {
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
             SharedPreferences.Editor editor = prefs.edit();
             editor.putString(Constants.EXTRA_PRIVATE_KEY, base64PrivateKey);
-            editor.putString(Constants.EXTRA_EMAIL, user.getEmail());
+            editor.putString(Constants.EXTRA_USERNAME, user.getUsername());
             editor.commit();
 
             new GCMRegistration(getActivity()).check();
