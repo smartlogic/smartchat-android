@@ -53,6 +53,7 @@ import java.util.Map;
 
 import io.smartlogic.smartchat.hypermedia.FriendSearch;
 import io.smartlogic.smartchat.hypermedia.HalFriends;
+import io.smartlogic.smartchat.hypermedia.HalNotifications;
 import io.smartlogic.smartchat.hypermedia.HalRoot;
 import io.smartlogic.smartchat.models.Device;
 import io.smartlogic.smartchat.models.Friend;
@@ -308,6 +309,24 @@ public class ApiClient {
         HalFriends friends = (HalFriends) executeAndParseJson(friendRequest, mapper, HalFriends.class);
 
         return friends.getFriends();
+    }
+
+    public List<HalNotifications.Notification> getNotifications() throws AuthenticationException {
+        loadPrivateKey();
+
+        client = new DefaultHttpClient();
+
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+        mapper.enable(SerializationFeature.WRAP_ROOT_VALUE);
+
+        HttpGet rootRequest = new HttpGet(rootUrl);
+        HalRoot root = (HalRoot) executeAndParseJson(rootRequest, mapper, HalRoot.class);
+
+        HttpGet mediaRequest = new HttpGet(root.getMediaLink());
+        HalNotifications notifications = (HalNotifications) executeAndParseJson(mediaRequest, mapper, HalNotifications.class);
+
+        return notifications.getNotifications();
     }
 
     public void uploadMedia(List<Integer> friendIds, String photoPath, String drawingPath) throws AuthenticationException {

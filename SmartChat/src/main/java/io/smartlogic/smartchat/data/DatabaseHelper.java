@@ -5,11 +5,11 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import io.smartlogic.smartchat.Constants;
+import io.smartlogic.smartchat.data.migrations.AddNotifications;
 import io.smartlogic.smartchat.data.migrations.InitialDatabase;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
-    private static final String TAG = "DatabaseHelper";
-    private static final int SCHEMA = 1;
+    private static final int SCHEMA = 2;
 
     public static final String DEFAULT_SORT_ORDER = "id";
 
@@ -23,6 +23,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             db.beginTransaction();
 
             new InitialDatabase(db).up();
+            new AddNotifications(db).up();
 
             db.setTransactionSuccessful();
         } finally {
@@ -36,6 +37,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             db.beginTransaction();
 
             switch (oldVersion) {
+                case 1: // => 2
+                    new AddNotifications(db).up();
             }
 
             db.setTransactionSuccessful();

@@ -11,6 +11,9 @@ public class DataUriManager {
     protected static final int FRIENDS = 1;
     protected static final int FRIENDS_ID = 2;
 
+    protected static final int NOTIFICATIONS = 3;
+    protected static final int NOTIFICATIONS_ID = 4;
+
     private static final UriMatcher uriMatcher;
 
     static {
@@ -18,6 +21,9 @@ public class DataUriManager {
 
         uriMatcher.addURI(Constants.AUTHORITY, "friends", FRIENDS);
         uriMatcher.addURI(Constants.AUTHORITY, "friends/#", FRIENDS_ID);
+
+        uriMatcher.addURI(Constants.AUTHORITY, "notifications/", NOTIFICATIONS);
+        uriMatcher.addURI(Constants.AUTHORITY, "notifications/#", NOTIFICATIONS_ID);
     }
 
     public static int match(Uri uri) {
@@ -32,6 +38,18 @@ public class DataUriManager {
 
     public static Uri getFriendUri(long id) {
         Uri.Builder builder = getFriendsUri().buildUpon();
+        builder.appendPath(String.valueOf(id));
+        return builder.build();
+    }
+
+    public static Uri getNotificationsUri() {
+        Uri.Builder builder = CONTENT_URI.buildUpon();
+        builder.appendPath("notifications");
+        return builder.build();
+    }
+
+    public static Uri getNotificationUri(long id) {
+        Uri.Builder builder = getNotificationsUri().buildUpon();
         builder.appendPath(String.valueOf(id));
         return builder.build();
     }

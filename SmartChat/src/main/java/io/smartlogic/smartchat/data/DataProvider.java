@@ -25,7 +25,18 @@ public class DataProvider extends ContentProvider {
     @Override
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
         SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
-        qb.setTables("friends");
+
+        switch (DataUriManager.match(uri)) {
+            case DataUriManager.FRIENDS:
+            case DataUriManager.FRIENDS_ID:
+                qb.setTables("friends");
+                break;
+            case DataUriManager.NOTIFICATIONS:
+            case DataUriManager.NOTIFICATIONS_ID:
+                qb.setTables("notifications");
+                break;
+        }
+
 
         String orderBy;
 
@@ -54,8 +65,18 @@ public class DataProvider extends ContentProvider {
         Uri newUri = null;
 
         if (database != null && database.getWritableDatabase() != null) {
-            id = database.getWritableDatabase().insert("friends", "id", values);
-            newUri = DataUriManager.getFriendUri(id);
+            switch (DataUriManager.match(uri)) {
+                case DataUriManager.FRIENDS:
+                case DataUriManager.FRIENDS_ID:
+                    id = database.getWritableDatabase().insert("friends", "id", values);
+                    newUri = DataUriManager.getFriendUri(id);
+                    break;
+                case DataUriManager.NOTIFICATIONS:
+                case DataUriManager.NOTIFICATIONS_ID:
+                    id = database.getWritableDatabase().insert("notifications", "id", values);
+                    newUri = DataUriManager.getNotificationUri(id);
+                    break;
+            }
         }
 
         if (getContext() != null) {
@@ -74,7 +95,16 @@ public class DataProvider extends ContentProvider {
         int count = 0;
 
         if (database != null && database.getWritableDatabase() != null) {
-            count = database.getWritableDatabase().delete("friends", selection, selectionArgs);
+            switch (DataUriManager.match(uri)) {
+                case DataUriManager.FRIENDS:
+                case DataUriManager.FRIENDS_ID:
+                    count = database.getWritableDatabase().delete("friends", selection, selectionArgs);
+                    break;
+                case DataUriManager.NOTIFICATIONS:
+                case DataUriManager.NOTIFICATIONS_ID:
+                    count = database.getWritableDatabase().delete("notifications", selection, selectionArgs);
+                    break;
+            }
         }
 
         if (getContext() != null) {
@@ -89,7 +119,16 @@ public class DataProvider extends ContentProvider {
         int count = 0;
 
         if (database != null && database.getWritableDatabase() != null) {
-            count = database.getWritableDatabase().update("friends", values, selection, selectionArgs);
+            switch (DataUriManager.match(uri)) {
+                case DataUriManager.FRIENDS:
+                case DataUriManager.FRIENDS_ID:
+                    count = database.getWritableDatabase().update("friends", values, selection, selectionArgs);
+                    break;
+                case DataUriManager.NOTIFICATIONS:
+                case DataUriManager.NOTIFICATIONS_ID:
+                    count = database.getWritableDatabase().update("notifications", values, selection, selectionArgs);
+                    break;
+            }
         }
 
         if (getContext() != null) {
