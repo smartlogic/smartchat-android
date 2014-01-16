@@ -42,6 +42,9 @@ public class MainActivity extends FragmentActivity {
 
         if (getIntent().getExtras() != null && getIntent().getExtras().getBoolean(Constants.EXTRA_GO_TO_NOTIFICATIONS)) {
             mPagerAdapter.displayNotifications();
+            if (getActionBar() != null) {
+                getActionBar().show();
+            }
         }
 
         new GCMRegistration(this).check();

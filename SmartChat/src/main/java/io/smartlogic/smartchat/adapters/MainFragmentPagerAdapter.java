@@ -37,9 +37,6 @@ public class MainFragmentPagerAdapter extends FragmentStatePagerAdapter {
     public void displayNotifications() {
         mViewPager.setCurrentItem(POSITION_LIST);
         mContext.setTitle(getTitle(POSITION_LIST));
-        if (mContext.getActionBar() != null) {
-            mContext.getActionBar().show();
-        }
     }
 
     @Override
