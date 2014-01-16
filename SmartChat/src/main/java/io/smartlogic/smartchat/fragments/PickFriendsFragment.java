@@ -13,14 +13,14 @@ import java.util.HashSet;
 
 import io.smartlogic.smartchat.Constants;
 import io.smartlogic.smartchat.activities.MainActivity;
-import io.smartlogic.smartchat.activities.UploadActivity;
+import io.smartlogic.smartchat.activities.PickFriendsActivity;
 import io.smartlogic.smartchat.adapters.FriendSelectorAdapter;
 import io.smartlogic.smartchat.data.DataUriManager;
 import io.smartlogic.smartchat.models.Friend;
 import io.smartlogic.smartchat.services.UploadService;
 
 public class PickFriendsFragment extends ListFragment implements FriendSelectorAdapter.OnFriendCheckedListener,
-        UploadActivity.OnDoneSelectedListener, LoaderManager.LoaderCallbacks<Cursor> {
+        PickFriendsActivity.OnDoneSelectedListener, LoaderManager.LoaderCallbacks<Cursor> {
 
     private FriendSelectorAdapter mAdapter;
     private HashSet<Integer> mCheckedFriendIds;

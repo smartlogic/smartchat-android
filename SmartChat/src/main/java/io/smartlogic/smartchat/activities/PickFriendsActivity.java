@@ -10,7 +10,7 @@ import io.smartlogic.smartchat.Constants;
 import io.smartlogic.smartchat.R;
 import io.smartlogic.smartchat.fragments.PickFriendsFragment;
 
-public class UploadActivity extends FragmentActivity {
+public class PickFriendsActivity extends FragmentActivity {
     private PickFriendsFragment mFriendsFragment;
 
     @Override

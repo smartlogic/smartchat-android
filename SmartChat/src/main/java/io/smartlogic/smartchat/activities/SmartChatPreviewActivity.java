@@ -44,13 +44,14 @@ public class SmartChatPreviewActivity extends Activity {
         mDrawingView = new DrawingView(this);
         mDrawingView.setLayoutParams(previewLayoutParams);
 
-        layout.addView(mDrawingView, 1);
+        int drawingViewIndex = layout.indexOfChild(preview) + 1;
+        layout.addView(mDrawingView, drawingViewIndex);
 
         mUploadButton = (Button) findViewById(R.id.upload);
         mUploadButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(SmartChatPreviewActivity.this, UploadActivity.class);
+                Intent intent = new Intent(SmartChatPreviewActivity.this, PickFriendsActivity.class);
 
                 if (mDrawingView.doesDrawingExist()) {
                     String drawingPhotoPath = saveDrawing();
