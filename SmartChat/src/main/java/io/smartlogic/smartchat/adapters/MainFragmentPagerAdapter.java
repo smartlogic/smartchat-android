@@ -9,12 +9,14 @@ import io.smartlogic.smartchat.R;
 import io.smartlogic.smartchat.fragments.AddContactsWithInviteFragment;
 import io.smartlogic.smartchat.fragments.CameraFragment;
 import io.smartlogic.smartchat.fragments.FriendsFragment;
+import io.smartlogic.smartchat.fragments.NotificationsFragment;
 
 public class MainFragmentPagerAdapter extends FragmentStatePagerAdapter {
-    private static final int TAB_COUNT = 3;
-    private static final int POSITION_CAMERA = 0;
-    private static final int POSITION_FRIENDS = 1;
-    private static final int POSITION_ADD_FRIENDS = 2;
+    private static final int TAB_COUNT = 4;
+    private static final int POSITION_LIST = 0;
+    private static final int POSITION_CAMERA = 1;
+    private static final int POSITION_FRIENDS = 2;
+    private static final int POSITION_ADD_FRIENDS = 3;
     private final Activity mContext;
     private final ViewPager mViewPager;
     private String[] titles;
@@ -29,11 +31,22 @@ public class MainFragmentPagerAdapter extends FragmentStatePagerAdapter {
 
         mPageChangeListener = new PageChangeListener();
         mViewPager.setOnPageChangeListener(mPageChangeListener);
+        mViewPager.setCurrentItem(POSITION_CAMERA);
+    }
+
+    public void displayNotifications() {
+        mViewPager.setCurrentItem(POSITION_LIST);
+        mContext.setTitle(getTitle(POSITION_LIST));
+        if (mContext.getActionBar() != null) {
+            mContext.getActionBar().show();
+        }
     }
 
     @Override
     public Fragment getItem(int position) {
         switch (position) {
+            case POSITION_LIST:
+                return Fragment.instantiate(mContext, NotificationsFragment.class.getName(), null);
             case POSITION_CAMERA:
                 return Fragment.instantiate(mContext, CameraFragment.class.getName(), null);
             case POSITION_FRIENDS:
@@ -52,7 +65,7 @@ public class MainFragmentPagerAdapter extends FragmentStatePagerAdapter {
 
     private String getTitle(int position) {
         if (titles == null) {
-            titles = new String[]{"", mContext.getString(R.string.friends), mContext.getString(R.string.add_contacts)};
+            titles = new String[]{mContext.getString(R.string.notifications), "", mContext.getString(R.string.friends), mContext.getString(R.string.add_contacts)};
         }
 
         return titles[position];
@@ -62,7 +75,7 @@ public class MainFragmentPagerAdapter extends FragmentStatePagerAdapter {
         @Override
         public void onPageScrolled(int i, float v, int i2) {
             if (mContext.getActionBar() != null) {
-                if (i == 0 && v < 0.5) {
+                if (i == POSITION_CAMERA && v < 0.5) {
                     mContext.getActionBar().hide();
                 } else {
                     mContext.getActionBar().show();

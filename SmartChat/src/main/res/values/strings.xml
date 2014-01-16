@@ -26,5 +26,7 @@
     <string name="email_invalid">Email is not valid</string>
     <string name="password_blank">Password cannot be blank</string>
     <string name="phone_number_blank">Phone number cannot be blank</string>
+    <string name="notifications">Notifications</string>
+    <string name="notifications_list_empty">You don\'t have any SmartChats. You should send some instead.</string>
 
 </resources>

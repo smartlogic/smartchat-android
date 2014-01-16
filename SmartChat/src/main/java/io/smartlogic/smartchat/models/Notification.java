@@ -9,6 +9,7 @@ public class Notification {
     private String creatorUsername;
     private String fileUrl;
     private String drawingUrl;
+    private boolean viewed = false;
 
     public static Notification fromCursor(Cursor cursor) {
         Notification notification = new Notification();
@@ -33,6 +34,10 @@ public class Notification {
             notification.setDrawingUrl(cursor.getString(cursor.getColumnIndex("drawing_url")));
         }
 
+        if (cursor.getColumnIndex("viewed") != -1) {
+            notification.setViewed(cursor.getInt(cursor.getColumnIndex("viewed")) == 1);
+        }
+
         return notification;
     }
 
@@ -43,6 +48,7 @@ public class Notification {
         cv.put("creator_username", getCreatorUsername());
         cv.put("file_url", getFileUrl());
         cv.put("drawing_url", getDrawingUrl());
+        cv.put("viewed", isViewed());
 
         return cv;
     }
@@ -51,6 +57,10 @@ public class Notification {
     public String toString() {
         return "<Notification _id: " + getDatabaseId() + " creator_id: " + getCreatorId() + " creator_username: " + getCreatorUsername() +
                 " file_url: " + getFileUrl() + " drawing_url: " + getDrawingUrl() + ">";
+    }
+
+    public void markViewed() {
+        this.viewed = true;
     }
 
     public int getDatabaseId() {
@@ -91,5 +101,13 @@ public class Notification {
 
     public void setDrawingUrl(String drawingUrl) {
         this.drawingUrl = drawingUrl;
+    }
+
+    public boolean isViewed() {
+        return viewed;
+    }
+
+    public void setViewed(boolean viewed) {
+        this.viewed = viewed;
     }
 }

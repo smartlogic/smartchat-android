@@ -10,8 +10,8 @@ import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
 
-import io.smartlogic.smartchat.activities.DisplaySmartChatActivity;
 import io.smartlogic.smartchat.activities.MainActivity;
+import io.smartlogic.smartchat.data.DataUriManager;
 
 public class GcmIntentService extends IntentService {
     public GcmIntentService() {
@@ -30,11 +30,18 @@ public class GcmIntentService extends IntentService {
                 .setDefaults(Notification.FLAG_SHOW_LIGHTS)
                 .setVibrate(new long[]{750})
                 .setLights(0xff6AC8C8, 1000, 750);
-        Intent resultIntent = new Intent(this, DisplaySmartChatActivity.class);
-        resultIntent.putExtras(extras);
+        Intent resultIntent = new Intent(this, MainActivity.class);
+        resultIntent.putExtra(Constants.EXTRA_GO_TO_NOTIFICATIONS, true);
+
+        io.smartlogic.smartchat.models.Notification notification = new io.smartlogic.smartchat.models.Notification();
+        notification.setCreatorId(extras.getInt("creator_id"));
+        notification.setCreatorUsername(extras.getString("creator_username"));
+        notification.setFileUrl(extras.getString("file_url"));
+        notification.setDrawingUrl(extras.getString("drawing_url", ""));
+
+        getContentResolver().insert(DataUriManager.getNotificationsUri(), notification.getAttributes());
 
         TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
-        stackBuilder.addParentStack(MainActivity.class);
         stackBuilder.addNextIntent(resultIntent);
         PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
         mBuilder.setContentIntent(resultPendingIntent);

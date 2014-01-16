@@ -40,6 +40,10 @@ public class MainActivity extends FragmentActivity {
 
         mPagerAdapter = new MainFragmentPagerAdapter(this, mViewPager);
 
+        if (getIntent().getExtras() != null && getIntent().getExtras().getBoolean(Constants.EXTRA_GO_TO_NOTIFICATIONS)) {
+            mPagerAdapter.displayNotifications();
+        }
+
         new GCMRegistration(this).check();
 
         new CreateAccountTask(this).execute();

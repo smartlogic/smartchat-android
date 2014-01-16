@@ -49,9 +49,9 @@ public class DisplaySmartChatActivity extends Activity {
 
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
             String encodedPrivateKey = prefs.getString(Constants.EXTRA_PRIVATE_KEY, "");
-            String s3Url = getIntent().getExtras().getString(Constants.EXTRA_FILE_URL);
+            String fileUrl = getIntent().getExtras().getString(Constants.EXTRA_FILE_URL);
 
-            SmartChatDownloader downloader = new SmartChatDownloader(context, encodedPrivateKey, s3Url);
+            SmartChatDownloader downloader = new SmartChatDownloader(context, encodedPrivateKey, fileUrl);
             pictureFile = downloader.download();
 
             if (!getIntent().getExtras().getString(Constants.EXTRA_DRAWING_FILE_URL, "").equals("")) {

@@ -41,7 +41,14 @@ public class DataProvider extends ContentProvider {
         String orderBy;
 
         if (TextUtils.isEmpty(sortOrder)) {
-            orderBy = DatabaseHelper.DEFAULT_SORT_ORDER;
+            switch (DataUriManager.match(uri)) {
+                case DataUriManager.NOTIFICATIONS:
+                case DataUriManager.NOTIFICATIONS_ID:
+                    orderBy = "_id";
+                    break;
+                default:
+                    orderBy = DatabaseHelper.DEFAULT_SORT_ORDER;
+            }
         } else {
             orderBy = sortOrder;
         }
