@@ -191,7 +191,7 @@ public class DrawingView extends View {
         canvas.drawBitmap(canvasBitmap, 0, 0, canvasPaint);
         canvas.drawPath(drawPath, drawPaint);
 
-        if (mDisplaySwatch) {
+        if (mDrawing && mDisplaySwatch) {
             for (ColorSwatchColor swatchColor : mColorSwatches) {
                 canvas.drawRect(swatchColor.location, swatchColor.paint);
             }
