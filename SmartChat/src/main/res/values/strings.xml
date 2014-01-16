@@ -28,5 +28,6 @@
     <string name="phone_number_blank">Phone number cannot be blank</string>
     <string name="notifications">Notifications</string>
     <string name="notifications_list_empty">You don\'t have any SmartChats. You should send some instead.</string>
+    <string name="draw">Draw</string>
 
 </resources>

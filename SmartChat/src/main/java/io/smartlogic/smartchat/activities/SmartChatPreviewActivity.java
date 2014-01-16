@@ -29,7 +29,9 @@ public class SmartChatPreviewActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_smart_chat_preview);
 
-        getActionBar().hide();
+        if (getActionBar() != null) {
+            getActionBar().hide();
+        }
 
         pictureFile = new File(getIntent().getExtras().getString(Constants.EXTRA_PHOTO_PATH));
         Bitmap bitmap = BitmapFactory.decodeFile(pictureFile.getAbsolutePath());
@@ -60,6 +62,14 @@ public class SmartChatPreviewActivity extends Activity {
 
                 intent.putExtra(Constants.EXTRA_PHOTO_PATH, getIntent().getExtras().getString(Constants.EXTRA_PHOTO_PATH));
                 startActivity(intent);
+            }
+        });
+
+        Button drawingButton = (Button) findViewById(R.id.draw);
+        drawingButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mDrawingView.toggleDrawing();
             }
         });
     }
