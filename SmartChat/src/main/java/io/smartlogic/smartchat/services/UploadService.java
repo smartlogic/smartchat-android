@@ -46,5 +46,8 @@ public class UploadService extends IntentService {
 
         File photoFile = new File(photoPath);
         photoFile.delete();
+
+        photoFile = new File(drawingPath);
+        photoFile.delete();
     }
 }
