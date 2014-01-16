@@ -20,6 +20,7 @@ import io.smartlogic.smartchat.R;
 import io.smartlogic.smartchat.views.DrawingView;
 
 public class SmartChatPreviewActivity extends Activity {
+    private File pictureFile;
     private DrawingView mDrawingView;
     private Button mUploadButton;
 
@@ -30,7 +31,7 @@ public class SmartChatPreviewActivity extends Activity {
 
         getActionBar().hide();
 
-        File pictureFile = new File(getIntent().getExtras().getString(Constants.EXTRA_PHOTO_PATH));
+        pictureFile = new File(getIntent().getExtras().getString(Constants.EXTRA_PHOTO_PATH));
         Bitmap bitmap = BitmapFactory.decodeFile(pictureFile.getAbsolutePath());
 
         ImageView preview = (ImageView) findViewById(R.id.smartchat);
@@ -60,6 +61,13 @@ public class SmartChatPreviewActivity extends Activity {
                 startActivity(intent);
             }
         });
+    }
+
+    @Override
+    public void onBackPressed() {
+        pictureFile.delete();
+
+        super.onBackPressed();
     }
 
     private String saveDrawing() {
