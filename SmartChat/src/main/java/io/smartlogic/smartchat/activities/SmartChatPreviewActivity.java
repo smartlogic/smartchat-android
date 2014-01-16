@@ -73,11 +73,20 @@ public class SmartChatPreviewActivity extends Activity {
             }
         });
 
+        final Button undoButton = (Button) findViewById(R.id.undo);
+        undoButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mDrawingView.undoPath();
+            }
+        });
+
         Button drawingButton = (Button) findViewById(R.id.draw);
         drawingButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 toggleSwatch.setVisibility(toggleSwatch.getVisibility() == View.VISIBLE ? View.GONE : View.VISIBLE);
+                undoButton.setVisibility(undoButton.getVisibility() == View.VISIBLE ? View.GONE : View.VISIBLE);
 
                 mDrawingView.toggleDrawing();
             }
