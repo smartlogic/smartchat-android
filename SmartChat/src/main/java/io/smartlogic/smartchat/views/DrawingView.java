@@ -7,7 +7,6 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Rect;
-import android.graphics.Region;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -27,6 +26,7 @@ public class DrawingView extends View {
     private Bitmap canvasBitmap;
     private boolean mDrawingExists = false;
     private boolean mDrawing = false;
+    private boolean mDisplaySwatch = false;
 
     private boolean mTouchingSwatch = false;
     private int[] mAvailableColors = new int[]{
@@ -104,6 +104,11 @@ public class DrawingView extends View {
 
     public void toggleDrawing() {
         this.mDrawing = !mDrawing;
+        invalidate();
+    }
+
+    public void toggleSwatch() {
+        this.mDisplaySwatch = !mDisplaySwatch;
         invalidate();
     }
 
@@ -185,9 +190,8 @@ public class DrawingView extends View {
 
         canvas.drawBitmap(canvasBitmap, 0, 0, canvasPaint);
         canvas.drawPath(drawPath, drawPaint);
-        canvas.clipPath(drawPath, Region.Op.REPLACE);
 
-        if (mDrawing) {
+        if (mDisplaySwatch) {
             for (ColorSwatchColor swatchColor : mColorSwatches) {
                 canvas.drawRect(swatchColor.location, swatchColor.paint);
             }
@@ -214,7 +218,9 @@ public class DrawingView extends View {
 
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                mTouchingSwatch = touchIntersecting((int) touchX, (int) touchY);
+                if (mDisplaySwatch) {
+                    mTouchingSwatch = touchIntersecting((int) touchX, (int) touchY);
+                }
 
                 if (!mTouchingSwatch) {
                     drawPath.moveTo(touchX, touchY);
@@ -222,7 +228,7 @@ public class DrawingView extends View {
 
                 break;
             case MotionEvent.ACTION_MOVE:
-                if (mTouchingSwatch) {
+                if (mDisplaySwatch && mTouchingSwatch) {
                     touchIntersecting((int) touchX, (int) touchY);
                 } else {
                     drawPath.lineTo(touchX, touchY);

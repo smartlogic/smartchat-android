@@ -23,6 +23,14 @@
         android:layout_height="wrap_content" />
 
     <Button
+        android:id="@+id/toggle_swatch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toLeftOf="@+id/draw"
+        android:visibility="gone"
+        android:text="@string/toggle_swatch" />
+
+    <Button
         android:id="@+id/upload"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

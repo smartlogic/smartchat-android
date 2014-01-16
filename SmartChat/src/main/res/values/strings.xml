@@ -29,5 +29,6 @@
     <string name="notifications">Notifications</string>
     <string name="notifications_list_empty">You don\'t have any SmartChats. You should send some instead.</string>
     <string name="draw">Draw</string>
+    <string name="toggle_swatch">Toggle Swatch</string>
 
 </resources>
