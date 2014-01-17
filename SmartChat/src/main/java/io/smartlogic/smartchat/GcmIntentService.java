@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
+import android.util.Log;
 
 import io.smartlogic.smartchat.activities.MainActivity;
 import io.smartlogic.smartchat.data.DataUriManager;
@@ -33,11 +34,15 @@ public class GcmIntentService extends IntentService {
         Intent resultIntent = new Intent(this, MainActivity.class);
         resultIntent.putExtra(Constants.EXTRA_GO_TO_NOTIFICATIONS, true);
 
+        for (String key : extras.keySet()) {
+            Log.d("smartchat", key + ": " + extras.get(key));
+        }
+
         io.smartlogic.smartchat.models.Notification notification = new io.smartlogic.smartchat.models.Notification();
         notification.setCreatorId(extras.getInt("creator_id"));
         notification.setCreatorUsername(extras.getString("creator_username"));
         notification.setFileUrl(extras.getString("file_url"));
-        notification.setDrawingUrl(extras.getString("drawing_url", ""));
+        notification.setDrawingUrl(extras.getString("drawing_file_url", ""));
 
         getContentResolver().insert(DataUriManager.getNotificationsUri(), notification.getAttributes());
 

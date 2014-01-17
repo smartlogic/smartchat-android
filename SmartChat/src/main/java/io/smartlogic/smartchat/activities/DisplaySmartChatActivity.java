@@ -55,9 +55,9 @@ public class DisplaySmartChatActivity extends Activity {
             pictureFile = downloader.download();
 
             if (!getIntent().getExtras().getString(Constants.EXTRA_DRAWING_FILE_URL, "").equals("")) {
-                String drawingS3Url = getIntent().getExtras().getString(Constants.EXTRA_DRAWING_FILE_URL);
+                String drawingFileUrl = getIntent().getExtras().getString(Constants.EXTRA_DRAWING_FILE_URL);
 
-                downloader = new SmartChatDownloader(context, encodedPrivateKey, drawingS3Url);
+                downloader = new SmartChatDownloader(context, encodedPrivateKey, drawingFileUrl);
                 drawingFile = downloader.download();
             }
 
