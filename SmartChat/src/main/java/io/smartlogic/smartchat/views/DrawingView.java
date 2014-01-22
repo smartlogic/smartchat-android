@@ -29,6 +29,7 @@ public class DrawingView extends View {
     private boolean mTouchingSwatch = false;
 
     private Rect mSwatchBorder;
+    private final static int STARTING_COLOR = 0;
     private int[] mAvailableColors = new int[]{
             Color.parseColor("#FFFFFF"),
             Color.parseColor("#000000"),
@@ -42,8 +43,9 @@ public class DrawingView extends View {
     private List<ColorSwatchColor> mColorSwatches;
     private ColorSwatchColor mCurrentColorSwatchColor;
 
+    private final static int STARTING_BRUSH_SIZE = 1;
     private int[] mAvailableBrushSizes = new int[]{
-            5, 10, 20, 40
+            5, 20, 40
     };
     private List<Brush> mBrushes;
     private Brush mCurrentBrush;
@@ -68,9 +70,9 @@ public class DrawingView extends View {
         drawPath = new Path();
         drawPaint = new Paint();
 
-        drawPaint.setColor(mAvailableColors[0]);
+        drawPaint.setColor(mAvailableColors[STARTING_COLOR]);
         drawPaint.setAntiAlias(true);
-        drawPaint.setStrokeWidth(mAvailableBrushSizes[0]);
+        drawPaint.setStrokeWidth(mAvailableBrushSizes[STARTING_BRUSH_SIZE]);
         drawPaint.setStyle(Paint.Style.STROKE);
         drawPaint.setStrokeJoin(Paint.Join.ROUND);
         drawPaint.setStrokeCap(Paint.Cap.ROUND);
@@ -158,7 +160,7 @@ public class DrawingView extends View {
             mColorSwatches.add(new ColorSwatchColor(mAvailableColors[i], rect));
         }
 
-        mCurrentColorSwatchColor = mColorSwatches.get(0);
+        mCurrentColorSwatchColor = mColorSwatches.get(STARTING_COLOR);
 
         mSwatchBorder.set(mSwatchBorder.left - sideLength, mSwatchBorder.top + sideLength, right, bottom);
 
@@ -171,7 +173,7 @@ public class DrawingView extends View {
             mBrushes.add(new Brush(size, rect));
         }
 
-        mCurrentBrush = mBrushes.get(0);
+        mCurrentBrush = mBrushes.get(STARTING_BRUSH_SIZE);
     }
 
     private int scalePixel(int pixel) {
