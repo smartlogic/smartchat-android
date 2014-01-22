@@ -52,6 +52,7 @@ import java.util.List;
 import java.util.Map;
 
 import io.smartlogic.smartchat.hypermedia.FriendSearch;
+import io.smartlogic.smartchat.hypermedia.HalErrors;
 import io.smartlogic.smartchat.hypermedia.HalFriends;
 import io.smartlogic.smartchat.hypermedia.HalNotifications;
 import io.smartlogic.smartchat.hypermedia.HalRoot;
@@ -83,7 +84,7 @@ public class ApiClient {
      * @param user User to register.
      * @return Private key in base 64 format
      */
-    public String registerUser(User user) {
+    public String registerUser(User user) throws RegistrationException {
         try {
             HttpClient client = new DefaultHttpClient();
             HttpGet rootRequest = new HttpGet(rootUrl);
@@ -105,8 +106,13 @@ public class ApiClient {
             userPost.setEntity(new StringEntity(requestJson));
 
             response = client.execute(userPost);
-
             responseJson = EntityUtils.toString(response.getEntity());
+
+            if (response.getStatusLine().getStatusCode() == 422) {
+                HalErrors errors = mapper.readValue(responseJson, HalErrors.class);
+                throw new RegistrationException(errors.getErrors());
+            }
+
             User loadedUser = mapper.readValue(responseJson, User.class);
 
             ByteArrayInputStream tube = new ByteArrayInputStream(loadedUser.getPrivateKey().getBytes());

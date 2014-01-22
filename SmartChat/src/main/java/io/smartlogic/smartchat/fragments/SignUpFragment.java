@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.util.Patterns;
@@ -19,11 +20,17 @@ import io.smartlogic.smartchat.R;
 import io.smartlogic.smartchat.activities.ContactsActivity;
 import io.smartlogic.smartchat.api.ApiClient;
 import io.smartlogic.smartchat.api.GCMRegistration;
+import io.smartlogic.smartchat.api.RegistrationException;
 import io.smartlogic.smartchat.models.User;
 import io.smartlogic.smartchat.sync.SyncClient;
 
 public class SignUpFragment extends Fragment {
     private Button mSignUpButton;
+    EditText mUsernameView;
+    EditText mEmailView;
+    EditText mPasswordView;
+
+    Handler mHandler;
 
     public SignUpFragment() {
     }
@@ -33,45 +40,53 @@ public class SignUpFragment extends Fragment {
         final View rootView = inflater.inflate(R.layout.fragment_sign_up, container, false);
 
         mSignUpButton = (Button) rootView.findViewById(R.id.sign_up);
-        mSignUpButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                attemptSignUp();
-            }
-        });
+        enableSignUpButton();
 
         return rootView;
     }
 
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        mHandler = new Handler();
+
+        mUsernameView = (EditText) getView().findViewById(R.id.username);
+        mEmailView = (EditText) getView().findViewById(R.id.email);
+        mPasswordView = (EditText) getView().findViewById(R.id.password);
+    }
+
     public void attemptSignUp() {
-        EditText usernameView = (EditText) getView().findViewById(R.id.username);
-        EditText emailView = (EditText) getView().findViewById(R.id.email);
-        EditText passwordView = (EditText) getView().findViewById(R.id.password);
+        mUsernameView.setError(null);
+        mEmailView.setError(null);
+        mPasswordView.setError(null);
 
-        usernameView.setError(null);
-        emailView.setError(null);
-        passwordView.setError(null);
-
-        String username = usernameView.getText().toString();
-        String email = emailView.getText().toString();
-        String password = passwordView.getText().toString();
+        String username = mUsernameView.getText().toString();
+        String email = mEmailView.getText().toString();
+        String password = mPasswordView.getText().toString();
 
         boolean cancel = false;
         View focusView = null;
 
-        if (TextUtils.isEmpty(email)) {
-            emailView.setError(getString(R.string.email_blank));
-            focusView = emailView;
-            cancel = true;
-        } else if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            emailView.setError(getString(R.string.email_invalid));
-            focusView = emailView;
+        if (TextUtils.isEmpty(password)) {
+            mPasswordView.setError(getString(R.string.password_blank));
+            focusView = mPasswordView;
             cancel = true;
         }
 
-        if (TextUtils.isEmpty(password)) {
-            passwordView.setError(getString(R.string.password_blank));
-            focusView = passwordView;
+        if (TextUtils.isEmpty(email)) {
+            mEmailView.setError(getString(R.string.email_blank));
+            focusView = mEmailView;
+            cancel = true;
+        } else if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            mEmailView.setError(getString(R.string.email_invalid));
+            focusView = mEmailView;
+            cancel = true;
+        }
+
+        if (TextUtils.isEmpty(username)) {
+            mUsernameView.setError(getString(R.string.username_blank));
+            focusView = mUsernameView;
             cancel = true;
         }
 
@@ -82,14 +97,31 @@ public class SignUpFragment extends Fragment {
         } else {
             new RegistrationTask(username, email, password).execute();
 
-            mSignUpButton.setOnClickListener(null);
+            disableSignUpButton();
         }
+    }
+
+    private void enableSignUpButton() {
+        mSignUpButton.setEnabled(true);
+        mSignUpButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                attemptSignUp();
+            }
+        });
+    }
+
+    private void disableSignUpButton() {
+        mSignUpButton.setOnClickListener(null);
+        mSignUpButton.setEnabled(false);
     }
 
     private class RegistrationTask extends AsyncTask<Void, Void, Void> {
         private String username;
         private String email;
         private String password;
+
+        private boolean registrationSuccessful = true;
 
         public RegistrationTask(String username, String email, String password) {
             this.username = username;
@@ -104,26 +136,64 @@ public class SignUpFragment extends Fragment {
             user.setEmail(email);
             user.setPassword(password);
 
-            ApiClient client = new ApiClient();
-            String base64PrivateKey = client.registerUser(user);
+            try {
+                ApiClient client = new ApiClient();
+                String base64PrivateKey = client.registerUser(user);
 
-            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
-            SharedPreferences.Editor editor = prefs.edit();
-            editor.putString(Constants.EXTRA_PRIVATE_KEY, base64PrivateKey);
-            editor.putString(Constants.EXTRA_USERNAME, user.getUsername());
-            editor.commit();
+                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+                SharedPreferences.Editor editor = prefs.edit();
+                editor.putString(Constants.EXTRA_PRIVATE_KEY, base64PrivateKey);
+                editor.putString(Constants.EXTRA_USERNAME, user.getUsername());
+                editor.commit();
 
-            new GCMRegistration(getActivity()).check();
+                new GCMRegistration(getActivity()).check();
 
-            new SyncClient(getActivity()).sync();
+                new SyncClient(getActivity()).sync();
+            } catch (RegistrationException e) {
+                for (String key : e.errors.keySet()) {
+                    EditText errorView = null;
+                    final StringBuilder out = new StringBuilder();
 
+                    if (key.equals("username")) {
+                        out.append("Username ");
+                        errorView = mUsernameView;
+                    } else if (key.equals("email")) {
+                        out.append("Email ");
+                        errorView = mEmailView;
+                    } else if (key.equals("password")) {
+                        out.append("Password ");
+                        errorView = mPasswordView;
+                    }
+
+                    for (String error : e.errors.get(key)) {
+                        out.append(error);
+                    }
+
+                    final EditText view = errorView;
+                    if (view != null) {
+                        mHandler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                view.setError(out.toString());
+                                view.requestFocus();
+
+                                enableSignUpButton();
+                            }
+                        });
+                    }
+                }
+
+                registrationSuccessful = false;
+            }
             return null;
         }
 
         @Override
         protected void onPostExecute(Void aVoid) {
-            Intent intent = new Intent(getActivity(), ContactsActivity.class);
-            startActivity(intent);
+            if (registrationSuccessful) {
+                Intent intent = new Intent(getActivity(), ContactsActivity.class);
+                startActivity(intent);
+            }
         }
     }
 }

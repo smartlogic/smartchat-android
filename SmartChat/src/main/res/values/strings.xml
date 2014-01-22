@@ -22,6 +22,7 @@
     <string name="friends_list_empty">You are not connected to any friends. Please add some by swiping right.</string>
     <string name="add_contacts_empty">None of your contacts were found on SmartChat, please invite some!</string>
     <string name="find_friends">Click to find friends</string>
+    <string name="username_blank">Username cannot be blank</string>
     <string name="email_blank">Email cannot be blank</string>
     <string name="email_invalid">Email is not valid</string>
     <string name="password_blank">Password cannot be blank</string>
