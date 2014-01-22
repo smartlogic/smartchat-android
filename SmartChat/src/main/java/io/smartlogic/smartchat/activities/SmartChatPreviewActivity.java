@@ -105,6 +105,7 @@ public class SmartChatPreviewActivity extends Activity {
             File pictureFile = File.createTempFile("drawing", ".png", getExternalCacheDir());
 
             OutputStream out = new FileOutputStream(pictureFile);
+            mDrawingView.hideSwatch();
             mDrawingView.getDrawingCache().compress(Bitmap.CompressFormat.PNG, 100, out);
             out.flush();
             out.close();

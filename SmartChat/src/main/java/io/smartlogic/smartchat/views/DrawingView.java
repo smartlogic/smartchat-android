@@ -98,6 +98,11 @@ public class DrawingView extends View {
         invalidate();
     }
 
+    public void hideSwatch() {
+        this.mDisplaySwatch = false;
+        invalidate();
+    }
+
     public boolean doesDrawingExist() {
         return mDrawingExists;
     }
