@@ -22,6 +22,7 @@ public class PickFriendsActivity extends FragmentActivity {
             Bundle args = new Bundle();
             args.putString(Constants.EXTRA_PHOTO_PATH, getIntent().getExtras().getString(Constants.EXTRA_PHOTO_PATH));
             args.putString(Constants.EXTRA_DRAWING_PATH, getIntent().getExtras().getString(Constants.EXTRA_DRAWING_PATH));
+            args.putInt(Constants.EXTRA_EXPIRE_IN, getIntent().getExtras().getInt(Constants.EXTRA_EXPIRE_IN));
             mFriendsFragment = new PickFriendsFragment();
             mFriendsFragment.setArguments(args);
             getSupportFragmentManager().beginTransaction()

@@ -15,6 +15,8 @@ public class Media {
     private String file;
     @JsonProperty("drawing")
     private String drawing;
+    @JsonProperty("expire_in")
+    private int expireIn;
 
     public List<Integer> getFriendIds() {
         return friendIds;
@@ -46,5 +48,13 @@ public class Media {
 
     public void setDrawing(String drawing) {
         this.drawing = drawing;
+    }
+
+    public int getExpireIn() {
+        return expireIn;
+    }
+
+    public void setExpireIn(int expireIn) {
+        this.expireIn = expireIn;
     }
 }

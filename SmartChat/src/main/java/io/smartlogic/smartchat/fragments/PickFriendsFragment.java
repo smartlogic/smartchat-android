@@ -7,6 +7,7 @@ import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.util.Log;
 import android.view.View;
 
 import java.util.HashSet;
@@ -59,10 +60,13 @@ public class PickFriendsFragment extends ListFragment implements FriendSelectorA
             i++;
         }
 
+        Log.d("PickFriends", "" + getArguments().getInt(Constants.EXTRA_EXPIRE_IN));
+
         Intent intent = new Intent(getActivity(), UploadService.class);
         intent.putExtra(Constants.EXTRA_FRIEND_IDS, friendIds);
         intent.putExtra(Constants.EXTRA_PHOTO_PATH, getArguments().getString(Constants.EXTRA_PHOTO_PATH));
         intent.putExtra(Constants.EXTRA_DRAWING_PATH, getArguments().getString(Constants.EXTRA_DRAWING_PATH, ""));
+        intent.putExtra(Constants.EXTRA_EXPIRE_IN, getArguments().getInt(Constants.EXTRA_EXPIRE_IN));
         getActivity().startService(intent);
 
         intent = new Intent(getActivity(), MainActivity.class);

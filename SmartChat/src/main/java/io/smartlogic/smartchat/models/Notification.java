@@ -3,6 +3,8 @@ package io.smartlogic.smartchat.models;
 import android.content.ContentValues;
 import android.database.Cursor;
 
+import io.smartlogic.smartchat.Constants;
+
 public class Notification {
     private int _id;
     private int creatorId;
@@ -10,6 +12,7 @@ public class Notification {
     private String fileUrl;
     private String drawingUrl;
     private boolean viewed = false;
+    private int expireIn = Constants.DEFAULT_EXPIRE_IN;
 
     public static Notification fromCursor(Cursor cursor) {
         Notification notification = new Notification();
@@ -38,6 +41,10 @@ public class Notification {
             notification.setViewed(cursor.getInt(cursor.getColumnIndex("viewed")) == 1);
         }
 
+        if (cursor.getColumnIndex("expire_in") != -1) {
+            notification.setExpireIn(cursor.getInt(cursor.getColumnIndex("expire_in")));
+        }
+
         return notification;
     }
 
@@ -49,6 +56,7 @@ public class Notification {
         cv.put("file_url", getFileUrl());
         cv.put("drawing_url", getDrawingUrl());
         cv.put("viewed", isViewed());
+        cv.put("expire_in", getExpireIn());
 
         return cv;
     }
@@ -109,5 +117,13 @@ public class Notification {
 
     public void setViewed(boolean viewed) {
         this.viewed = viewed;
+    }
+
+    public int getExpireIn() {
+        return expireIn;
+    }
+
+    public void setExpireIn(int expireIn) {
+        this.expireIn = expireIn;
     }
 }

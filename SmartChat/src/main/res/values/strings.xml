@@ -32,5 +32,6 @@
     <string name="draw">Draw</string>
     <string name="toggle_swatch">Toggle Swatch</string>
     <string name="undo">Undo</string>
+    <string name="expire_in">Expire In</string>
 
 </resources>

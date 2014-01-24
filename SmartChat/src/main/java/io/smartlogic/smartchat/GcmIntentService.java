@@ -39,10 +39,11 @@ public class GcmIntentService extends IntentService {
         }
 
         io.smartlogic.smartchat.models.Notification notification = new io.smartlogic.smartchat.models.Notification();
-        notification.setCreatorId(extras.getInt("creator_id"));
+        notification.setCreatorId(Integer.parseInt(extras.getString("creator_id")));
         notification.setCreatorUsername(extras.getString("creator_username"));
         notification.setFileUrl(extras.getString("file_url"));
         notification.setDrawingUrl(extras.getString("drawing_file_url", ""));
+        notification.setExpireIn(Integer.parseInt(extras.getString("expire_in")));
 
         getContentResolver().insert(DataUriManager.getNotificationsUri(), notification.getAttributes());
 

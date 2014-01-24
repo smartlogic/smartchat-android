@@ -29,7 +29,9 @@ public class DisplaySmartChatActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_display_smart_chat);
 
-        getActionBar().hide();
+        if (getActionBar() != null) {
+            getActionBar().hide();
+        }
 
         new ImageDownloaderTask(this).execute();
     }
@@ -84,7 +86,8 @@ public class DisplaySmartChatActivity extends Activity {
 
             final TextView countDownText = (TextView) findViewById(R.id.count_down);
 
-            new CountDownTimer(10 * 1000, 1000) {
+            int expireIn = getIntent().getExtras().getInt(Constants.EXTRA_EXPIRE_IN);
+            new CountDownTimer(expireIn * 1000, 1000) {
                 @Override
                 public void onTick(long millisUntilFinished) {
                     countDownText.setText(String.valueOf(millisUntilFinished / 1000));

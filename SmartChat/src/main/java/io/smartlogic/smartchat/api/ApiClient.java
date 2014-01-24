@@ -335,7 +335,7 @@ public class ApiClient {
         return notifications.getNotifications();
     }
 
-    public void uploadMedia(List<Integer> friendIds, String photoPath, String drawingPath) throws AuthenticationException {
+    public void uploadMedia(List<Integer> friendIds, String photoPath, String drawingPath, int expireIn) throws AuthenticationException {
         loadPrivateKey();
 
         client = new DefaultHttpClient();
@@ -362,6 +362,7 @@ public class ApiClient {
             }
 
             media.setFriendIds(friendIds);
+            media.setExpireIn(expireIn);
 
             String requestJson = mapper.writeValueAsString(media);
 

@@ -32,6 +32,7 @@ public class UploadService extends IntentService {
         String photoPath = intent.getExtras().getString(Constants.EXTRA_PHOTO_PATH);
         String drawingPath = intent.getExtras().getString(Constants.EXTRA_DRAWING_PATH, "");
         int[] friendIds = intent.getExtras().getIntArray(Constants.EXTRA_FRIEND_IDS);
+        int expireIn = intent.getExtras().getInt(Constants.EXTRA_EXPIRE_IN);
 
         List<Integer> friendIdList = new ArrayList<Integer>();
         for (int friendId : friendIds) {
@@ -39,7 +40,7 @@ public class UploadService extends IntentService {
         }
 
         try {
-            client.uploadMedia(friendIdList, photoPath, drawingPath);
+            client.uploadMedia(friendIdList, photoPath, drawingPath, expireIn);
         } catch (AuthenticationException e) {
             Log.e(TAG, "Authentication error");
         }

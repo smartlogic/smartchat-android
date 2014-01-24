@@ -54,6 +54,7 @@ public class NotificationsFragment extends ListFragment implements LoaderManager
         Intent intent = new Intent(getActivity(), DisplaySmartChatActivity.class);
         intent.putExtra(Constants.EXTRA_FILE_URL, notification.getFileUrl());
         intent.putExtra(Constants.EXTRA_DRAWING_FILE_URL, notification.getDrawingUrl());
+        intent.putExtra(Constants.EXTRA_EXPIRE_IN, notification.getExpireIn());
         startActivity(intent);
     }
 

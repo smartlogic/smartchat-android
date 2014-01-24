@@ -1,6 +1,8 @@
 package io.smartlogic.smartchat.activities;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -8,6 +10,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.NumberPicker;
 import android.widget.RelativeLayout;
 
 import java.io.File;
@@ -23,6 +26,7 @@ public class SmartChatPreviewActivity extends Activity {
     private File pictureFile;
     private DrawingView mDrawingView;
     private Button mUploadButton;
+    private int mExpireIn = Constants.DEFAULT_EXPIRE_IN;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,6 +65,7 @@ public class SmartChatPreviewActivity extends Activity {
                 }
 
                 intent.putExtra(Constants.EXTRA_PHOTO_PATH, getIntent().getExtras().getString(Constants.EXTRA_PHOTO_PATH));
+                intent.putExtra(Constants.EXTRA_EXPIRE_IN, mExpireIn);
                 startActivity(intent);
             }
         });
@@ -89,6 +94,36 @@ public class SmartChatPreviewActivity extends Activity {
                 undoButton.setVisibility(undoButton.getVisibility() == View.VISIBLE ? View.GONE : View.VISIBLE);
 
                 mDrawingView.toggleDrawing();
+            }
+        });
+
+        Button expireIn = (Button) findViewById(R.id.expire_in);
+        expireIn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final NumberPicker picker = new NumberPicker(SmartChatPreviewActivity.this);
+                picker.setMinValue(3);
+                picker.setMaxValue(20);
+                picker.setWrapSelectorWheel(false);
+                picker.setValue(mExpireIn);
+
+                AlertDialog dialog = new AlertDialog.Builder(SmartChatPreviewActivity.this)
+                        .setTitle(R.string.expire_in)
+                        .setView(picker)
+                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                mExpireIn = picker.getValue();
+                            }
+                        })
+                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+
+                            }
+                        })
+                        .create();
+                dialog.show();
             }
         });
     }
