@@ -33,5 +33,6 @@
     <string name="toggle_swatch">Toggle Swatch</string>
     <string name="undo">Undo</string>
     <string name="expire_in">Expire In</string>
+    <string name="upload_from_gallery">Upload from Gallery</string>
 
 </resources>

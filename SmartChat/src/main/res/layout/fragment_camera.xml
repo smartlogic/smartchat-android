@@ -22,4 +22,12 @@
         android:layout_alignParentBottom="true"
         android:layout_centerInParent="true"
         android:text="@string/capture" />
+
+    <Button
+        android:id="@+id/upload_from_gallery"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:text="@string/upload_from_gallery" />
 </RelativeLayout>

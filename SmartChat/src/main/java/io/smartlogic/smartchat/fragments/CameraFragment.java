@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.graphics.Point;
 import android.hardware.Camera;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -21,6 +22,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
 
@@ -31,6 +33,7 @@ import io.smartlogic.smartchat.views.CameraPreview;
 
 public class CameraFragment extends Fragment {
     private static String TAG = "CameraFragment";
+    private static int RESULT_LOAD_IMAGE = 1;
     private Camera mCamera;
     private CameraPreview mPreview;
     private FrameLayout mPreviewLayout;
@@ -90,6 +93,51 @@ public class CameraFragment extends Fragment {
                 resumeCamera();
             }
         });
+
+        Button uploadFromGallery = (Button) getView().findViewById(R.id.upload_from_gallery);
+        uploadFromGallery.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                startActivityForResult(intent, RESULT_LOAD_IMAGE);
+            }
+        });
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        Uri selectedImage = data.getData();
+
+        if (selectedImage != null) {
+            try {
+                InputStream inputStream = getActivity().getContentResolver().openInputStream(selectedImage);
+
+                File pictureFile = File.createTempFile("smartchat", ".jpg", getActivity().getExternalCacheDir());
+                OutputStream outputStream = new FileOutputStream(pictureFile);
+
+                try {
+                    final byte[] buffer = new byte[1024];
+                    int read;
+
+                    while ((read = inputStream.read(buffer)) != -1)
+                        outputStream.write(buffer, 0, read);
+
+                    outputStream.flush();
+                } finally {
+                    outputStream.close();
+                }
+
+                Intent intent = new Intent(getActivity(), SmartChatPreviewActivity.class);
+                intent.putExtra(Constants.EXTRA_PHOTO_PATH, pictureFile.getPath());
+                startActivity(intent);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     /**
