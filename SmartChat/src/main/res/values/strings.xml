@@ -34,5 +34,7 @@
     <string name="undo">Undo</string>
     <string name="expire_in">Expire In</string>
     <string name="upload_from_gallery">Upload from Gallery</string>
+    <string name="groupies">Groupies</string>
+    <string name="contacts_on_smartchat">Contacts on SmartChat</string>
 
 </resources>

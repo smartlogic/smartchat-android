@@ -12,7 +12,6 @@ import java.util.Map;
 
 import io.smartlogic.smartchat.Constants;
 import io.smartlogic.smartchat.activities.LogoutActivity;
-import io.smartlogic.smartchat.hypermedia.FriendSearch;
 import io.smartlogic.smartchat.models.Friend;
 import io.smartlogic.smartchat.models.User;
 
@@ -39,13 +38,13 @@ public class ContextApiClient {
         return new User();
     }
 
-    public List<FriendSearch.Friend> searchForFriends(Map<String, Integer> phoneNumbers, Map<String, Integer> emails) {
+    public FriendSearchResults searchForFriends(Map<String, Integer> phoneNumbers, Map<String, Integer> emails) {
         try {
             return mClient.searchForFriends(phoneNumbers, emails);
         } catch (AuthenticationException e) {
             signUserOut();
         }
-        return new ArrayList<FriendSearch.Friend>();
+        return new FriendSearchResults();
     }
 
     public void addFriend(String addFriendUrl) {

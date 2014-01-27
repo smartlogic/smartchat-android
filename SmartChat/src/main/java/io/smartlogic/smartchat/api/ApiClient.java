@@ -47,6 +47,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.Signature;
 import java.security.SignatureException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -194,7 +195,9 @@ public class ApiClient {
         return null;
     }
 
-    public List<FriendSearch.Friend> searchForFriends(Map<String, Integer> phoneNumbers, Map<String, Integer> emails) throws AuthenticationException {
+    public FriendSearchResults searchForFriends(Map<String, Integer> phoneNumbers, Map<String, Integer> emails) throws AuthenticationException {
+        FriendSearchResults friendSearchResults = new FriendSearchResults();
+
         Map<String, Integer> scrubbedPhoneNumbers = scrubPhoneNumbers(phoneNumbers);
         Map<String, Integer> scrubbedEmails = scrubEmails(emails);
 
@@ -211,6 +214,13 @@ public class ApiClient {
 
             HttpGet friendsRequest = new HttpGet(root.getFriendsLink());
             HalFriends friends = (HalFriends) executeAndParseJson(friendsRequest, mapper, HalFriends.class);
+
+            if (friends.hasGroupiesLink()) {
+                HttpGet groupies = new HttpGet(friends.getGroupiesLink());
+                FriendSearch friendSearch = (FriendSearch) executeAndParseJson(groupies, mapper, FriendSearch.class);
+
+                friendSearchResults.groupies = friendSearch.getFriends();
+            }
 
             Map<String, Object[]> map = new HashMap<String, Object[]>();
             map.put("phone_numbers", scrubbedPhoneNumbers.keySet().toArray());
@@ -232,7 +242,7 @@ public class ApiClient {
                 }
             }
 
-            return friendSearch.getFriends();
+            friendSearchResults.foundFriends = friendSearch.getFriends();
         } catch (IOException e) {
             e.printStackTrace();
         } catch (MalformedUriTemplateException e) {
@@ -241,7 +251,7 @@ public class ApiClient {
             e.printStackTrace();
         }
 
-        return null;
+        return friendSearchResults;
     }
 
     public void addFriend(String addFriendUrl) throws AuthenticationException {

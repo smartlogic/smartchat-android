@@ -28,6 +28,9 @@ public class FriendSearch {
         @JsonProperty("_links")
         protected FriendLinks links;
 
+        @JsonProperty("username")
+        public String username;
+
         @JsonProperty("email")
         public String email;
 

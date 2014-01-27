@@ -5,14 +5,16 @@ import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.ContactsContract;
-import android.support.v4.app.ListFragment;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,13 +22,19 @@ import java.util.Map;
 import io.smartlogic.smartchat.Constants;
 import io.smartlogic.smartchat.R;
 import io.smartlogic.smartchat.adapters.ContactsAdapter;
+import io.smartlogic.smartchat.adapters.GroupiesAdapter;
 import io.smartlogic.smartchat.api.ContextApiClient;
+import io.smartlogic.smartchat.api.FriendSearchResults;
 import io.smartlogic.smartchat.hypermedia.FriendSearch;
 import io.smartlogic.smartchat.sync.AccountHelper;
 
-public class AddContactsFragment extends ListFragment implements ContactsAdapter.OnContactAddedListener {
+public class AddContactsFragment extends Fragment implements ContactsAdapter.OnContactAddedListener, GroupiesAdapter.OnGroupieAddedListner {
     private Cursor mContactsCursor;
     private List<FriendSearch.Friend> mContactsOnSmartChat;
+    private List<FriendSearch.Friend> mGroupies;
+
+    private ListView mContactsListView;
+    private ListView mGroupiesListView;
 
     public AddContactsFragment() {
     }
@@ -42,6 +50,11 @@ public class AddContactsFragment extends ListFragment implements ContactsAdapter
     }
 
     @Override
+    public void onGroupieAdded(FriendSearch.Friend groupie) {
+        new AddContactTask().execute(groupie.getAddLink());
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_add_contacts, null);
     }
@@ -50,7 +63,10 @@ public class AddContactsFragment extends ListFragment implements ContactsAdapter
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        TextView empty = (TextView) view.findViewById(android.R.id.empty);
+        mContactsListView = (ListView) view.findViewById(R.id.contacts_list);
+        mGroupiesListView = (ListView) view.findViewById(R.id.groupies_list);
+
+        TextView empty = (TextView) view.findViewById(R.id.empty_contacts_list);
         empty.setVisibility(View.GONE);
 
         final Button button = (Button) view.findViewById(R.id.find_friends);
@@ -77,7 +93,10 @@ public class AddContactsFragment extends ListFragment implements ContactsAdapter
             loadEmails();
 
             ContextApiClient client = new ContextApiClient(getActivity());
-            mContactsOnSmartChat = client.searchForFriends(phoneNumbers, emails);
+
+            FriendSearchResults friendSearchResults = client.searchForFriends(phoneNumbers, emails);
+            mContactsOnSmartChat = friendSearchResults.getFoundFriends();
+            mGroupies = friendSearchResults.getGroupies();
 
             return null;
         }
@@ -174,7 +193,19 @@ public class AddContactsFragment extends ListFragment implements ContactsAdapter
                 ProgressBar progressBar = (ProgressBar) getView().findViewById(R.id.progress_bar);
                 progressBar.setVisibility(View.GONE);
 
-                setListAdapter(new ContactsAdapter(getActivity(), AddContactsFragment.this, mContactsCursor));
+                mContactsListView.setAdapter(new ContactsAdapter(getActivity(), AddContactsFragment.this, mContactsCursor));
+                TextView contactsHeader = (TextView) getView().findViewById(R.id.contacts_header);
+                contactsHeader.setVisibility(View.VISIBLE);
+                if (mContactsListView.getCount() == 0) {
+                    TextView emptyContactsList = (TextView) getView().findViewById(R.id.empty_contacts_list);
+                    emptyContactsList.setVisibility(View.VISIBLE);
+                }
+
+                mGroupiesListView.setAdapter(new GroupiesAdapter(getActivity(), AddContactsFragment.this, mGroupies));
+                if (mGroupiesListView.getCount() > 0) {
+                    TextView groupiesHeader = (TextView) getView().findViewById(R.id.groupies_header);
+                    groupiesHeader.setVisibility(View.VISIBLE);
+                }
             }
         }
     }

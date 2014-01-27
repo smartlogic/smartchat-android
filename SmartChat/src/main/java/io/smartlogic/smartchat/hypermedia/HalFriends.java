@@ -16,6 +16,14 @@ public class HalFriends {
         return links.search.href;
     }
 
+    public boolean hasGroupiesLink() {
+        return links.groupies != null;
+    }
+
+    public String getGroupiesLink() {
+        return links.groupies.href;
+    }
+
     public List<Friend> getFriends() {
         return embedded.friends;
     }
@@ -30,5 +38,7 @@ public class HalFriends {
         Link self;
         @JsonProperty("search")
         Link search;
+        @JsonProperty("smartchat:groupies")
+        Link groupies;
     }
 }
