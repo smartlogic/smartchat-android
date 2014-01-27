@@ -40,10 +40,17 @@ public class MainActivity extends FragmentActivity {
 
         mPagerAdapter = new MainFragmentPagerAdapter(this, mViewPager);
 
-        if (getIntent().getExtras() != null && getIntent().getExtras().getBoolean(Constants.EXTRA_GO_TO_NOTIFICATIONS)) {
-            mPagerAdapter.displayNotifications();
-            if (getActionBar() != null) {
-                getActionBar().show();
+        if (getIntent().getExtras() != null) {
+            if (getIntent().getExtras().getBoolean(Constants.EXTRA_GO_TO_NOTIFICATIONS)) {
+                mPagerAdapter.displayNotifications();
+                if (getActionBar() != null) {
+                    getActionBar().show();
+                }
+            } else if (getIntent().getExtras().getBoolean(Constants.EXTRA_GO_TO_ADD_CONTACTS)) {
+                mPagerAdapter.displayAddContacts();
+                if (getActionBar() != null) {
+                    getActionBar().show();
+                }
             }
         }
 

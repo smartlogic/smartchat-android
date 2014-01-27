@@ -39,6 +39,11 @@ public class MainFragmentPagerAdapter extends FragmentStatePagerAdapter {
         mContext.setTitle(getTitle(POSITION_LIST));
     }
 
+    public void displayAddContacts() {
+        mViewPager.setCurrentItem(POSITION_ADD_FRIENDS);
+        mContext.setTitle(getTitle(POSITION_ADD_FRIENDS));
+    }
+
     @Override
     public Fragment getItem(int position) {
         switch (position) {

@@ -3,6 +3,7 @@ package io.smartlogic.smartchat;
 public class Constants {
     public static final String EXTRA_SYNC = "sync";
     public static final String EXTRA_GO_TO_NOTIFICATIONS = "go_to_notifications";
+    public static final String EXTRA_GO_TO_ADD_CONTACTS = "go_to_add_contacts";
     public static final String EXTRA_USERNAME = "username";
     public static final String EXTRA_PRIVATE_KEY = "private_key";
     public static final String EXTRA_PHOTO_PATH = "photo_path";
