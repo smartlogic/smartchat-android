@@ -26,8 +26,16 @@ public class GroupiesAdapter extends ArrayAdapter<FriendSearch.Friend> {
         mFriends = friends;
     }
 
+    /**
+     * Get size of groupies, limits to 5 if larger than 5.
+     *
+     * @return Size of groupies list
+     */
     @Override
     public int getCount() {
+        if (mFriends.size() > 5) {
+            return 5;
+        }
         return mFriends.size();
     }
 
