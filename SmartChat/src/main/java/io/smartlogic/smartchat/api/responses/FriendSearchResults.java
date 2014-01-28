@@ -1,4 +1,4 @@
-package io.smartlogic.smartchat.api;
+package io.smartlogic.smartchat.api.responses;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +13,15 @@ public class FriendSearchResults {
         return foundFriends;
     }
 
+    public void setFoundFriends(List<FriendSearch.Friend> foundFriends) {
+        this.foundFriends = foundFriends;
+    }
+
     public List<FriendSearch.Friend> getGroupies() {
         return groupies;
+    }
+
+    public void setGroupies(List<FriendSearch.Friend> groupies) {
+        this.groupies = groupies;
     }
 }

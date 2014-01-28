@@ -52,11 +52,14 @@ import java.util.List;
 import java.util.Map;
 
 import io.smartlogic.smartchat.BuildConfig;
+import io.smartlogic.smartchat.api.responses.FriendSearchResults;
+import io.smartlogic.smartchat.api.responses.SMSVerificationResponse;
 import io.smartlogic.smartchat.hypermedia.FriendSearch;
 import io.smartlogic.smartchat.hypermedia.HalErrors;
 import io.smartlogic.smartchat.hypermedia.HalFriends;
 import io.smartlogic.smartchat.hypermedia.HalNotifications;
 import io.smartlogic.smartchat.hypermedia.HalRoot;
+import io.smartlogic.smartchat.hypermedia.HalSmsVerification;
 import io.smartlogic.smartchat.models.Device;
 import io.smartlogic.smartchat.models.Friend;
 import io.smartlogic.smartchat.models.Media;
@@ -225,7 +228,7 @@ public class ApiClient {
                 HttpGet groupies = new HttpGet(friends.getGroupiesLink());
                 FriendSearch friendSearch = (FriendSearch) executeAndParseJson(groupies, mapper, FriendSearch.class);
 
-                friendSearchResults.groupies = friendSearch.getFriends();
+                friendSearchResults.setGroupies(friendSearch.getFriends());
             }
 
             Map<String, Object[]> map = new HashMap<String, Object[]>();
@@ -248,7 +251,7 @@ public class ApiClient {
                 }
             }
 
-            friendSearchResults.foundFriends = friendSearch.getFriends();
+            friendSearchResults.setFoundFriends(friendSearch.getFriends());
         } catch (IOException e) {
             e.printStackTrace();
         } catch (MalformedUriTemplateException e) {
@@ -436,6 +439,26 @@ public class ApiClient {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public SMSVerificationResponse getSmsVerificationCode() throws AuthenticationException {
+        loadPrivateKey();
+
+        client = new DefaultHttpClient();
+
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+
+        HttpGet rootRequest = new HttpGet(getRootUrl());
+        HalRoot root = (HalRoot) executeAndParseJson(rootRequest, mapper, HalRoot.class);
+
+        if (!root.hasSmsVerifyUrl()) {
+            return null;
+        }
+
+        HttpGet smsVerification = new HttpGet(root.getSmsVerifyLink());
+        HalSmsVerification verification = (HalSmsVerification) executeAndParseJson(smsVerification, mapper, HalSmsVerification.class);
+        return new SMSVerificationResponse(verification.getVerificationCode(), verification.getVerificationPhoneNumber());
     }
 
     private void loadPrivateKey() {

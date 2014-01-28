@@ -23,7 +23,7 @@ import io.smartlogic.smartchat.R;
 import io.smartlogic.smartchat.adapters.ContactsAdapter;
 import io.smartlogic.smartchat.adapters.GroupiesAdapter;
 import io.smartlogic.smartchat.api.ContextApiClient;
-import io.smartlogic.smartchat.api.FriendSearchResults;
+import io.smartlogic.smartchat.api.responses.FriendSearchResults;
 import io.smartlogic.smartchat.hypermedia.FriendSearch;
 import io.smartlogic.smartchat.sync.AccountHelper;
 import io.smartlogic.smartchat.views.GroupiesView;

@@ -12,6 +12,8 @@ import java.util.Map;
 
 import io.smartlogic.smartchat.Constants;
 import io.smartlogic.smartchat.activities.LogoutActivity;
+import io.smartlogic.smartchat.api.responses.FriendSearchResults;
+import io.smartlogic.smartchat.api.responses.SMSVerificationResponse;
 import io.smartlogic.smartchat.models.Friend;
 import io.smartlogic.smartchat.models.User;
 
@@ -78,6 +80,15 @@ public class ContextApiClient {
         } catch (AuthenticationException e) {
             signUserOut();
         }
+    }
+
+    public SMSVerificationResponse getSmsVerificationCode() {
+        try {
+            return mClient.getSmsVerificationCode();
+        } catch (AuthenticationException e) {
+            signUserOut();
+        }
+        return null;
     }
 
     private void signUserOut() {

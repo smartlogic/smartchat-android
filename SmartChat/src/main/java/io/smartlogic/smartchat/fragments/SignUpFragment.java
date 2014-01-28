@@ -17,7 +17,7 @@ import android.widget.EditText;
 
 import io.smartlogic.smartchat.Constants;
 import io.smartlogic.smartchat.R;
-import io.smartlogic.smartchat.activities.ContactsActivity;
+import io.smartlogic.smartchat.activities.SMSVerifyActivity;
 import io.smartlogic.smartchat.api.ApiClient;
 import io.smartlogic.smartchat.api.GCMRegistration;
 import io.smartlogic.smartchat.api.RegistrationException;
@@ -191,7 +191,7 @@ public class SignUpFragment extends Fragment {
         @Override
         protected void onPostExecute(Void aVoid) {
             if (registrationSuccessful) {
-                Intent intent = new Intent(getActivity(), ContactsActivity.class);
+                Intent intent = new Intent(getActivity(), SMSVerifyActivity.class);
                 startActivity(intent);
             }
         }

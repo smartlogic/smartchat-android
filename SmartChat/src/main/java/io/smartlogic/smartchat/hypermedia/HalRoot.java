@@ -1,6 +1,5 @@
 package io.smartlogic.smartchat.hypermedia;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class HalRoot {
@@ -35,6 +34,14 @@ public class HalRoot {
         return links.invitations.href;
     }
 
+    public String getSmsVerifyLink() {
+        return links.smsVerify.href;
+    }
+
+    public boolean hasSmsVerifyUrl() {
+        return links.smsVerify != null;
+    }
+
     public class RootLinks {
         @JsonProperty("self")
         Link self;
@@ -56,5 +63,8 @@ public class HalRoot {
 
         @JsonProperty("smartchat:invitations")
         Link invitations;
+
+        @JsonProperty("smartchat:sms-verify")
+        Link smsVerify;
     }
 }

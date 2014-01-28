@@ -36,5 +36,8 @@
     <string name="upload_from_gallery">Upload from Gallery</string>
     <string name="groupies">Groupies</string>
     <string name="contacts_on_smartchat">Contacts on SmartChat</string>
+    <string name="skip">Skip</string>
+    <string name="verify_my_number">Verify my number via SMS</string>
+    <string name="verify_explanation">Would you like to add your phone number so others can find you? This will send us a text message.</string>
 
 </resources>
