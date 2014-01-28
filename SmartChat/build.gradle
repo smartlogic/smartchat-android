@@ -40,10 +40,16 @@ android {
         targetSdkVersion 19
     }
     buildTypes {
+        debug {
+            buildConfigField "String", "API_URL", "\"http://192.168.1.254:5000\""
+        }
+
         release {
             runProguard false
             proguardFile getDefaultProguardFile('proguard-android.txt')
             signingConfig signingConfigs.release
+
+            buildConfigField "String", "API_URL", "http://smartchat.smartlogic.io"
         }
     }
     productFlavors {

@@ -47,11 +47,11 @@ import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.Signature;
 import java.security.SignatureException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import io.smartlogic.smartchat.BuildConfig;
 import io.smartlogic.smartchat.hypermedia.FriendSearch;
 import io.smartlogic.smartchat.hypermedia.HalErrors;
 import io.smartlogic.smartchat.hypermedia.HalFriends;
@@ -64,7 +64,6 @@ import io.smartlogic.smartchat.models.User;
 
 public class ApiClient {
     public static final String TAG = "ApiClient";
-    public static final String rootUrl = "http://192.168.1.254:5000/";
     private String username;
     private String encodedPrivateKey;
     private PrivateKey privateKey;
@@ -79,6 +78,13 @@ public class ApiClient {
         this.encodedPrivateKey = privateKey;
     }
 
+    private static String getRootUrl() {
+        if (BuildConfig.DEBUG) {
+            return BuildConfig.API_URL;
+        }
+        return BuildConfig.API_URL;
+    }
+
     /**
      * Register a new user
      *
@@ -88,7 +94,7 @@ public class ApiClient {
     public String registerUser(User user) throws RegistrationException {
         try {
             HttpClient client = new DefaultHttpClient();
-            HttpGet rootRequest = new HttpGet(rootUrl);
+            HttpGet rootRequest = new HttpGet(getRootUrl());
             HttpResponse response = client.execute(rootRequest);
 
             String responseJson = EntityUtils.toString(response.getEntity());
@@ -148,7 +154,7 @@ public class ApiClient {
 
         try {
             HttpClient client = new DefaultHttpClient();
-            HttpGet rootRequest = new HttpGet(rootUrl);
+            HttpGet rootRequest = new HttpGet(getRootUrl());
             HttpResponse response = client.execute(rootRequest);
 
             Log.d("smartchat", String.valueOf(response.getStatusLine().getStatusCode()));
@@ -209,7 +215,7 @@ public class ApiClient {
         mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
 
         try {
-            HttpGet rootRequest = new HttpGet(rootUrl);
+            HttpGet rootRequest = new HttpGet(getRootUrl());
             HalRoot root = (HalRoot) executeAndParseJson(rootRequest, mapper, HalRoot.class);
 
             HttpGet friendsRequest = new HttpGet(root.getFriendsLink());
@@ -280,7 +286,7 @@ public class ApiClient {
         mapper.enable(SerializationFeature.WRAP_ROOT_VALUE);
 
         try {
-            HttpGet rootRequest = new HttpGet(rootUrl);
+            HttpGet rootRequest = new HttpGet(getRootUrl());
             HalRoot root = (HalRoot) executeAndParseJson(rootRequest, mapper, HalRoot.class);
 
             Device device = new Device();
@@ -318,7 +324,7 @@ public class ApiClient {
         mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
         mapper.enable(SerializationFeature.WRAP_ROOT_VALUE);
 
-        HttpGet rootRequest = new HttpGet(rootUrl);
+        HttpGet rootRequest = new HttpGet(getRootUrl());
         HalRoot root = (HalRoot) executeAndParseJson(rootRequest, mapper, HalRoot.class);
 
         HttpGet friendRequest = new HttpGet(root.getFriendsLink());
@@ -336,7 +342,7 @@ public class ApiClient {
         mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
         mapper.enable(SerializationFeature.WRAP_ROOT_VALUE);
 
-        HttpGet rootRequest = new HttpGet(rootUrl);
+        HttpGet rootRequest = new HttpGet(getRootUrl());
         HalRoot root = (HalRoot) executeAndParseJson(rootRequest, mapper, HalRoot.class);
 
         HttpGet mediaRequest = new HttpGet(root.getMediaLink());
@@ -376,7 +382,7 @@ public class ApiClient {
 
             String requestJson = mapper.writeValueAsString(media);
 
-            HttpGet rootRequest = new HttpGet(rootUrl);
+            HttpGet rootRequest = new HttpGet(getRootUrl());
             HalRoot root = (HalRoot) executeAndParseJson(rootRequest, mapper, HalRoot.class);
 
             HttpPost mediaRequest = new HttpPost(root.getMediaLink());
@@ -404,7 +410,7 @@ public class ApiClient {
         mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
 
         try {
-            HttpGet rootRequest = new HttpGet(rootUrl);
+            HttpGet rootRequest = new HttpGet(getRootUrl());
             HalRoot root = (HalRoot) executeAndParseJson(rootRequest, mapper, HalRoot.class);
 
             HttpPost inviteRequest = new HttpPost(root.getInvitationsLink());
