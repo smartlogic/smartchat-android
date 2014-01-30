@@ -49,7 +49,7 @@ android {
             proguardFile getDefaultProguardFile('proguard-android.txt')
             signingConfig signingConfigs.release
 
-            buildConfigField "String", "API_URL", "http://smartchat.smartlogic.io"
+            buildConfigField "String", "API_URL", "\"http://smartchat.smartlogic.io\""
         }
     }
     productFlavors {
