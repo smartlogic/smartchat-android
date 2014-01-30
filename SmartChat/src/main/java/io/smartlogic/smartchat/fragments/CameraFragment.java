@@ -175,16 +175,28 @@ public class CameraFragment extends Fragment {
         float screenRatio = (float) screenSize.x / screenSize.y;
         List<Camera.Size> sizes = parameters.getSupportedPictureSizes();
         Camera.Size selectedSize = parameters.getPictureSize();
-        for (Camera.Size size : sizes) {
-            float ratio = (float) size.height / size.width;
-            if (ratio == screenRatio) {
-                selectedSize = size;
-                break;
+
+        Log.i(TAG, "Screen ratio: " + screenRatio);
+
+        if (sizes != null) {
+            for (Camera.Size size : sizes) {
+                Log.i(TAG, "Found picture size: " + size.width + "x" + size.height);
+
+                float ratio = (float) size.height / size.width;
+                if (ratio == screenRatio) {
+                    selectedSize = size;
+                    break;
+                }
             }
         }
 
-        parameters.setPreviewSize(screenSize.y, screenSize.x);
-        parameters.setPictureSize(selectedSize.width, selectedSize.height);
+        if (selectedSize != null) {
+            Log.i(TAG, "Setting screen size: " + screenSize.y + "x" + screenSize.x);
+            parameters.setPreviewSize(screenSize.y, screenSize.x);
+            Log.i(TAG, "Setting picture size: " + selectedSize.width + "x" + selectedSize.height);
+            parameters.setPictureSize(selectedSize.width, selectedSize.height);
+        }
+
         parameters.setRotation(90);
         parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_AUTO);
         mCamera.setParameters(parameters);
