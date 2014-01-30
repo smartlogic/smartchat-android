@@ -46,4 +46,12 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentBottom="true"
         android:text="@string/expire_in" />
+
+    <EditText
+        android:id="@+id/message_edit"
+        android:layout_centerInParent="true"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="text"
+        android:visibility="gone" />
 </RelativeLayout>

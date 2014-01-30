@@ -7,7 +7,9 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Rect;
+import android.text.TextUtils;
 import android.util.AttributeSet;
+import android.util.TypedValue;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -27,6 +29,12 @@ public class DrawingView extends View {
     private boolean mDrawing = false;
     private boolean mDisplaySwatch = true;
     private boolean mTouchingSwatch = false;
+
+    private String mText = "";
+    private Paint mTextPaint;
+    private Rect mTextBounds;
+    private Paint mTextBorderPaint;
+    private Rect mTextBorder;
 
     private Rect mSwatchBorder;
     private final static int STARTING_COLOR = 0;
@@ -86,6 +94,13 @@ public class DrawingView extends View {
         mPaths = new Stack<DrawingPath>();
 
         scale = getResources().getDisplayMetrics().density;
+
+        mTextPaint = new Paint();
+        mTextPaint.setColor(Color.WHITE);
+        mTextPaint.setTextSize(sp(20));
+
+        mTextBorderPaint = new Paint();
+        mTextBorderPaint.setColor(Color.BLACK);
     }
 
     public void toggleDrawing() {
@@ -119,6 +134,19 @@ public class DrawingView extends View {
             paint.setStrokeWidth(drawingPath.brush.size);
             drawCanvas.drawPath(drawingPath.path, paint);
         }
+
+        invalidate();
+    }
+
+    public void setText(String text) {
+        this.mText = text;
+        mDrawingExists = true;
+
+        mTextBounds = new Rect();
+        mTextPaint.getTextBounds(mText, 0, mText.length(), mTextBounds);
+
+        int padding = (int) dip(20);
+        mTextBorder = new Rect(mTextBounds.left + padding, mTextBounds.top + padding, mTextBounds.right + padding, mTextBounds.bottom + padding);
 
         invalidate();
     }
@@ -198,6 +226,14 @@ public class DrawingView extends View {
                 brush.paint.setColor(mCurrentColorSwatchColor.color);
                 canvas.drawLine(brush.location.left, brush.location.top, brush.location.right, brush.location.bottom, brush.paint);
             }
+        }
+
+        if (!TextUtils.isEmpty(mText)) {
+            float x = canvas.getWidth() / 2 - mTextBounds.width() / 2;
+            float y = canvas.getHeight() / 2 - mTextBounds.height() / 2;
+
+            canvas.drawRect(mTextBorder, mTextBorderPaint);
+            canvas.drawText(mText, x, y, mTextPaint);
         }
     }
 
@@ -284,6 +320,14 @@ public class DrawingView extends View {
     private void setPaintStroke(Brush brush) {
         mCurrentBrush = brush;
         drawPaint.setStrokeWidth(brush.size);
+    }
+
+    private float dip(int size) {
+        return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, size, getResources().getDisplayMetrics());
+    }
+
+    private float sp(int size) {
+        return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, size, getResources().getDisplayMetrics());
     }
 
     private class ColorSwatchColor {

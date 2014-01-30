@@ -7,8 +7,10 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.NumberPicker;
 import android.widget.RelativeLayout;
@@ -25,8 +27,10 @@ import io.smartlogic.smartchat.views.DrawingView;
 public class SmartChatPreviewActivity extends Activity {
     private File pictureFile;
     private DrawingView mDrawingView;
-    private Button mUploadButton;
+    private EditText mMessageEdit;
     private int mExpireIn = Constants.DEFAULT_EXPIRE_IN;
+
+    private boolean mMessageShowing = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,6 +40,8 @@ public class SmartChatPreviewActivity extends Activity {
         if (getActionBar() != null) {
             getActionBar().hide();
         }
+
+        mMessageEdit = (EditText) findViewById(R.id.message_edit);
 
         pictureFile = new File(getIntent().getExtras().getString(Constants.EXTRA_PHOTO_PATH));
         Bitmap bitmap = BitmapFactory.decodeFile(pictureFile.getAbsolutePath());
@@ -53,7 +59,7 @@ public class SmartChatPreviewActivity extends Activity {
         int drawingViewIndex = layout.indexOfChild(preview) + 1;
         layout.addView(mDrawingView, drawingViewIndex);
 
-        mUploadButton = (Button) findViewById(R.id.upload);
+        Button mUploadButton = (Button) findViewById(R.id.upload);
         mUploadButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -117,6 +123,25 @@ public class SmartChatPreviewActivity extends Activity {
                 dialog.show();
             }
         });
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        if (event.getAction() != MotionEvent.ACTION_UP) {
+            return super.onTouchEvent(event);
+        }
+
+        if (mMessageShowing) {
+            mMessageEdit.setVisibility(View.INVISIBLE);
+            mDrawingView.setText(mMessageEdit.getText().toString());
+        } else {
+            mMessageEdit.setVisibility(View.VISIBLE);
+            mMessageEdit.requestFocus();
+        }
+
+        mMessageShowing = !mMessageShowing;
+
+        return true;
     }
 
     @Override
