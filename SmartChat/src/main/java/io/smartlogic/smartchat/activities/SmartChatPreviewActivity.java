@@ -70,14 +70,6 @@ public class SmartChatPreviewActivity extends Activity {
             }
         });
 
-        final Button toggleSwatch = (Button) findViewById(R.id.toggle_swatch);
-        toggleSwatch.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mDrawingView.toggleSwatch();
-            }
-        });
-
         final Button undoButton = (Button) findViewById(R.id.undo);
         undoButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -90,7 +82,6 @@ public class SmartChatPreviewActivity extends Activity {
         drawingButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                toggleSwatch.setVisibility(toggleSwatch.getVisibility() == View.VISIBLE ? View.GONE : View.VISIBLE);
                 undoButton.setVisibility(undoButton.getVisibility() == View.VISIBLE ? View.GONE : View.VISIBLE);
 
                 mDrawingView.toggleDrawing();

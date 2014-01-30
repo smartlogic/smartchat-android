@@ -25,7 +25,7 @@ public class DrawingView extends View {
 
     private boolean mDrawingExists = false;
     private boolean mDrawing = false;
-    private boolean mDisplaySwatch = false;
+    private boolean mDisplaySwatch = true;
     private boolean mTouchingSwatch = false;
 
     private Rect mSwatchBorder;
@@ -90,11 +90,6 @@ public class DrawingView extends View {
 
     public void toggleDrawing() {
         this.mDrawing = !mDrawing;
-        invalidate();
-    }
-
-    public void toggleSwatch() {
-        this.mDisplaySwatch = !mDisplaySwatch;
         invalidate();
     }
 
