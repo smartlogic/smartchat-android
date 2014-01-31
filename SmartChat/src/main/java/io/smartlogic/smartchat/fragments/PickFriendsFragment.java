@@ -9,10 +9,13 @@ import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.util.Log;
 import android.view.View;
+import android.widget.CheckBox;
+import android.widget.ListView;
 
 import java.util.HashSet;
 
 import io.smartlogic.smartchat.Constants;
+import io.smartlogic.smartchat.R;
 import io.smartlogic.smartchat.activities.MainActivity;
 import io.smartlogic.smartchat.activities.PickFriendsActivity;
 import io.smartlogic.smartchat.adapters.FriendSelectorAdapter;
@@ -43,12 +46,26 @@ public class PickFriendsFragment extends ListFragment implements FriendSelectorA
     }
 
     @Override
-    public void onFriendChecked(Friend friend, boolean isChecked) {
-        if (isChecked) {
-            mCheckedFriendIds.add(friend.getId());
-        } else {
+    public void onFriendChecked(Friend friend) {
+        if (mCheckedFriendIds.contains(friend)) {
             mCheckedFriendIds.remove(friend.getId());
+        } else {
+            mCheckedFriendIds.add(friend.getId());
         }
+    }
+
+    @Override
+    public boolean isFriendSelected(Friend friend) {
+        return mCheckedFriendIds.contains(friend);
+    }
+
+    @Override
+    public void onListItemClick(ListView l, View v, int position, long id) {
+        Friend friend = mAdapter.positionSelected(position);
+        onFriendChecked(friend);
+
+        CheckBox checkBox = (CheckBox) v.findViewById(R.id.checkbox);
+        checkBox.setChecked(!checkBox.isChecked());
     }
 
     @Override
@@ -59,8 +76,6 @@ public class PickFriendsFragment extends ListFragment implements FriendSelectorA
             friendIds[i] = id;
             i++;
         }
-
-        Log.d("PickFriends", "" + getArguments().getInt(Constants.EXTRA_EXPIRE_IN));
 
         Intent intent = new Intent(getActivity(), UploadService.class);
         intent.putExtra(Constants.EXTRA_FRIEND_IDS, friendIds);

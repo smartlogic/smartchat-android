@@ -39,15 +39,24 @@ public class FriendSelectorAdapter extends CursorAdapter {
         friendUsername.setText(friend.getUsername());
 
         CheckBox checkBox = (CheckBox) view.findViewById(R.id.checkbox);
+        checkBox.setChecked(mFriendCheckedListener.isFriendSelected(friend));
         checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                mFriendCheckedListener.onFriendChecked(friend, isChecked);
+                mFriendCheckedListener.onFriendChecked(friend);
             }
         });
     }
 
+    public Friend positionSelected(int position) {
+        Cursor cursor = getCursor();
+        cursor.moveToPosition(position);
+        return Friend.fromCursor(cursor);
+    }
+
     public interface OnFriendCheckedListener {
-        public void onFriendChecked(Friend fiend, boolean isChecked);
+        public void onFriendChecked(Friend fiend);
+
+        public boolean isFriendSelected(Friend friend);
     }
 }
