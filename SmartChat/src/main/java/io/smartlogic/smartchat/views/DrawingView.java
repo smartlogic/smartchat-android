@@ -100,7 +100,7 @@ public class DrawingView extends View {
         mTextPaint.setTextSize(sp(20));
 
         mTextBorderPaint = new Paint();
-        mTextBorderPaint.setColor(Color.BLACK);
+        mTextBorderPaint.setColor(Color.parseColor("#80000000"));
     }
 
     public void toggleDrawing() {
@@ -146,7 +146,7 @@ public class DrawingView extends View {
         mTextPaint.getTextBounds(mText, 0, mText.length(), mTextBounds);
 
         int padding = (int) dip(20);
-        mTextBorder = new Rect(mTextBounds.left + padding, mTextBounds.top + padding, mTextBounds.right + padding, mTextBounds.bottom + padding);
+        mTextBorder = new Rect(mTextBounds.left - padding, mTextBounds.top - padding, mTextBounds.right + padding, mTextBounds.bottom + padding);
 
         invalidate();
     }
@@ -230,9 +230,14 @@ public class DrawingView extends View {
 
         if (!TextUtils.isEmpty(mText)) {
             float x = canvas.getWidth() / 2 - mTextBounds.width() / 2;
-            float y = canvas.getHeight() / 2 - mTextBounds.height() / 2;
+            float y = canvas.getHeight() / 2 + mTextBounds.height() / 2;
 
-            canvas.drawRect(mTextBorder, mTextBorderPaint);
+            int left = canvas.getWidth() / 2 - mTextBorder.width() / 2;
+            int top = canvas.getHeight() / 2 - mTextBorder.height() / 2;
+            int right = canvas.getWidth() / 2 + mTextBorder.width() / 2;
+            int bottom = canvas.getHeight() / 2 + mTextBorder.height() / 2;
+
+            canvas.drawRect(left, top, right, bottom, mTextBorderPaint);
             canvas.drawText(mText, x, y, mTextPaint);
         }
     }

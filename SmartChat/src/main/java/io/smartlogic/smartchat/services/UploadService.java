@@ -23,6 +23,8 @@ public class UploadService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
+        Log.d(TAG, "Uploading photo");
+
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         String username = prefs.getString(Constants.EXTRA_USERNAME, "");
         String encodedPrivateKey = prefs.getString(Constants.EXTRA_PRIVATE_KEY, "");

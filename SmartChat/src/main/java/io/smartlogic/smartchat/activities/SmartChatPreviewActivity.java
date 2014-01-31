@@ -131,6 +131,12 @@ public class SmartChatPreviewActivity extends Activity {
             return super.onTouchEvent(event);
         }
 
+        toggleMessage();
+
+        return true;
+    }
+
+    private boolean toggleMessage() {
         if (mMessageShowing) {
             mMessageEdit.setVisibility(View.INVISIBLE);
             mDrawingView.setText(mMessageEdit.getText().toString());
@@ -139,13 +145,16 @@ public class SmartChatPreviewActivity extends Activity {
             mMessageEdit.requestFocus();
         }
 
-        mMessageShowing = !mMessageShowing;
-
-        return true;
+        return mMessageShowing = !mMessageShowing;
     }
 
     @Override
     public void onBackPressed() {
+        if (mMessageShowing) {
+            toggleMessage();
+            return;
+        }
+
         pictureFile.delete();
 
         super.onBackPressed();
