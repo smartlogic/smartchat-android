@@ -29,6 +29,7 @@ public class DrawingView extends View {
     private boolean mDrawing = false;
     private boolean mDisplaySwatch = true;
     private boolean mTouchingSwatch = false;
+    private boolean mTextShowing = true;
 
     private String mText = "";
     private Paint mTextPaint;
@@ -111,6 +112,10 @@ public class DrawingView extends View {
     public void hideSwatch() {
         this.mDisplaySwatch = false;
         invalidate();
+    }
+
+    public void setTextShowing(boolean textShowing) {
+        this.mTextShowing = textShowing;
     }
 
     public boolean doesDrawingExist() {
@@ -228,7 +233,7 @@ public class DrawingView extends View {
             }
         }
 
-        if (!TextUtils.isEmpty(mText)) {
+        if (mTextShowing && !TextUtils.isEmpty(mText)) {
             float x = canvas.getWidth() / 2 - mTextBounds.width() / 2;
             float y = canvas.getHeight() / 2 + mTextBounds.height() / 2;
 

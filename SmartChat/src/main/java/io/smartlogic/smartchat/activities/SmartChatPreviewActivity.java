@@ -145,7 +145,11 @@ public class SmartChatPreviewActivity extends Activity {
             mMessageEdit.requestFocus();
         }
 
-        return mMessageShowing = !mMessageShowing;
+        mMessageShowing = !mMessageShowing;
+
+        mDrawingView.setTextShowing(!mMessageShowing);
+
+        return mMessageShowing;
     }
 
     @Override
