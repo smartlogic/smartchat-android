@@ -14,8 +14,11 @@ import android.view.MotionEvent;
 import android.view.View;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.SortedMap;
 import java.util.Stack;
+import java.util.TreeMap;
 
 public class DrawingView extends View {
     private static final String TAG = "DrawingView";
@@ -166,38 +169,39 @@ public class DrawingView extends View {
         canvasBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
         drawCanvas = new Canvas(canvasBitmap);
 
-        int sideLength = scalePixel(75);
+        int width = scalePixel(150);
+        int height = scalePixel(5);
 
-        int left = scalePixel(getWidth() - 250 + sideLength);
-        int top = scalePixel(250 - sideLength);
-        int right = left + scalePixel(sideLength);
-        int bottom = top + scalePixel(sideLength);
+        int left = scalePixel(getWidth() - 50 - width);
+        int top = scalePixel(450 - height);
+        int right = left + scalePixel(width);
+        int bottom = top + scalePixel(height);
 
-        mSwatchBorder = new Rect(left, top, right, bottom);
 
-        for (int i = 0; i < mAvailableColors.length; i++) {
-            if (i % 2 == 0) {
-                left -= sideLength;
-                right -= sideLength;
-
-                top += sideLength;
-                bottom += sideLength;
-            } else {
-                left += sideLength;
-                right += sideLength;
+        int[] values = new int[]{0, 64, 128, 192, 255};
+        SortedMap<Long, Integer> colors = new TreeMap<Long, Integer>(Collections.reverseOrder());
+        for (int r : values) {
+            for (int g : values) {
+                for (int b : values) {
+                    long colourScore = (r << 16) + (g << 8) + b;
+                    colors.put(colourScore, Color.rgb(r, g, b));
+                }
             }
+        }
 
+        mSwatchBorder = new Rect(left, top, right, top + height * colors.size());
 
+        for (Integer color : colors.values()) {
             Rect rect = new Rect(left, top, right, bottom);
+            mColorSwatches.add(new ColorSwatchColor(color, rect));
 
-            mColorSwatches.add(new ColorSwatchColor(mAvailableColors[i], rect));
+            top += height;
+            bottom += height;
         }
 
         mCurrentColorSwatchColor = mColorSwatches.get(STARTING_COLOR);
 
-        mSwatchBorder.set(mSwatchBorder.left - sideLength, mSwatchBorder.top + sideLength, right, bottom);
-
-        top += sideLength;
+        top += height;
         for (int size : mAvailableBrushSizes) {
             top += scalePixel(100);
 
@@ -210,7 +214,7 @@ public class DrawingView extends View {
     }
 
     private int scalePixel(int pixel) {
-        return (int) (pixel - 0.5f / scale);
+        return (int) Math.ceil(pixel - 0.5f / scale);
     }
 
     @Override
