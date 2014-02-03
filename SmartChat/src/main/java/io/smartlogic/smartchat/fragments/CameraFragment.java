@@ -173,28 +173,68 @@ public class CameraFragment extends Fragment {
         Point screenSize = new Point();
         display.getSize(screenSize);
         float screenRatio = (float) screenSize.x / screenSize.y;
+
         List<Camera.Size> sizes = parameters.getSupportedPictureSizes();
+        List<Camera.Size> previewSizes = parameters.getSupportedPreviewSizes();
+
         Camera.Size selectedSize = parameters.getPictureSize();
+        Camera.Size previewSize = parameters.getPreviewSize();
+
+        float startingRatio = (float) selectedSize.height / selectedSize.width;
 
         Log.i(TAG, "Screen ratio: " + screenRatio);
+        Log.i(TAG, "Starting ratio: " + startingRatio);
+        Log.i(TAG, "Current size: " + selectedSize.width + "x" + selectedSize.height);
+        Log.i(TAG, "Preview size: " + previewSize.width + "x" + previewSize.height);
+
+        boolean foundMatchingSize = false;
 
         if (sizes != null) {
             for (Camera.Size size : sizes) {
-                Log.i(TAG, "Found picture size: " + size.width + "x" + size.height);
-
                 float ratio = (float) size.height / size.width;
+                Log.i(TAG, "Found picture size: " + size.width + "x" + size.height + " with ratio: " + ratio);
                 if (ratio == screenRatio) {
                     selectedSize = size;
+                    foundMatchingSize = true;
                     break;
+                }
+            }
+
+            if (!foundMatchingSize) {
+                for (Camera.Size size : sizes) {
+                    float ratio = (float) size.height / size.width;
+                    Log.i(TAG, "Found picture size: " + size.width + "x" + size.height + " with ratio: " + ratio);
+                    if (ratio == startingRatio) {
+                        selectedSize = size;
+                        break;
+                    }
+                }
+            }
+        }
+
+        if (previewSizes != null) {
+            Integer currentDifference = null;
+
+            for (Camera.Size size : previewSizes) {
+                float ratio = (float) size.height / size.width;
+                int difference = Math.abs((screenSize.y + screenSize.x) - (size.height + size.width));
+                Log.i(TAG, "Found preview size: " + size.width + "x" + size.height + " with ratio: " + ratio + " and difference of " + difference);
+
+                if (currentDifference == null || difference < currentDifference) {
+                    currentDifference = difference;
+                    previewSize = size;
                 }
             }
         }
 
         if (selectedSize != null) {
-            Log.i(TAG, "Setting screen size: " + screenSize.y + "x" + screenSize.x);
-            parameters.setPreviewSize(screenSize.y, screenSize.x);
             Log.i(TAG, "Setting picture size: " + selectedSize.width + "x" + selectedSize.height);
             parameters.setPictureSize(selectedSize.width, selectedSize.height);
+        }
+
+        if (previewSize != null) {
+            Log.i(TAG, "Setting screen size: " + previewSize.width + "x" + previewSize.height);
+            parameters.setPreviewSize(previewSize.width, previewSize.height);
         }
 
         parameters.setRotation(90);
