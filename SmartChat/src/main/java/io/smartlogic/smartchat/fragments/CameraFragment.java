@@ -174,8 +174,6 @@ public class CameraFragment extends Fragment {
 
         parameters.setRotation(90);
         mCamera.setDisplayOrientation(90);
-
-        parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_AUTO);
         mCamera.setParameters(parameters);
 
         // Create our Preview view and set it as the content of our activity.
