@@ -169,23 +169,46 @@ public class CameraFragment extends Fragment {
         mCamera = getCameraInstance(mCameraId);
         Camera.Parameters parameters = mCamera.getParameters();
 
+        setPictureSize(parameters);
+        setPreviewSize(parameters);
+
+        parameters.setRotation(90);
+        mCamera.setDisplayOrientation(90);
+
+        parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_AUTO);
+        mCamera.setParameters(parameters);
+
+        // Create our Preview view and set it as the content of our activity.
+        mPreview = new CameraPreview(getActivity(), mCamera);
+        mPreviewLayout = (FrameLayout) getView().findViewById(R.id.camera_preview);
+        mPreviewLayout.addView(mPreview);
+        mPreview.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mCamera.autoFocus(new Camera.AutoFocusCallback() {
+                    @Override
+                    public void onAutoFocus(boolean success, Camera camera) {
+                        Log.d(TAG, "started autofocus");
+                    }
+                });
+            }
+        });
+    }
+
+    private void setPictureSize(Camera.Parameters parameters) {
         Display display = getActivity().getWindowManager().getDefaultDisplay();
         Point screenSize = new Point();
         display.getSize(screenSize);
         float screenRatio = (float) screenSize.x / screenSize.y;
 
         List<Camera.Size> sizes = parameters.getSupportedPictureSizes();
-        List<Camera.Size> previewSizes = parameters.getSupportedPreviewSizes();
-
         Camera.Size selectedSize = parameters.getPictureSize();
-        Camera.Size previewSize = parameters.getPreviewSize();
 
         float startingRatio = (float) selectedSize.height / selectedSize.width;
 
         Log.i(TAG, "Screen ratio: " + screenRatio);
         Log.i(TAG, "Starting ratio: " + startingRatio);
         Log.i(TAG, "Current size: " + selectedSize.width + "x" + selectedSize.height);
-        Log.i(TAG, "Preview size: " + previewSize.width + "x" + previewSize.height);
 
         boolean foundMatchingSize = false;
 
@@ -212,6 +235,22 @@ public class CameraFragment extends Fragment {
             }
         }
 
+        if (selectedSize != null) {
+            Log.i(TAG, "Setting picture size: " + selectedSize.width + "x" + selectedSize.height);
+            parameters.setPictureSize(selectedSize.width, selectedSize.height);
+        }
+    }
+
+    private void setPreviewSize(Camera.Parameters parameters) {
+        Display display = getActivity().getWindowManager().getDefaultDisplay();
+        Point screenSize = new Point();
+        display.getSize(screenSize);
+
+        List<Camera.Size> previewSizes = parameters.getSupportedPreviewSizes();
+        Camera.Size previewSize = parameters.getPreviewSize();
+
+        Log.i(TAG, "Preview size: " + previewSize.width + "x" + previewSize.height);
+
         if (previewSizes != null) {
             Integer currentDifference = null;
 
@@ -227,36 +266,10 @@ public class CameraFragment extends Fragment {
             }
         }
 
-        if (selectedSize != null) {
-            Log.i(TAG, "Setting picture size: " + selectedSize.width + "x" + selectedSize.height);
-            parameters.setPictureSize(selectedSize.width, selectedSize.height);
-        }
-
         if (previewSize != null) {
             Log.i(TAG, "Setting screen size: " + previewSize.width + "x" + previewSize.height);
             parameters.setPreviewSize(previewSize.width, previewSize.height);
         }
-
-        parameters.setRotation(90);
-        parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_AUTO);
-        mCamera.setParameters(parameters);
-        mCamera.setDisplayOrientation(90);
-
-        // Create our Preview view and set it as the content of our activity.
-        mPreview = new CameraPreview(getActivity(), mCamera);
-        mPreviewLayout = (FrameLayout) getView().findViewById(R.id.camera_preview);
-        mPreviewLayout.addView(mPreview);
-        mPreview.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mCamera.autoFocus(new Camera.AutoFocusCallback() {
-                    @Override
-                    public void onAutoFocus(boolean success, Camera camera) {
-                        Log.d(TAG, "started autofocus");
-                    }
-                });
-            }
-        });
     }
 
     public void removeCameraInstance() {
