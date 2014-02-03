@@ -6,16 +6,16 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
-import android.util.Log;
+import android.view.View;
 
 import io.smartlogic.smartchat.Constants;
 import io.smartlogic.smartchat.R;
 import io.smartlogic.smartchat.adapters.MainFragmentPagerAdapter;
-import io.smartlogic.smartchat.api.ContextApiClient;
 import io.smartlogic.smartchat.api.GCMRegistration;
 import io.smartlogic.smartchat.sync.SyncClient;
 
@@ -27,6 +27,13 @@ public class MainActivity extends FragmentActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if (Build.VERSION.SDK_INT > 16) {
+            View decorView = getWindow().getDecorView();
+            // Hide the status bar.
+            int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION;
+            decorView.setSystemUiVisibility(uiOptions);
+        }
 
         if (getActionBar() != null) {
             getActionBar().hide();
@@ -59,6 +66,18 @@ public class MainActivity extends FragmentActivity {
         new GCMRegistration(this).check();
 
         new CreateAccountTask(this).execute();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        if (Build.VERSION.SDK_INT > 16 && mViewPager.getCurrentItem() == mPagerAdapter.POSITION_CAMERA) {
+            View decorView = getWindow().getDecorView();
+            // Hide the status bar.
+            int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION;
+            decorView.setSystemUiVisibility(uiOptions);
+        }
     }
 
     private class SyncNowTask extends AsyncTask<Void, Void, Void> {

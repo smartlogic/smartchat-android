@@ -1,9 +1,11 @@
 package io.smartlogic.smartchat.adapters;
 
 import android.app.Activity;
+import android.os.Build;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
+import android.view.View;
 
 import io.smartlogic.smartchat.R;
 import io.smartlogic.smartchat.fragments.AddContactsWithInviteFragment;
@@ -13,10 +15,10 @@ import io.smartlogic.smartchat.fragments.NotificationsFragment;
 
 public class MainFragmentPagerAdapter extends FragmentStatePagerAdapter {
     private static final int TAB_COUNT = 4;
-    private static final int POSITION_LIST = 0;
-    private static final int POSITION_CAMERA = 1;
-    private static final int POSITION_FRIENDS = 2;
-    private static final int POSITION_ADD_FRIENDS = 3;
+    public static final int POSITION_LIST = 0;
+    public static final int POSITION_CAMERA = 1;
+    public static final int POSITION_FRIENDS = 2;
+    public static final int POSITION_ADD_FRIENDS = 3;
     private final Activity mContext;
     private final ViewPager mViewPager;
     private String[] titles;
@@ -79,7 +81,19 @@ public class MainFragmentPagerAdapter extends FragmentStatePagerAdapter {
             if (mContext.getActionBar() != null) {
                 if (i == POSITION_CAMERA && v < 0.5) {
                     mContext.getActionBar().hide();
+
+                    if (Build.VERSION.SDK_INT > 16) {
+                        View decorView = mContext.getWindow().getDecorView();
+                        // Hide the status bar.
+                        int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION;
+                        decorView.setSystemUiVisibility(uiOptions);
+                    }
                 } else {
+                    if (Build.VERSION.SDK_INT > 16) {
+                        View decorView = mContext.getWindow().getDecorView();
+                        decorView.setSystemUiVisibility(0);
+                    }
+
                     mContext.getActionBar().show();
                 }
             }

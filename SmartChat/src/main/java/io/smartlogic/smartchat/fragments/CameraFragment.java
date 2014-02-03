@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.graphics.Point;
+import android.graphics.Rect;
 import android.hardware.Camera;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -13,6 +14,8 @@ import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
+import android.view.Surface;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -24,6 +27,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.List;
 
 import io.smartlogic.smartchat.Constants;
@@ -169,8 +173,12 @@ public class CameraFragment extends Fragment {
         mCamera = getCameraInstance(mCameraId);
         Camera.Parameters parameters = mCamera.getParameters();
 
-        setPictureSize(parameters);
-        setPreviewSize(parameters);
+        Display display = getActivity().getWindowManager().getDefaultDisplay();
+        final Point screenSize = new Point();
+        display.getSize(screenSize);
+
+        setPictureSize(parameters, screenSize);
+        setPreviewSize(parameters, screenSize);
 
         parameters.setRotation(90);
         mCamera.setDisplayOrientation(90);
@@ -180,23 +188,44 @@ public class CameraFragment extends Fragment {
         mPreview = new CameraPreview(getActivity(), mCamera);
         mPreviewLayout = (FrameLayout) getView().findViewById(R.id.camera_preview);
         mPreviewLayout.addView(mPreview);
-        mPreview.setOnClickListener(new View.OnClickListener() {
+        mPreview.setOnTouchListener(new View.OnTouchListener() {
             @Override
-            public void onClick(View v) {
+            public boolean onTouch(View v, MotionEvent event) {
+                Camera.Parameters focusParameters = mCamera.getParameters();
+
+                if (focusParameters.getMaxNumFocusAreas() > 0) {
+                    List<Camera.Area> focusAreas = new ArrayList<Camera.Area>();
+
+                    float percentageX = event.getX() / screenSize.x;
+                    float percentageY = event.getY() / screenSize.y;
+
+                    int x = (int) (percentageX * 2000) - 1000;
+                    int y = (int) (percentageY * 2000) - 1000;
+
+                    int left = x - 100;
+                    int top = y - 100;
+                    int right = x + 100;
+                    int bottom = y + 100;
+
+                    Rect area = new Rect(left, top, right, bottom);
+                    focusAreas.add(new Camera.Area(area, 1000));
+                    focusParameters.setFocusAreas(focusAreas);
+                    mCamera.setParameters(focusParameters);
+                }
+
                 mCamera.autoFocus(new Camera.AutoFocusCallback() {
                     @Override
                     public void onAutoFocus(boolean success, Camera camera) {
                         Log.d(TAG, "started autofocus");
                     }
                 });
+
+                return true;
             }
         });
     }
 
-    private void setPictureSize(Camera.Parameters parameters) {
-        Display display = getActivity().getWindowManager().getDefaultDisplay();
-        Point screenSize = new Point();
-        display.getSize(screenSize);
+    private void setPictureSize(Camera.Parameters parameters, Point screenSize) {
         float screenRatio = (float) screenSize.x / screenSize.y;
 
         List<Camera.Size> sizes = parameters.getSupportedPictureSizes();
@@ -239,11 +268,7 @@ public class CameraFragment extends Fragment {
         }
     }
 
-    private void setPreviewSize(Camera.Parameters parameters) {
-        Display display = getActivity().getWindowManager().getDefaultDisplay();
-        Point screenSize = new Point();
-        display.getSize(screenSize);
-
+    private void setPreviewSize(Camera.Parameters parameters, Point screenSize) {
         List<Camera.Size> previewSizes = parameters.getSupportedPreviewSizes();
         Camera.Size previewSize = parameters.getPreviewSize();
 
