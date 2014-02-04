@@ -20,7 +20,7 @@ public class PickFriendsActivity extends FragmentActivity {
 
         if (savedInstanceState == null && getIntent().getExtras() != null) {
             Bundle args = new Bundle();
-            args.putString(Constants.EXTRA_PHOTO_PATH, getIntent().getExtras().getString(Constants.EXTRA_PHOTO_PATH));
+            args.putString(Constants.EXTRA_FILE_PATH, getIntent().getExtras().getString(Constants.EXTRA_FILE_PATH));
             args.putString(Constants.EXTRA_DRAWING_PATH, getIntent().getExtras().getString(Constants.EXTRA_DRAWING_PATH));
             args.putInt(Constants.EXTRA_EXPIRE_IN, getIntent().getExtras().getInt(Constants.EXTRA_EXPIRE_IN));
             mFriendsFragment = new PickFriendsFragment();

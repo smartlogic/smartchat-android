@@ -23,15 +23,13 @@ public class UploadService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
-        Log.d(TAG, "Uploading photo");
-
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         String username = prefs.getString(Constants.EXTRA_USERNAME, "");
         String encodedPrivateKey = prefs.getString(Constants.EXTRA_PRIVATE_KEY, "");
 
         ApiClient client = new ApiClient(username, encodedPrivateKey);
 
-        String photoPath = intent.getExtras().getString(Constants.EXTRA_PHOTO_PATH);
+        String filePath = intent.getExtras().getString(Constants.EXTRA_FILE_PATH);
         String drawingPath = intent.getExtras().getString(Constants.EXTRA_DRAWING_PATH, "");
         int[] friendIds = intent.getExtras().getIntArray(Constants.EXTRA_FRIEND_IDS);
         int expireIn = intent.getExtras().getInt(Constants.EXTRA_EXPIRE_IN);
@@ -42,15 +40,15 @@ public class UploadService extends IntentService {
         }
 
         try {
-            client.uploadMedia(friendIdList, photoPath, drawingPath, expireIn);
+            client.uploadMedia(friendIdList, filePath, drawingPath, expireIn);
         } catch (AuthenticationException e) {
             Log.e(TAG, "Authentication error");
         }
 
-        File photoFile = new File(photoPath);
-        photoFile.delete();
+        File file = new File(filePath);
+        file.delete();
 
-        photoFile = new File(drawingPath);
-        photoFile.delete();
+        file = new File(drawingPath);
+        file.delete();
     }
 }

@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.MediaPlayer;
 import android.os.Build;
 import android.view.MotionEvent;
 import android.view.View;
@@ -14,6 +15,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.NumberPicker;
 import android.widget.RelativeLayout;
+import android.widget.VideoView;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Click;
@@ -31,15 +33,26 @@ import io.smartlogic.smartchat.views.DrawingView;
 
 @EActivity(R.layout.activity_smart_chat_preview)
 public class SmartChatPreviewActivity extends Activity {
-    private File pictureFile;
+    private File mediaFile;
     private DrawingView mDrawingView;
-    private EditText mMessageEdit;
     private int mExpireIn = Constants.DEFAULT_EXPIRE_IN;
 
     private boolean mMessageShowing = false;
 
+    @ViewById(R.id.message_edit)
+    EditText mMessageEdit;
+
     @ViewById(R.id.undo)
     Button mUndoButton;
+
+    @ViewById(R.id.container)
+    RelativeLayout mContainer;
+
+    @ViewById(R.id.smartchat_photo)
+    ImageView previewPhoto;
+
+    @ViewById(R.id.smartchat_video)
+    VideoView previewVideo;
 
     @AfterViews
     protected void afterViews() {
@@ -47,23 +60,46 @@ public class SmartChatPreviewActivity extends Activity {
             getActionBar().hide();
         }
 
-        mMessageEdit = (EditText) findViewById(R.id.message_edit);
+        String photoPath = null;
+        String videoPath = null;
+        if (getIntent() != null && getIntent().getExtras() != null) {
+            photoPath = getIntent().getExtras().getString(Constants.EXTRA_PHOTO_PATH, null);
+            videoPath = getIntent().getExtras().getString(Constants.EXTRA_VIDEO_PATH, null);
+        }
 
-        pictureFile = new File(getIntent().getExtras().getString(Constants.EXTRA_PHOTO_PATH));
-        Bitmap bitmap = BitmapFactory.decodeFile(pictureFile.getAbsolutePath());
+        View preview = previewPhoto;
 
-        ImageView preview = (ImageView) findViewById(R.id.smartchat);
-        preview.setImageBitmap(bitmap);
+        if (photoPath != null) {
+            mediaFile = new File(photoPath);
+            Bitmap bitmap = BitmapFactory.decodeFile(mediaFile.getAbsolutePath());
 
-        RelativeLayout layout = (RelativeLayout) findViewById(R.id.container);
+            previewPhoto.setImageBitmap(bitmap);
+
+            mContainer.removeView(previewVideo);
+        } else if (videoPath != null) {
+            mediaFile = new File(videoPath);
+
+            previewVideo.setVideoPath(mediaFile.getPath());
+            previewVideo.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                @Override
+                public void onCompletion(MediaPlayer mp) {
+                    previewVideo.start();
+                }
+            });
+            previewVideo.start();
+
+            preview = previewVideo;
+
+            mContainer.removeView(previewPhoto);
+        }
 
         RelativeLayout.LayoutParams previewLayoutParams = (RelativeLayout.LayoutParams) preview.getLayoutParams();
 
         mDrawingView = new DrawingView(this);
         mDrawingView.setLayoutParams(previewLayoutParams);
 
-        int drawingViewIndex = layout.indexOfChild(preview) + 1;
-        layout.addView(mDrawingView, drawingViewIndex);
+        int drawingViewIndex = mContainer.indexOfChild(preview) + 1;
+        mContainer.addView(mDrawingView, drawingViewIndex);
     }
 
     @Click(R.id.upload)
@@ -75,7 +111,7 @@ public class SmartChatPreviewActivity extends Activity {
             intent.putExtra(Constants.EXTRA_DRAWING_PATH, drawingPhotoPath);
         }
 
-        intent.putExtra(Constants.EXTRA_PHOTO_PATH, getIntent().getExtras().getString(Constants.EXTRA_PHOTO_PATH));
+        intent.putExtra(Constants.EXTRA_FILE_PATH, mediaFile.getPath());
         intent.putExtra(Constants.EXTRA_EXPIRE_IN, mExpireIn);
         startActivity(intent);
     }
@@ -165,7 +201,9 @@ public class SmartChatPreviewActivity extends Activity {
             return;
         }
 
-        pictureFile.delete();
+        if (mediaFile != null) {
+            mediaFile.delete();
+        }
 
         super.onBackPressed();
     }

@@ -7,6 +7,7 @@ import android.graphics.Rect;
 import android.hardware.Camera;
 import android.util.Log;
 import android.view.MotionEvent;
+import android.view.Surface;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -55,6 +56,8 @@ public class CameraHelper implements CameraFragment.ICamera {
         }
     };
 
+    private VideoHelper mVideoHelper;
+
     public CameraHelper(Activity activity) {
         this.mActivity = activity;
     }
@@ -67,6 +70,22 @@ public class CameraHelper implements CameraFragment.ICamera {
     @Override
     public void takePicture() {
         mCamera.takePicture(null, null, mPicture);
+    }
+
+    @Override
+    public void takeVideo(Surface surface) {
+        if (mVideoHelper == null) {
+            mVideoHelper = new VideoHelper(mActivity, mCamera, mCameraId);
+        }
+
+        mVideoHelper.takeVideo(surface, new VideoHelper.OnVideoRecordedListener() {
+            @Override
+            public void videoRecorded(String path) {
+                Intent intent = new Intent(mActivity, SmartChatPreviewActivity_.class);
+                intent.putExtra(Constants.EXTRA_VIDEO_PATH, path);
+                mActivity.startActivity(intent);
+            }
+        });
     }
 
     @Override
@@ -88,6 +107,10 @@ public class CameraHelper implements CameraFragment.ICamera {
             mCamera.cancelAutoFocus();
             mCamera.release();
             mCamera = null;
+        }
+
+        if (mVideoHelper != null) {
+            mVideoHelper.releaseMediaRecorder();
         }
     }
 

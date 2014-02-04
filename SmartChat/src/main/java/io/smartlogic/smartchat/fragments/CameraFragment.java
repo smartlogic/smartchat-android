@@ -6,6 +6,7 @@ import android.hardware.Camera;
 import android.support.v4.app.Fragment;
 import android.view.Display;
 import android.view.MotionEvent;
+import android.view.Surface;
 import android.view.View;
 import android.widget.FrameLayout;
 
@@ -32,9 +33,14 @@ public class CameraFragment extends Fragment {
         mCameraHelper = new CameraHelper(getActivity());
     }
 
-    @Click(R.id.capture)
-    void capture() {
+    @Click(R.id.photo)
+    void capturePhoto() {
         mCameraHelper.takePicture();
+    }
+
+    @Click(R.id.video)
+    void captureVideo() {
+        mCameraHelper.takeVideo(mPreview.getHolder().getSurface());
     }
 
     @Click(R.id.switch_camera)
@@ -110,6 +116,8 @@ public class CameraFragment extends Fragment {
         public Camera getCamera();
 
         public void takePicture();
+
+        public void takeVideo(Surface surface);
 
         public void cameraResume(Point screenSize);
 

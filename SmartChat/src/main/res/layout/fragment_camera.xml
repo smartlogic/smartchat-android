@@ -15,13 +15,27 @@
         android:layout_alignParentRight="true"
         android:text="@string/switch_camera" />
 
+    <View
+        android:id="@+id/center"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_centerInParent="true" />
+
     <Button
-        android:id="@+id/capture"
+        android:id="@+id/photo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_toLeftOf="@+id/center"
         android:layout_alignParentBottom="true"
-        android:layout_centerInParent="true"
-        android:text="@string/capture" />
+        android:text="@string/photo" />
+
+    <Button
+        android:id="@+id/video"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/center"
+        android:layout_alignParentBottom="true"
+        android:text="@string/video" />
 
     <Button
         android:id="@+id/upload_from_gallery"

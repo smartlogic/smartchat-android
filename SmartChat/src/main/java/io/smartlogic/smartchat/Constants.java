@@ -6,7 +6,9 @@ public class Constants {
     public static final String EXTRA_GO_TO_ADD_CONTACTS = "go_to_add_contacts";
     public static final String EXTRA_USERNAME = "username";
     public static final String EXTRA_PRIVATE_KEY = "private_key";
+    public static final String EXTRA_FILE_PATH = "file_path";
     public static final String EXTRA_PHOTO_PATH = "photo_path";
+    public static final String EXTRA_VIDEO_PATH = "video_path";
     public static final String EXTRA_DRAWING_PATH = "drawing_path";
     public static final String EXTRA_FILE_URL = "file_url";
     public static final String EXTRA_DRAWING_FILE_URL = "drawing_file_url";
