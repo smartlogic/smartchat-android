@@ -3,15 +3,15 @@ package io.smartlogic.smartchat.fragments;
 import android.content.Intent;
 import android.graphics.Point;
 import android.hardware.Camera;
-import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.Display;
-import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.FrameLayout;
+
+import org.androidannotations.annotations.AfterViews;
+import org.androidannotations.annotations.Click;
+import org.androidannotations.annotations.EFragment;
 
 import io.smartlogic.smartchat.Constants;
 import io.smartlogic.smartchat.R;
@@ -20,49 +20,34 @@ import io.smartlogic.smartchat.helpers.CameraHelper;
 import io.smartlogic.smartchat.tasks.CopyFromGalleryTask;
 import io.smartlogic.smartchat.views.CameraPreview;
 
+@EFragment(R.layout.fragment_camera)
 public class CameraFragment extends Fragment {
     private static int RESULT_LOAD_IMAGE = 1;
     private CameraPreview mPreview;
     private FrameLayout mPreviewLayout;
     private ICamera mCameraHelper;
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_camera, null);
+    @AfterViews
+    void init() {
+        mCameraHelper = new CameraHelper(getActivity());
     }
 
-    @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
-        mCameraHelper = new CameraHelper(getActivity());
+    @Click(R.id.capture)
+    void capture() {
+        mCameraHelper.takePicture();
+    }
 
-        Button captureButton = (Button) getView().findViewById(R.id.capture);
-        captureButton.setOnClickListener(
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        mCameraHelper.takePicture();
-                    }
-                }
-        );
+    @Click(R.id.switch_camera)
+    void switchCamera() {
+        removeCameraInstance();
+        mCameraHelper.toggleFrontBack();
+        resumeCamera();
+    }
 
-        Button switchCamera = (Button) getView().findViewById(R.id.switch_camera);
-        switchCamera.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                removeCameraInstance();
-                mCameraHelper.toggleFrontBack();
-                resumeCamera();
-            }
-        });
-
-        Button uploadFromGallery = (Button) getView().findViewById(R.id.upload_from_gallery);
-        uploadFromGallery.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                startActivityForResult(intent, RESULT_LOAD_IMAGE);
-            }
-        });
+    @Click(R.id.upload_from_gallery)
+    void uploadFromGallery() {
+        Intent intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        startActivityForResult(intent, RESULT_LOAD_IMAGE);
     }
 
     @Override

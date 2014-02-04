@@ -9,7 +9,7 @@ import android.view.View;
 
 import io.smartlogic.smartchat.R;
 import io.smartlogic.smartchat.fragments.AddContactsWithInviteFragment;
-import io.smartlogic.smartchat.fragments.CameraFragment;
+import io.smartlogic.smartchat.fragments.CameraFragment_;
 import io.smartlogic.smartchat.fragments.FriendsFragment;
 import io.smartlogic.smartchat.fragments.NotificationsFragment;
 
@@ -52,7 +52,7 @@ public class MainFragmentPagerAdapter extends FragmentStatePagerAdapter {
             case POSITION_LIST:
                 return Fragment.instantiate(mContext, NotificationsFragment.class.getName(), null);
             case POSITION_CAMERA:
-                return Fragment.instantiate(mContext, CameraFragment.class.getName(), null);
+                return Fragment.instantiate(mContext, CameraFragment_.class.getName(), null);
             case POSITION_FRIENDS:
                 return Fragment.instantiate(mContext, FriendsFragment.class.getName(), null);
             case POSITION_ADD_FRIENDS:

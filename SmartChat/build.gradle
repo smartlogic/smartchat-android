@@ -4,12 +4,22 @@ buildscript {
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:0.7.+'
+        // the latest version of the android-apt plugin
+        classpath 'com.neenbedankt.gradle.plugins:android-apt:1.2'
     }
 }
 apply plugin: 'android'
+apply plugin: 'android-apt'
 
 repositories {
     mavenCentral()
+}
+
+apt {
+    arguments {
+        androidManifestFile variant.processResources.manifestFile
+        resourcePackageName 'io.smartlogic.smartchat'
+    }
 }
 
 android {
@@ -35,10 +45,12 @@ android {
             keyPassword System.getenv("KEY_PASSWORD")
         }
     }
+
     defaultConfig {
         minSdkVersion 15
         targetSdkVersion 19
     }
+
     buildTypes {
         debug {
             buildConfigField "String", "API_URL", "\"http://192.168.1.254:5000/\""
@@ -52,6 +64,7 @@ android {
             buildConfigField "String", "API_URL", "\"http://smartchat.smartlogic.io\""
         }
     }
+
     productFlavors {
         defaultFlavor {
             proguardFile 'proguard-rules.txt'
@@ -69,4 +82,7 @@ dependencies {
     compile "com.damnhandy:handy-uri-templates:2.0.1"
     compile 'com.google.android.gms:play-services:4.0.30'
     compile 'com.android.support:support-v4:13.0.0'
+
+    apt "org.androidannotations:androidannotations:3.0.1"
+    compile "org.androidannotations:androidannotations-api:3.0.1"
 }
