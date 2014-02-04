@@ -3,26 +3,16 @@ package io.smartlogic.smartchat.views;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
-import android.graphics.Rect;
-import android.text.TextUtils;
 import android.util.AttributeSet;
-import android.util.TypedValue;
+import android.util.DisplayMetrics;
 import android.view.MotionEvent;
 import android.view.View;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.SortedMap;
 import java.util.Stack;
-import java.util.TreeMap;
 
 public class DrawingView extends View {
-    private static final String TAG = "DrawingView";
-
     private Path drawPath;
     private Paint drawPaint, canvasPaint;
     private Canvas drawCanvas;
@@ -34,37 +24,11 @@ public class DrawingView extends View {
     private boolean mTouchingSwatch = false;
     private boolean mTextShowing = true;
 
-    private String mText = "";
-    private Paint mTextPaint;
-    private Rect mTextBounds;
-    private Paint mTextBorderPaint;
-    private Rect mTextBorder;
-
-    private Rect mSwatchBorder;
-    private final static int STARTING_COLOR = 0;
-    private int[] mAvailableColors = new int[]{
-            Color.parseColor("#FFFFFF"),
-            Color.parseColor("#000000"),
-            Color.parseColor("#FF0000"),
-            Color.parseColor("#00FF00"),
-            Color.parseColor("#0000FF"),
-            Color.parseColor("#FFFF00"),
-            Color.parseColor("#00FFFF"),
-            Color.parseColor("#FF00FF"),
-    };
-    private List<ColorSwatchColor> mColorSwatches;
-    private ColorSwatchColor mCurrentColorSwatchColor;
-
-    private final static int STARTING_BRUSH_SIZE = 1;
-    private int[] mAvailableBrushSizes = new int[]{
-            5, 20, 40
-    };
-    private List<Brush> mBrushes;
-    private Brush mCurrentBrush;
+    private SwatchView mSwatchView;
+    private BrushView mBrushView;
+    private DrawingTextView mDrawingTextView;
 
     private Stack<DrawingPath> mPaths;
-
-    private float scale;
 
     @SuppressWarnings("unused")
     public DrawingView(Context context) {
@@ -82,9 +46,9 @@ public class DrawingView extends View {
         drawPath = new Path();
         drawPaint = new Paint();
 
-        drawPaint.setColor(mAvailableColors[STARTING_COLOR]);
+        drawPaint.setColor(SwatchView.STARTING_COLOR);
         drawPaint.setAntiAlias(true);
-        drawPaint.setStrokeWidth(mAvailableBrushSizes[STARTING_BRUSH_SIZE]);
+        drawPaint.setStrokeWidth(BrushView.STARTING_BRUSH_SIZE);
         drawPaint.setStyle(Paint.Style.STROKE);
         drawPaint.setStrokeJoin(Paint.Join.ROUND);
         drawPaint.setStrokeCap(Paint.Cap.ROUND);
@@ -93,18 +57,12 @@ public class DrawingView extends View {
 
         setDrawingCacheEnabled(true);
 
-        mColorSwatches = new ArrayList<ColorSwatchColor>();
-        mBrushes = new ArrayList<Brush>();
         mPaths = new Stack<DrawingPath>();
 
-        scale = getResources().getDisplayMetrics().density;
-
-        mTextPaint = new Paint();
-        mTextPaint.setColor(Color.WHITE);
-        mTextPaint.setTextSize(sp(20));
-
-        mTextBorderPaint = new Paint();
-        mTextBorderPaint.setColor(Color.parseColor("#80000000"));
+        DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
+        mSwatchView = new SwatchView(displayMetrics.density, drawPaint);
+        mBrushView = new BrushView(displayMetrics.density);
+        mDrawingTextView = new DrawingTextView(displayMetrics);
     }
 
     public void toggleDrawing() {
@@ -147,15 +105,8 @@ public class DrawingView extends View {
     }
 
     public void setText(String text) {
-        this.mText = text;
         mDrawingExists = true;
-
-        mTextBounds = new Rect();
-        mTextPaint.getTextBounds(mText, 0, mText.length(), mTextBounds);
-
-        int padding = (int) dip(20);
-        mTextBorder = new Rect(mTextBounds.left - padding, mTextBounds.top - padding, mTextBounds.right + padding, mTextBounds.bottom + padding);
-
+        mDrawingTextView.setText(text);
         invalidate();
     }
 
@@ -163,58 +114,11 @@ public class DrawingView extends View {
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
 
-        mColorSwatches.clear();
-        mBrushes.clear();
+        mSwatchView.setStartingLocation(w - 50, 450);
+        mBrushView.setStartingLocation(mSwatchView.left, mSwatchView.bottom);
 
         canvasBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
         drawCanvas = new Canvas(canvasBitmap);
-
-        int width = scalePixel(150);
-        int height = scalePixel(5);
-
-        int left = scalePixel(getWidth() - 50 - width);
-        int top = scalePixel(450 - height);
-        int right = left + scalePixel(width);
-        int bottom = top + scalePixel(height);
-
-
-        int[] values = new int[]{0, 64, 128, 192, 255};
-        SortedMap<Long, Integer> colors = new TreeMap<Long, Integer>(Collections.reverseOrder());
-        for (int r : values) {
-            for (int g : values) {
-                for (int b : values) {
-                    long colourScore = (r << 16) + (g << 8) + b;
-                    colors.put(colourScore, Color.rgb(r, g, b));
-                }
-            }
-        }
-
-        mSwatchBorder = new Rect(left, top, right, top + height * colors.size());
-
-        for (Integer color : colors.values()) {
-            Rect rect = new Rect(left, top, right, bottom);
-            mColorSwatches.add(new ColorSwatchColor(color, rect));
-
-            top += height;
-            bottom += height;
-        }
-
-        mCurrentColorSwatchColor = mColorSwatches.get(STARTING_COLOR);
-
-        top += height;
-        for (int size : mAvailableBrushSizes) {
-            top += scalePixel(100);
-
-            Rect rect = new Rect(mSwatchBorder.left, top, mSwatchBorder.right, top);
-
-            mBrushes.add(new Brush(size, rect));
-        }
-
-        mCurrentBrush = mBrushes.get(STARTING_BRUSH_SIZE);
-    }
-
-    private int scalePixel(int pixel) {
-        return (int) Math.ceil(pixel - 0.5f / scale);
     }
 
     @Override
@@ -225,29 +129,12 @@ public class DrawingView extends View {
         canvas.drawPath(drawPath, drawPaint);
 
         if (mDrawing && mDisplaySwatch) {
-            for (ColorSwatchColor swatchColor : mColorSwatches) {
-                canvas.drawRect(swatchColor.location, swatchColor.paint);
-            }
-
-            canvas.drawRect(mSwatchBorder, drawPaint);
-
-            for (Brush brush : mBrushes) {
-                brush.paint.setColor(mCurrentColorSwatchColor.color);
-                canvas.drawLine(brush.location.left, brush.location.top, brush.location.right, brush.location.bottom, brush.paint);
-            }
+            mSwatchView.onDraw(canvas);
+            mBrushView.onDraw(canvas, mSwatchView.getCurrentColor());
         }
 
-        if (mTextShowing && !TextUtils.isEmpty(mText)) {
-            float x = canvas.getWidth() / 2 - mTextBounds.width() / 2;
-            float y = canvas.getHeight() / 2 + mTextBounds.height() / 2;
-
-            int left = canvas.getWidth() / 2 - mTextBorder.width() / 2;
-            int top = canvas.getHeight() / 2 - mTextBorder.height() / 2;
-            int right = canvas.getWidth() / 2 + mTextBorder.width() / 2;
-            int bottom = canvas.getHeight() / 2 + mTextBorder.height() / 2;
-
-            canvas.drawRect(left, top, right, bottom, mTextBorderPaint);
-            canvas.drawText(mText, x, y, mTextPaint);
+        if (mTextShowing && !mDrawingTextView.isTextEmpty()) {
+            mDrawingTextView.onDraw(canvas);
         }
     }
 
@@ -285,7 +172,7 @@ public class DrawingView extends View {
                     mTouchingSwatch = false;
                 }
 
-                mPaths.add(new DrawingPath(drawPath, mCurrentColorSwatchColor, mCurrentBrush));
+                mPaths.add(new DrawingPath(drawPath, mSwatchView.getCurrentColorSwatchColor(), mBrushView.getCurrentBrush()));
 
                 drawCanvas.drawPath(drawPath, drawPaint);
                 drawPath = new Path();
@@ -299,92 +186,24 @@ public class DrawingView extends View {
     }
 
     private boolean touchIntersecting(int x, int y) {
-        for (ColorSwatchColor swatchColor : mColorSwatches) {
-            if (swatchColor.location.intersects(x, y, x, y)) {
-                setPaintColor(swatchColor);
-
-                return true;
-            }
+        if (mSwatchView.touchIntersecting(x, y)) {
+            drawPaint.setColor(mSwatchView.getCurrentColor());
+            return true;
         }
 
-        for (Brush brush : mBrushes) {
-            if (brushLineIntersects(brush, x, y)) {
-                setPaintStroke(brush);
-                return true;
-            }
+        if (mBrushView.touchIntersecting(x, y)) {
+            drawPaint.setStrokeWidth(mBrushView.getCurrentBrushSize());
         }
+
         return false;
-    }
-
-    private boolean brushLineIntersects(Brush brush, int x, int y) {
-        Rect brushRectangle = new Rect(
-                brush.location.left,
-                brush.location.top - 50,
-                brush.location.right,
-                brush.location.bottom + 50
-        );
-        return brushRectangle.intersects(x, y, x, y);
-    }
-
-    private void setPaintColor(ColorSwatchColor colorSwatchColor) {
-        mCurrentColorSwatchColor = colorSwatchColor;
-        drawPaint.setColor(colorSwatchColor.color);
-    }
-
-    private void setPaintStroke(Brush brush) {
-        mCurrentBrush = brush;
-        drawPaint.setStrokeWidth(brush.size);
-    }
-
-    private float dip(int size) {
-        return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, size, getResources().getDisplayMetrics());
-    }
-
-    private float sp(int size) {
-        return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, size, getResources().getDisplayMetrics());
-    }
-
-    private class ColorSwatchColor {
-        int color;
-        Paint paint;
-        Rect location;
-
-        public ColorSwatchColor(int color, Rect location) {
-            Paint paint = new Paint();
-            paint.setColor(color);
-            paint.setStrokeWidth(0);
-
-            this.color = color;
-            this.paint = paint;
-            this.location = location;
-        }
-    }
-
-    private class Brush {
-        int size;
-        Paint paint;
-        Rect location;
-
-        public Brush(int size, Rect location) {
-            Paint paint = new Paint();
-            paint.setStrokeWidth(size);
-            paint.setAntiAlias(true);
-            paint.setStyle(Paint.Style.STROKE);
-            paint.setStrokeJoin(Paint.Join.ROUND);
-            paint.setStrokeCap(Paint.Cap.ROUND);
-
-            this.size = size;
-            this.paint = paint;
-            this.location = location;
-        }
     }
 
     private class DrawingPath {
         Path path;
-        ColorSwatchColor swatchColor;
-        Brush brush;
+        SwatchView.ColorSwatchColor swatchColor;
+        BrushView.Brush brush;
 
-        public DrawingPath(Path path, ColorSwatchColor swatchColor, Brush brush) {
+        public DrawingPath(Path path, SwatchView.ColorSwatchColor swatchColor, BrushView.Brush brush) {
             this.path = path;
             this.swatchColor = swatchColor;
             this.brush = brush;
