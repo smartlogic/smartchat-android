@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Build;
-import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
@@ -15,6 +14,11 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.NumberPicker;
 import android.widget.RelativeLayout;
+
+import org.androidannotations.annotations.AfterViews;
+import org.androidannotations.annotations.Click;
+import org.androidannotations.annotations.EActivity;
+import org.androidannotations.annotations.ViewById;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -25,6 +29,7 @@ import io.smartlogic.smartchat.Constants;
 import io.smartlogic.smartchat.R;
 import io.smartlogic.smartchat.views.DrawingView;
 
+@EActivity(R.layout.activity_smart_chat_preview)
 public class SmartChatPreviewActivity extends Activity {
     private File pictureFile;
     private DrawingView mDrawingView;
@@ -33,12 +38,11 @@ public class SmartChatPreviewActivity extends Activity {
 
     private boolean mMessageShowing = false;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    @ViewById(R.id.undo)
+    Button mUndoButton;
 
-        setContentView(R.layout.activity_smart_chat_preview);
-
+    @AfterViews
+    protected void afterViews() {
         if (getActionBar() != null) {
             getActionBar().hide();
         }
@@ -60,71 +64,59 @@ public class SmartChatPreviewActivity extends Activity {
 
         int drawingViewIndex = layout.indexOfChild(preview) + 1;
         layout.addView(mDrawingView, drawingViewIndex);
+    }
 
-        Button mUploadButton = (Button) findViewById(R.id.upload);
-        mUploadButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(SmartChatPreviewActivity.this, PickFriendsActivity.class);
+    @Click(R.id.upload)
+    void upload() {
+        Intent intent = new Intent(SmartChatPreviewActivity.this, PickFriendsActivity.class);
 
-                if (mDrawingView.doesDrawingExist()) {
-                    String drawingPhotoPath = saveDrawing();
-                    intent.putExtra(Constants.EXTRA_DRAWING_PATH, drawingPhotoPath);
-                }
+        if (mDrawingView.doesDrawingExist()) {
+            String drawingPhotoPath = saveDrawing();
+            intent.putExtra(Constants.EXTRA_DRAWING_PATH, drawingPhotoPath);
+        }
 
-                intent.putExtra(Constants.EXTRA_PHOTO_PATH, getIntent().getExtras().getString(Constants.EXTRA_PHOTO_PATH));
-                intent.putExtra(Constants.EXTRA_EXPIRE_IN, mExpireIn);
-                startActivity(intent);
-            }
-        });
+        intent.putExtra(Constants.EXTRA_PHOTO_PATH, getIntent().getExtras().getString(Constants.EXTRA_PHOTO_PATH));
+        intent.putExtra(Constants.EXTRA_EXPIRE_IN, mExpireIn);
+        startActivity(intent);
+    }
 
-        final Button undoButton = (Button) findViewById(R.id.undo);
-        undoButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mDrawingView.undoPath();
-            }
-        });
+    @Click(R.id.expire_in)
+    void expireIn() {
+        final NumberPicker picker = new NumberPicker(SmartChatPreviewActivity.this);
+        picker.setMinValue(3);
+        picker.setMaxValue(20);
+        picker.setWrapSelectorWheel(false);
+        picker.setValue(mExpireIn);
 
-        Button drawingButton = (Button) findViewById(R.id.draw);
-        drawingButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                undoButton.setVisibility(undoButton.getVisibility() == View.VISIBLE ? View.GONE : View.VISIBLE);
+        AlertDialog dialog = new AlertDialog.Builder(SmartChatPreviewActivity.this)
+                .setTitle(R.string.expire_in)
+                .setView(picker)
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        mExpireIn = picker.getValue();
+                    }
+                })
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
 
-                mDrawingView.toggleDrawing();
-            }
-        });
+                    }
+                })
+                .create();
+        dialog.show();
+    }
 
-        Button expireIn = (Button) findViewById(R.id.expire_in);
-        expireIn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                final NumberPicker picker = new NumberPicker(SmartChatPreviewActivity.this);
-                picker.setMinValue(3);
-                picker.setMaxValue(20);
-                picker.setWrapSelectorWheel(false);
-                picker.setValue(mExpireIn);
+    @Click(R.id.undo)
+    void undo() {
+        mDrawingView.undoPath();
+    }
 
-                AlertDialog dialog = new AlertDialog.Builder(SmartChatPreviewActivity.this)
-                        .setTitle(R.string.expire_in)
-                        .setView(picker)
-                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                mExpireIn = picker.getValue();
-                            }
-                        })
-                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
+    @Click(R.id.draw)
+    void toggleDraw() {
+        mUndoButton.setVisibility(mUndoButton.getVisibility() == View.VISIBLE ? View.GONE : View.VISIBLE);
 
-                            }
-                        })
-                        .create();
-                dialog.show();
-            }
-        });
+        mDrawingView.toggleDrawing();
     }
 
     @Override

@@ -83,7 +83,7 @@
             android:name=".activities.InviteUserActivity"
             android:label="@string/app_name" />
         <activity
-            android:name=".activities.SmartChatPreviewActivity"
+            android:name=".activities.SmartChatPreviewActivity_"
             android:label="@string/app_name"
             android:screenOrientation="portrait" />
         <activity

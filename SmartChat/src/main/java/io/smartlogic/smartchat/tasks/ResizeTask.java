@@ -1,7 +1,6 @@
 package io.smartlogic.smartchat.tasks;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
@@ -15,20 +14,23 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import io.smartlogic.smartchat.Constants;
-import io.smartlogic.smartchat.activities.SmartChatPreviewActivity;
-
 public class ResizeTask extends AsyncTask<Void, Void, Void> {
     private String filePath;
     private String resizedPhotoPath;
 
     private Activity mActivity;
     private int mCameraId;
+    private OnResizeCompletedListener mOnResizeCompletedListener;
 
-    public ResizeTask(Activity context, String filePath, int cameraId) {
+    public interface OnResizeCompletedListener {
+        public void resizeCompleted(String resizedPhotoPath);
+    }
+
+    public ResizeTask(Activity context, String filePath, int cameraId, OnResizeCompletedListener onResizeCompletedListener) {
         this.mActivity = context;
         this.filePath = filePath;
         this.mCameraId = cameraId;
+        this.mOnResizeCompletedListener = onResizeCompletedListener;
     }
 
     @Override
@@ -93,8 +95,6 @@ public class ResizeTask extends AsyncTask<Void, Void, Void> {
 
     @Override
     protected void onPostExecute(Void aVoid) {
-        Intent intent = new Intent(mActivity, SmartChatPreviewActivity.class);
-        intent.putExtra(Constants.EXTRA_PHOTO_PATH, resizedPhotoPath);
-        mActivity.startActivity(intent);
+        mOnResizeCompletedListener.resizeCompleted(resizedPhotoPath);
     }
 }

@@ -1,6 +1,7 @@
 package io.smartlogic.smartchat.helpers;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.hardware.Camera;
@@ -14,6 +15,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.smartlogic.smartchat.Constants;
+import io.smartlogic.smartchat.activities.SmartChatPreviewActivity_;
 import io.smartlogic.smartchat.fragments.CameraFragment;
 import io.smartlogic.smartchat.tasks.ResizeTask;
 
@@ -34,7 +37,14 @@ public class CameraHelper implements CameraFragment.ICamera {
                 fos.write(data);
                 fos.close();
 
-                new ResizeTask(mActivity, pictureFile.getPath(), mCameraId).execute();
+                new ResizeTask(mActivity, pictureFile.getPath(), mCameraId, new ResizeTask.OnResizeCompletedListener() {
+                    @Override
+                    public void resizeCompleted(String resizedPhotoPath) {
+                        Intent intent = new Intent(mActivity, SmartChatPreviewActivity_.class);
+                        intent.putExtra(Constants.EXTRA_PHOTO_PATH, resizedPhotoPath);
+                        mActivity.startActivity(intent);
+                    }
+                }).execute();
 
                 Log.d(TAG, "Captured " + pictureFile.toString());
             } catch (FileNotFoundException e) {
