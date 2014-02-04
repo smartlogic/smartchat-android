@@ -11,6 +11,7 @@ import android.os.CountDownTimer;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
+import android.webkit.MimeTypeMap;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -21,7 +22,7 @@ import io.smartlogic.smartchat.R;
 import io.smartlogic.smartchat.api.SmartChatDownloader;
 
 public class DisplaySmartChatActivity extends Activity {
-    private File pictureFile;
+    private File file;
     private File drawingFile;
 
     @Override
@@ -54,7 +55,7 @@ public class DisplaySmartChatActivity extends Activity {
             String fileUrl = getIntent().getExtras().getString(Constants.EXTRA_FILE_URL);
 
             SmartChatDownloader downloader = new SmartChatDownloader(context, encodedPrivateKey, fileUrl);
-            pictureFile = downloader.download();
+            file = downloader.download();
 
             if (!getIntent().getExtras().getString(Constants.EXTRA_DRAWING_FILE_URL, "").equals("")) {
                 String drawingFileUrl = getIntent().getExtras().getString(Constants.EXTRA_DRAWING_FILE_URL);
@@ -66,14 +67,29 @@ public class DisplaySmartChatActivity extends Activity {
             return null;
         }
 
+        public String getMimeType(String url) {
+            String type = null;
+            String extension = MimeTypeMap.getFileExtensionFromUrl(url);
+            if (extension != null) {
+                MimeTypeMap mime = MimeTypeMap.getSingleton();
+                type = mime.getMimeTypeFromExtension(extension);
+            }
+            return type;
+        }
+
+
         @Override
         protected void onPostExecute(Void aVoid) {
-            Bitmap bitmap = BitmapFactory.decodeFile(pictureFile.getAbsolutePath());
+            Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
 
-            ImageView photoView = (ImageView) findViewById(R.id.smartchat);
-            photoView.setImageBitmap(bitmap);
+            String mimeType = getMimeType(file.getAbsolutePath());
 
-            pictureFile.delete();
+            if (mimeType.matches("image")) {
+                ImageView photoView = (ImageView) findViewById(R.id.smartchat);
+                photoView.setImageBitmap(bitmap);
+            }
+
+            file.delete();
 
             if (drawingFile != null) {
                 bitmap = BitmapFactory.decodeFile(drawingFile.getAbsolutePath());
