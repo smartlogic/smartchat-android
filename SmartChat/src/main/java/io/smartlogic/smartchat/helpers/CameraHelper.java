@@ -24,6 +24,7 @@ import io.smartlogic.smartchat.tasks.ResizeTask;
 public class CameraHelper implements CameraFragment.ICamera {
     private static final String TAG = "CameraHelper";
 
+    private boolean mAutofocusing = false;
     private Activity mActivity;
     private Camera mCamera;
     private int mCameraId;
@@ -125,6 +126,13 @@ public class CameraHelper implements CameraFragment.ICamera {
 
     @Override
     public void autoFocus(MotionEvent event, Point screenSize) {
+        if (mAutofocusing || event.getAction() != MotionEvent.ACTION_UP) {
+            Log.d(TAG, "Not auto focusing");
+            return;
+        }
+
+        mAutofocusing = true;
+
         Camera.Parameters focusParameters = mCamera.getParameters();
 
         if (focusParameters.getMaxNumFocusAreas() > 0) {
@@ -150,7 +158,9 @@ public class CameraHelper implements CameraFragment.ICamera {
         mCamera.autoFocus(new Camera.AutoFocusCallback() {
             @Override
             public void onAutoFocus(boolean success, Camera camera) {
-                Log.d(TAG, "started autofocus");
+                mAutofocusing = false;
+
+                Log.d(TAG, "Autofocused");
             }
         });
     }
