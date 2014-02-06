@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/container"
     android:background="@android:color/black"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -12,12 +13,18 @@
         android:indeterminate="true" />
 
     <ImageView
-        android:id="@+id/smartchat"
+        android:id="@+id/smartchat_photo"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_centerInParent="true"
         android:adjustViewBounds="true"
         android:contentDescription="@string/app_name" />
+
+    <VideoView
+        android:id="@+id/smartchat_video"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerInParent="true" />
 
     <ImageView
         android:id="@+id/drawing"

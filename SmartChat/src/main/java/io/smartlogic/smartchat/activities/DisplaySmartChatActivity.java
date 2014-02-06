@@ -4,18 +4,22 @@ import android.app.Activity;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.MediaPlayer;
 import android.os.CountDownTimer;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
 import android.webkit.MimeTypeMap;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.VideoView;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Background;
 import org.androidannotations.annotations.EActivity;
 import org.androidannotations.annotations.UiThread;
+import org.androidannotations.annotations.ViewById;
 
 import java.io.File;
 
@@ -27,6 +31,9 @@ import io.smartlogic.smartchat.api.SmartChatDownloader;
 public class DisplaySmartChatActivity extends Activity {
     private File file;
     private File drawingFile;
+
+    @ViewById(R.id.container)
+    RelativeLayout mContainer;
 
     @AfterViews
     protected void init() {
@@ -66,10 +73,27 @@ public class DisplaySmartChatActivity extends Activity {
 
         Log.d("Display", "MimeType: " + mimeType);
 
+        final ImageView photoView = (ImageView) findViewById(R.id.smartchat_photo);
+        final VideoView videoView = (VideoView) findViewById(R.id.smartchat_video);
+
         if (mimeType.matches("image/.*")) {
             Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
-            ImageView photoView = (ImageView) findViewById(R.id.smartchat);
             photoView.setImageBitmap(bitmap);
+        } else {
+            mContainer.removeView(photoView);
+        }
+
+        if (mimeType.matches("video/.*")) {
+            videoView.setVideoPath(file.getPath());
+            videoView.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                @Override
+                public void onCompletion(MediaPlayer mp) {
+                    videoView.start();
+                }
+            });
+            videoView.start();
+        } else {
+            mContainer.removeView(videoView);
         }
 
         file.delete();

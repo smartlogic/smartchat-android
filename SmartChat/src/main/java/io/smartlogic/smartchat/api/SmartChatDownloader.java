@@ -2,6 +2,7 @@ package io.smartlogic.smartchat.api;
 
 import android.content.Context;
 import android.util.Base64;
+import android.webkit.MimeTypeMap;
 
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
@@ -30,12 +31,12 @@ import javax.crypto.spec.SecretKeySpec;
 public class SmartChatDownloader {
     private Context context;
     private String encodedPrivateKey;
-    private String s3Url;
+    private String fileUrl;
 
-    public SmartChatDownloader(Context context, String encodedPrivateKey, String s3Url) {
+    public SmartChatDownloader(Context context, String encodedPrivateKey, String fileUrl) {
         this.context = context;
         this.encodedPrivateKey = encodedPrivateKey;
-        this.s3Url = s3Url;
+        this.fileUrl = fileUrl;
     }
 
     public File download() {
@@ -43,7 +44,7 @@ public class SmartChatDownloader {
 
         try {
             HttpClient client = new DefaultHttpClient();
-            HttpGet s3File = new HttpGet(s3Url);
+            HttpGet s3File = new HttpGet(fileUrl);
 
             HttpResponse response = client.execute(s3File);
 
@@ -74,7 +75,8 @@ public class SmartChatDownloader {
 
             byte[] decrypted_data = aes.doFinal(data);
 
-            File pictureFile = File.createTempFile("smartchat", ".jpg", context.getExternalCacheDir());
+            String extension = MimeTypeMap.getFileExtensionFromUrl(fileUrl);
+            File pictureFile = File.createTempFile("smartchat", "." + extension, context.getExternalCacheDir());
             BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(pictureFile));
             bos.write(decrypted_data);
             bos.flush();
