@@ -85,12 +85,6 @@ public class DisplaySmartChatActivity extends Activity {
 
         if (mimeType.matches("video/.*")) {
             videoView.setVideoPath(file.getPath());
-            videoView.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    videoView.start();
-                }
-            });
             videoView.start();
         } else {
             mContainer.removeView(videoView);

@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Build;
 import android.view.MotionEvent;
 import android.view.View;
@@ -54,6 +55,9 @@ public class SmartChatPreviewActivity extends Activity {
     @ViewById(R.id.smartchat_video)
     VideoView previewVideo;
 
+    @ViewById(R.id.expire_in)
+    Button mExpireInButton;
+
     @AfterViews
     protected void afterViews() {
         if (getActionBar() != null) {
@@ -91,6 +95,11 @@ public class SmartChatPreviewActivity extends Activity {
             preview = previewVideo;
 
             mContainer.removeView(previewPhoto);
+
+            MediaPlayer mp = MediaPlayer.create(this, Uri.parse(videoPath));
+            mExpireIn = (int) Math.ceil(((float) mp.getDuration()) / 1000);
+            mp.release();
+            mContainer.removeView(mExpireInButton);
         }
 
         RelativeLayout.LayoutParams previewLayoutParams = (RelativeLayout.LayoutParams) preview.getLayoutParams();
