@@ -16,7 +16,7 @@ import org.androidannotations.annotations.EFragment;
 
 import io.smartlogic.smartchat.Constants;
 import io.smartlogic.smartchat.R;
-import io.smartlogic.smartchat.activities.SmartChatPreviewActivity;
+import io.smartlogic.smartchat.activities.SmartChatPreviewActivity_;
 import io.smartlogic.smartchat.helpers.CameraHelper;
 import io.smartlogic.smartchat.tasks.CopyFromGalleryTask;
 import io.smartlogic.smartchat.views.CameraPreview;
@@ -63,7 +63,7 @@ public class CameraFragment extends Fragment {
         new CopyFromGalleryTask(getActivity(), new CopyFromGalleryTask.OnCopyCompletedListener() {
             @Override
             public void copyCompleted(String picturePath) {
-                Intent intent = new Intent(getActivity(), SmartChatPreviewActivity.class);
+                Intent intent = new Intent(getActivity(), SmartChatPreviewActivity_.class);
                 intent.putExtra(Constants.EXTRA_PHOTO_PATH, picturePath);
                 startActivity(intent);
             }
