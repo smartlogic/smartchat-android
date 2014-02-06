@@ -77,7 +77,7 @@
             android:label="@string/app_name"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".activities.DisplaySmartChatActivity"
+            android:name=".activities.DisplaySmartChatActivity_"
             android:label="@string/app_name"
             android:screenOrientation="portrait" />
         <activity

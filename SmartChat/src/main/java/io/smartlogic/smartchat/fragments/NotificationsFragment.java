@@ -16,7 +16,7 @@ import android.widget.TextView;
 
 import io.smartlogic.smartchat.Constants;
 import io.smartlogic.smartchat.R;
-import io.smartlogic.smartchat.activities.DisplaySmartChatActivity;
+import io.smartlogic.smartchat.activities.DisplaySmartChatActivity_;
 import io.smartlogic.smartchat.adapters.NotificationsAdapter;
 import io.smartlogic.smartchat.data.DataUriManager;
 import io.smartlogic.smartchat.models.Notification;
@@ -51,7 +51,7 @@ public class NotificationsFragment extends ListFragment implements LoaderManager
                         new String[]{String.valueOf(notification.getDatabaseId())}
                 );
 
-        Intent intent = new Intent(getActivity(), DisplaySmartChatActivity.class);
+        Intent intent = new Intent(getActivity(), DisplaySmartChatActivity_.class);
         intent.putExtra(Constants.EXTRA_FILE_URL, notification.getFileUrl());
         intent.putExtra(Constants.EXTRA_DRAWING_FILE_URL, notification.getDrawingUrl());
         intent.putExtra(Constants.EXTRA_EXPIRE_IN, notification.getExpireIn());
