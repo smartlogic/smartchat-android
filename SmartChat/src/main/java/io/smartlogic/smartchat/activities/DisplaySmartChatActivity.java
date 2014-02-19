@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.View;
 import android.webkit.MimeTypeMap;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.VideoView;
@@ -34,6 +35,9 @@ public class DisplaySmartChatActivity extends Activity {
 
     @ViewById(R.id.container)
     RelativeLayout mContainer;
+
+    @ViewById(R.id.progress_bar)
+    ProgressBar mProgressBar;
 
     @AfterViews
     protected void init() {
@@ -71,6 +75,8 @@ public class DisplaySmartChatActivity extends Activity {
 
     @UiThread
     protected void setUpFileDisplay() {
+        mContainer.removeView(mProgressBar);
+
         String mimeType = getMimeType(file.getAbsolutePath());
 
         Log.d("Display", "MimeType: " + mimeType);
