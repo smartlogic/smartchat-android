@@ -65,8 +65,6 @@ public class SmartChatPreviewActivity extends Activity {
             getActionBar().hide();
         }
 
-        ViewHelper.hideSystemUI(this);
-
         String photoPath = null;
         String videoPath = null;
         if (getIntent() != null && getIntent().getExtras() != null) {
@@ -171,12 +169,7 @@ public class SmartChatPreviewActivity extends Activity {
     protected void onResume() {
         super.onResume();
 
-        if (Build.VERSION.SDK_INT > 16) {
-            View decorView = getWindow().getDecorView();
-            // Hide the status bar.
-            int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION;
-            decorView.setSystemUiVisibility(uiOptions);
-        }
+        ViewHelper.hideSystemUI(this);
     }
 
     @Override
