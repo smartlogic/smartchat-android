@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.media.MediaPlayer;
 import android.os.CountDownTimer;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -26,6 +25,7 @@ import java.io.File;
 import io.smartlogic.smartchat.Constants;
 import io.smartlogic.smartchat.R;
 import io.smartlogic.smartchat.api.SmartChatDownloader;
+import io.smartlogic.smartchat.helpers.ViewHelper;
 
 @EActivity(R.layout.activity_display_smart_chat)
 public class DisplaySmartChatActivity extends Activity {
@@ -40,6 +40,8 @@ public class DisplaySmartChatActivity extends Activity {
         if (getActionBar() != null) {
             getActionBar().hide();
         }
+
+        ViewHelper.hideSystemUI(this);
 
         downloadFile();
     }

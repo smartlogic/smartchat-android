@@ -6,17 +6,16 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
-import android.view.View;
 
 import io.smartlogic.smartchat.Constants;
 import io.smartlogic.smartchat.R;
 import io.smartlogic.smartchat.adapters.MainFragmentPagerAdapter;
 import io.smartlogic.smartchat.api.GCMRegistration;
+import io.smartlogic.smartchat.helpers.ViewHelper;
 import io.smartlogic.smartchat.sync.SyncClient;
 
 public class MainActivity extends FragmentActivity {
@@ -28,13 +27,6 @@ public class MainActivity extends FragmentActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (Build.VERSION.SDK_INT > 16) {
-            View decorView = getWindow().getDecorView();
-            // Hide the status bar.
-            int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION;
-            decorView.setSystemUiVisibility(uiOptions);
-        }
-
         if (getActionBar() != null) {
             getActionBar().hide();
         }
@@ -45,23 +37,18 @@ public class MainActivity extends FragmentActivity {
 
         mViewPager = new ViewPager(this);
         mViewPager.setId(R.id.pager);
-        setContentView(mViewPager);
 
         mPagerAdapter = new MainFragmentPagerAdapter(this, mViewPager);
 
         if (getIntent().getExtras() != null) {
             if (getIntent().getExtras().getBoolean(Constants.EXTRA_GO_TO_NOTIFICATIONS)) {
                 mPagerAdapter.displayNotifications();
-                if (getActionBar() != null) {
-                    getActionBar().show();
-                }
             } else if (getIntent().getExtras().getBoolean(Constants.EXTRA_GO_TO_ADD_CONTACTS)) {
                 mPagerAdapter.displayAddContacts();
-                if (getActionBar() != null) {
-                    getActionBar().show();
-                }
             }
         }
+
+        setContentView(mViewPager);
 
         new GCMRegistration(this).check();
 
@@ -72,11 +59,8 @@ public class MainActivity extends FragmentActivity {
     protected void onResume() {
         super.onResume();
 
-        if (Build.VERSION.SDK_INT > 16 && mViewPager.getCurrentItem() == mPagerAdapter.POSITION_CAMERA) {
-            View decorView = getWindow().getDecorView();
-            // Hide the status bar.
-            int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION;
-            decorView.setSystemUiVisibility(uiOptions);
+        if (mViewPager.getCurrentItem() == MainFragmentPagerAdapter.POSITION_CAMERA) {
+            ViewHelper.hideSystemUI(this);
         }
     }
 

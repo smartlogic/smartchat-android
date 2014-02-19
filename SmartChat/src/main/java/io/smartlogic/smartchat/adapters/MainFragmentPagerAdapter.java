@@ -1,17 +1,16 @@
 package io.smartlogic.smartchat.adapters;
 
 import android.app.Activity;
-import android.os.Build;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
-import android.view.View;
 
 import io.smartlogic.smartchat.R;
 import io.smartlogic.smartchat.fragments.AddContactsWithInviteFragment;
 import io.smartlogic.smartchat.fragments.CameraFragment_;
 import io.smartlogic.smartchat.fragments.FriendsFragment;
 import io.smartlogic.smartchat.fragments.NotificationsFragment;
+import io.smartlogic.smartchat.helpers.ViewHelper;
 
 public class MainFragmentPagerAdapter extends FragmentStatePagerAdapter {
     private static final int TAB_COUNT = 4;
@@ -78,31 +77,22 @@ public class MainFragmentPagerAdapter extends FragmentStatePagerAdapter {
     private class PageChangeListener implements ViewPager.OnPageChangeListener {
         @Override
         public void onPageScrolled(int i, float v, int i2) {
-            if (mContext.getActionBar() != null) {
-                if (i == POSITION_CAMERA && v < 0.5) {
-                    mContext.getActionBar().hide();
-
-                    if (Build.VERSION.SDK_INT > 16) {
-                        View decorView = mContext.getWindow().getDecorView();
-                        // Hide the status bar.
-                        int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION;
-                        decorView.setSystemUiVisibility(uiOptions);
-                    }
-                } else {
-                    if (Build.VERSION.SDK_INT > 16) {
-                        View decorView = mContext.getWindow().getDecorView();
-                        decorView.setSystemUiVisibility(0);
-                    }
-
-                    mContext.getActionBar().show();
-                }
-            }
         }
 
         @Override
         public void onPageSelected(int i) {
             mContext.setTitle(getTitle(i));
             mContext.invalidateOptionsMenu();
+
+            if (mContext.getActionBar() != null) {
+                if (i == POSITION_CAMERA) {
+                    ViewHelper.hideSystemUI(mContext);
+                    mContext.getActionBar().hide();
+                } else {
+                    ViewHelper.showSystemUI(mContext);
+                    mContext.getActionBar().show();
+                }
+            }
         }
 
         @Override

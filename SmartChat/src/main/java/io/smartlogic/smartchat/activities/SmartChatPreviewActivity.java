@@ -30,6 +30,7 @@ import java.io.OutputStream;
 
 import io.smartlogic.smartchat.Constants;
 import io.smartlogic.smartchat.R;
+import io.smartlogic.smartchat.helpers.ViewHelper;
 import io.smartlogic.smartchat.views.DrawingView;
 
 @EActivity(R.layout.activity_smart_chat_preview)
@@ -63,6 +64,8 @@ public class SmartChatPreviewActivity extends Activity {
         if (getActionBar() != null) {
             getActionBar().hide();
         }
+
+        ViewHelper.hideSystemUI(this);
 
         String photoPath = null;
         String videoPath = null;
