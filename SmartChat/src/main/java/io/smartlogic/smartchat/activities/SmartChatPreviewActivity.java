@@ -8,7 +8,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.MediaPlayer;
 import android.net.Uri;
-import android.os.Build;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
