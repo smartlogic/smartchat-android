@@ -2,19 +2,24 @@ package io.smartlogic.smartchat.activities;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.NumberPicker;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.VideoView;
 
 import org.androidannotations.annotations.AfterViews;
@@ -29,7 +34,6 @@ import java.io.OutputStream;
 
 import io.smartlogic.smartchat.Constants;
 import io.smartlogic.smartchat.R;
-import io.smartlogic.smartchat.helpers.ViewHelper;
 import io.smartlogic.smartchat.views.DrawingView;
 
 @EActivity(R.layout.activity_smart_chat_preview)
@@ -109,6 +113,16 @@ public class SmartChatPreviewActivity extends Activity {
 
         int drawingViewIndex = mContainer.indexOfChild(preview) + 1;
         mContainer.addView(mDrawingView, drawingViewIndex);
+
+        mMessageEdit.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_DONE) {
+                    toggleMessage();
+                }
+                return false;
+            }
+        });
     }
 
     @Click(R.id.upload)
@@ -176,12 +190,18 @@ public class SmartChatPreviewActivity extends Activity {
     }
 
     private boolean toggleMessage() {
+        InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+
         if (mMessageShowing) {
             mMessageEdit.setVisibility(View.INVISIBLE);
             mDrawingView.setText(mMessageEdit.getText().toString());
+
+            inputMethodManager.hideSoftInputFromWindow(mContainer.getWindowToken(), 0);
         } else {
             mMessageEdit.setVisibility(View.VISIBLE);
             mMessageEdit.requestFocus();
+
+            inputMethodManager.toggleSoftInputFromWindow(mContainer.getApplicationWindowToken(), InputMethodManager.SHOW_FORCED, 0);
         }
 
         mMessageShowing = !mMessageShowing;
