@@ -55,15 +55,6 @@ public class MainActivity extends FragmentActivity {
         new CreateAccountTask(this).execute();
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-        if (mViewPager.getCurrentItem() == MainFragmentPagerAdapter.POSITION_CAMERA) {
-            ViewHelper.hideSystemUI(this);
-        }
-    }
-
     private class SyncNowTask extends AsyncTask<Void, Void, Void> {
         @Override
         protected Void doInBackground(Void... params) {

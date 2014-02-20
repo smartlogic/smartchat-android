@@ -45,8 +45,6 @@ public class DisplaySmartChatActivity extends Activity {
             getActionBar().hide();
         }
 
-        ViewHelper.hideSystemUI(this);
-
         downloadFile();
     }
 

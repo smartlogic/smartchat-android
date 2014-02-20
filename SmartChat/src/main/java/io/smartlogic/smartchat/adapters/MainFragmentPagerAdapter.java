@@ -86,10 +86,8 @@ public class MainFragmentPagerAdapter extends FragmentStatePagerAdapter {
 
             if (mContext.getActionBar() != null) {
                 if (i == POSITION_CAMERA) {
-                    ViewHelper.hideSystemUI(mContext);
                     mContext.getActionBar().hide();
                 } else {
-                    ViewHelper.showSystemUI(mContext);
                     mContext.getActionBar().show();
                 }
             }

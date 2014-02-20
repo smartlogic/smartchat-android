@@ -165,13 +165,6 @@ public class SmartChatPreviewActivity extends Activity {
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-
-        ViewHelper.hideSystemUI(this);
-    }
-
-    @Override
     public boolean onTouchEvent(MotionEvent event) {
         if (event.getAction() != MotionEvent.ACTION_UP) {
             return super.onTouchEvent(event);
