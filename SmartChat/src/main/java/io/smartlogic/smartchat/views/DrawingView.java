@@ -77,6 +77,7 @@ public class DrawingView extends View {
 
     public void setTextShowing(boolean textShowing) {
         this.mTextShowing = textShowing;
+        invalidate();
     }
 
     public boolean doesDrawingExist() {
@@ -133,7 +134,7 @@ public class DrawingView extends View {
             mBrushView.onDraw(canvas, mSwatchView.getCurrentColor());
         }
 
-        if (mTextShowing && !mDrawingTextView.isTextEmpty()) {
+        if (mTextShowing) {
             mDrawingTextView.onDraw(canvas);
         }
     }

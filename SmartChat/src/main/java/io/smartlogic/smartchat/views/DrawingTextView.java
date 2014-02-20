@@ -29,10 +29,6 @@ public class DrawingTextView {
         mTextBorderPaint.setColor(Color.parseColor("#80000000"));
     }
 
-    public boolean isTextEmpty() {
-        return TextUtils.isEmpty(mText);
-    }
-
     public void setText(String text) {
         this.mText = text;
 
@@ -44,6 +40,10 @@ public class DrawingTextView {
     }
 
     public void onDraw(Canvas canvas) {
+        if (isTextEmpty()) {
+            return;
+        }
+
         float x = canvas.getWidth() / 2 - mTextBounds.width() / 2;
         float y = canvas.getHeight() / 2 + mTextBounds.height() / 2;
 
@@ -54,6 +54,10 @@ public class DrawingTextView {
 
         canvas.drawRect(left, top, right, bottom, mTextBorderPaint);
         canvas.drawText(mText, x, y, mTextPaint);
+    }
+
+    private boolean isTextEmpty() {
+        return TextUtils.isEmpty(mText);
     }
 
     private float dip(int size) {
