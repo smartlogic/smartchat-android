@@ -19,6 +19,9 @@ public class HalNotifications {
         @JsonProperty("_links")
         NotificationLinks links;
 
+        @JsonProperty("uuid")
+        String uuid;
+
         public int getCreatorId() {
             return embedded.creator.id;
         }
@@ -45,6 +48,10 @@ public class HalNotifications {
             }
 
             return "";
+        }
+
+        public String getUuid() {
+            return uuid;
         }
     }
 

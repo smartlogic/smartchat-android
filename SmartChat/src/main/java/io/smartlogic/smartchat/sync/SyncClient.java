@@ -109,6 +109,7 @@ public class SyncClient {
             notification.setCreatorUsername(halNotification.getCreatorUsername());
             notification.setFileUrl(halNotification.getFileUrl());
             notification.setDrawingUrl(halNotification.getDrawingUrl());
+            notification.setUuid(halNotification.getUuid());
 
             if (filesInDatabase.contains(notification.getFileUrl())) {
                 mContentResolver.update(DataUriManager.getNotificationUri(notification.getDatabaseId()), notification.getAttributes(), "file_url = ?", new String[]{notification.getFileUrl()});

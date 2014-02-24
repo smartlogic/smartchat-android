@@ -77,6 +77,7 @@ public class GcmIntentService extends IntentService {
         notification.setFileUrl(extras.getString("file_url"));
         notification.setDrawingUrl(extras.getString("drawing_file_url", ""));
         notification.setExpireIn(Integer.parseInt(extras.getString("expire_in")));
+        notification.setUuid(extras.getString("uuid"));
 
         getContentResolver().insert(DataUriManager.getNotificationsUri(), notification.getAttributes());
 

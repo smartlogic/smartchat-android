@@ -13,6 +13,7 @@ public class Notification {
     private String drawingUrl;
     private boolean viewed = false;
     private int expireIn = Constants.DEFAULT_EXPIRE_IN;
+    private String uuid;
 
     public static Notification fromCursor(Cursor cursor) {
         Notification notification = new Notification();
@@ -45,6 +46,10 @@ public class Notification {
             notification.setExpireIn(cursor.getInt(cursor.getColumnIndex("expire_in")));
         }
 
+        if (cursor.getColumnIndex("uuid") != -1) {
+            notification.setUuid(cursor.getString(cursor.getColumnIndex("uuid")));
+        }
+
         return notification;
     }
 
@@ -57,6 +62,7 @@ public class Notification {
         cv.put("drawing_url", getDrawingUrl());
         cv.put("viewed", isViewed());
         cv.put("expire_in", getExpireIn());
+        cv.put("uuid", getUuid());
 
         return cv;
     }
@@ -125,5 +131,13 @@ public class Notification {
 
     public void setExpireIn(int expireIn) {
         this.expireIn = expireIn;
+    }
+
+    public String getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
     }
 }
