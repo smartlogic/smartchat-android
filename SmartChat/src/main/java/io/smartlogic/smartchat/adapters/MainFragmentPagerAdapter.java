@@ -10,7 +10,6 @@ import io.smartlogic.smartchat.fragments.AddContactsWithInviteFragment;
 import io.smartlogic.smartchat.fragments.CameraFragment_;
 import io.smartlogic.smartchat.fragments.FriendsFragment;
 import io.smartlogic.smartchat.fragments.NotificationsFragment;
-import io.smartlogic.smartchat.helpers.ViewHelper;
 
 public class MainFragmentPagerAdapter extends FragmentStatePagerAdapter {
     private static final int TAB_COUNT = 4;

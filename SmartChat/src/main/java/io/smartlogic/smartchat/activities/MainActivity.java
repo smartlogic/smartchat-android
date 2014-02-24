@@ -15,7 +15,6 @@ import io.smartlogic.smartchat.Constants;
 import io.smartlogic.smartchat.R;
 import io.smartlogic.smartchat.adapters.MainFragmentPagerAdapter;
 import io.smartlogic.smartchat.api.GCMRegistration;
-import io.smartlogic.smartchat.helpers.ViewHelper;
 import io.smartlogic.smartchat.sync.SyncClient;
 
 public class MainActivity extends FragmentActivity {

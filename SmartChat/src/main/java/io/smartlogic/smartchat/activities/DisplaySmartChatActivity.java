@@ -26,7 +26,6 @@ import java.io.File;
 import io.smartlogic.smartchat.Constants;
 import io.smartlogic.smartchat.R;
 import io.smartlogic.smartchat.api.SmartChatDownloader;
-import io.smartlogic.smartchat.helpers.ViewHelper;
 
 @EActivity(R.layout.activity_display_smart_chat)
 public class DisplaySmartChatActivity extends Activity {
