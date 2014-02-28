@@ -39,6 +39,17 @@ public class DrawingTextView {
         mTextBorder = new Rect(mTextBounds.left - padding, mTextBounds.top - padding, mTextBounds.right + padding, mTextBounds.bottom + padding);
     }
 
+    public String textChanged(String text) {
+        Rect textBounds = new Rect();
+        mTextPaint.getTextBounds(text, 0, text.length(), textBounds);
+
+        if (textBounds.width() > mDisplayMetrics.widthPixels) {
+            return text.substring(0, text.length() - 1);
+        }
+
+        return text;
+    }
+
     public void onDraw(Canvas canvas) {
         if (isTextEmpty()) {
             return;

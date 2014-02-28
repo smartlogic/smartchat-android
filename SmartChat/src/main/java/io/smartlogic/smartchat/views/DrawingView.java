@@ -111,6 +111,10 @@ public class DrawingView extends View {
         invalidate();
     }
 
+    public String textChanged(String text) {
+        return mDrawingTextView.textChanged(text);
+    }
+
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
