@@ -9,6 +9,8 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
@@ -121,6 +123,27 @@ public class SmartChatPreviewActivity extends Activity {
                     toggleMessage();
                 }
                 return false;
+            }
+        });
+        mMessageEdit.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                String newStr = mDrawingView.textChanged(s.toString());
+
+                if (!newStr.equals(s.toString())) {
+                    mMessageEdit.setText(newStr);
+                    mMessageEdit.setSelection(newStr.length());
+                }
             }
         });
     }

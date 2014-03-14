@@ -1,33 +1,32 @@
 package io.smartlogic.smartchat.views;
 
-import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.util.DisplayMetrics;
+import android.util.TypedValue;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.SortedMap;
-import java.util.TreeMap;
+
+import rainbowvis.Rainbow;
 
 public class SwatchView {
     final static int STARTING_COLOR = Color.parseColor("#FFFFFF");
 
     private Paint mDrawPaint;
+    private DisplayMetrics mDisplayMetrics;
     private Rect mSwatchBorder;
     private List<ColorSwatchColor> mColorSwatches;
     private ColorSwatchColor mCurrentColorSwatchColor;
 
     int left, top, right, bottom;
 
-    private float scale;
-
-    public SwatchView(float scale, Paint drawPaint) {
+    public SwatchView(DisplayMetrics displayMetrics, Paint drawPaint) {
+        this.mDisplayMetrics = displayMetrics;
         this.mDrawPaint = drawPaint;
         this.mColorSwatches = new ArrayList<ColorSwatchColor>();
-        this.scale = scale;
     }
 
     public int getCurrentColor() {
@@ -53,30 +52,20 @@ public class SwatchView {
     protected void setStartingLocation(int x, int y) {
         mColorSwatches.clear();
 
-        int width = scalePixel(150);
-        int height = scalePixel(5);
+        int width = dip(50);
+        int height = dip(2);
 
-        left = scalePixel(x - width);
-        top = scalePixel(y - height);
-        right = left + scalePixel(width);
-        bottom = top + scalePixel(height);
+        left = x - width;
+        top = y - height;
+        right = left + width;
+        bottom = top + height;
 
-        int[] values = new int[]{0, 64, 128, 192, 255};
-        SortedMap<Long, Integer> colors = new TreeMap<Long, Integer>(Collections.reverseOrder());
-        for (int r : values) {
-            for (int g : values) {
-                for (int b : values) {
-                    long colourScore = (r << 16) + (g << 8) + b;
-                    colors.put(colourScore, Color.rgb(r, g, b));
-                }
-            }
-        }
+        mSwatchBorder = new Rect(left, top, right, top + height * 100);
 
-        mSwatchBorder = new Rect(left, top, right, top + height * colors.size());
-
-        for (Integer color : colors.values()) {
+        Rainbow rainbow = new Rainbow();
+        for (int i = 0; i < 100; i++) {
             Rect rect = new Rect(left, top, right, bottom);
-            mColorSwatches.add(new ColorSwatchColor(color, rect));
+            mColorSwatches.add(new ColorSwatchColor(Color.parseColor("#" + rainbow.colorAt(i)), rect));
 
             top += height;
             bottom += height;
@@ -93,8 +82,8 @@ public class SwatchView {
         canvas.drawRect(mSwatchBorder, mDrawPaint);
     }
 
-    private int scalePixel(int pixel) {
-        return (int) Math.ceil(pixel - 0.5f / scale);
+    private int dip(int size) {
+        return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, size, mDisplayMetrics);
     }
 
     protected static class ColorSwatchColor {

@@ -7,6 +7,7 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
+import android.util.TypedValue;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -17,6 +18,7 @@ public class DrawingView extends View {
     private Paint drawPaint, canvasPaint;
     private Canvas drawCanvas;
     private Bitmap canvasBitmap;
+    private DisplayMetrics mDisplayMetrics;
 
     private boolean mDrawingExists = false;
     private boolean mDrawing = false;
@@ -59,10 +61,10 @@ public class DrawingView extends View {
 
         mPaths = new Stack<DrawingPath>();
 
-        DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
-        mSwatchView = new SwatchView(displayMetrics.density, drawPaint);
-        mBrushView = new BrushView(displayMetrics.density);
-        mDrawingTextView = new DrawingTextView(displayMetrics);
+        mDisplayMetrics = getResources().getDisplayMetrics();
+        mSwatchView = new SwatchView(mDisplayMetrics, drawPaint);
+        mBrushView = new BrushView(mDisplayMetrics.density);
+        mDrawingTextView = new DrawingTextView(mDisplayMetrics);
     }
 
     public void toggleDrawing() {
@@ -111,11 +113,15 @@ public class DrawingView extends View {
         invalidate();
     }
 
+    public String textChanged(String text) {
+        return mDrawingTextView.textChanged(text);
+    }
+
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
 
-        mSwatchView.setStartingLocation(w - 50, 450);
+        mSwatchView.setStartingLocation(w - dip(20), dip(150));
         mBrushView.setStartingLocation(mSwatchView.left, mSwatchView.bottom);
 
         canvasBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
@@ -184,6 +190,10 @@ public class DrawingView extends View {
 
         invalidate();
         return true;
+    }
+
+    private int dip(int size) {
+        return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, size, mDisplayMetrics);
     }
 
     private boolean touchIntersecting(int x, int y) {
